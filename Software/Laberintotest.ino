@@ -26,7 +26,7 @@
 #define BUTTON 13
 // const
 #define DISTANCIA_MINIMA 200
-#define DISTANCIA_LADOS 150
+#define DISTANCIA_LADOS 100
 #define DISTANCIA_MAXIMA 250
 #define TICK_PID 70
 #define TICK_ULTRASONIDO 10
@@ -36,7 +36,7 @@
 int velocidad_derecha = 200;
 int velocidad_izquierda = 200;
 int velocidad_media = 200;
-int velocidad_giro = 185;
+int velocidad_giro = 188;
 // pwm DE UN MOTOR
 const int freq = 5000;
 const int PWMChannel = 0; // LOS CANALES PWM TIENEN QUE SER DISTINTOS!!!!!!
