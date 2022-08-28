@@ -595,6 +595,7 @@
         )
       )
     )
+<<<<<<< HEAD
     (symbol "EESTN5:LM1117-SOT" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
       (property "Reference" "U" (id 0) (at 0 5.08 0)
         (effects (font (size 1.524 1.524)))
@@ -639,6 +640,8 @@
         )
       )
     )
+=======
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
     (symbol "EESTN5:Mounting_Hole" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
       (property "Reference" "H" (id 0) (at 0 5.08 0)
         (effects (font (size 1.27 1.27)))
@@ -982,6 +985,52 @@
         )
       )
     )
+<<<<<<< HEAD
+=======
+    (symbol "Regulator_Linear:LM1117-3.3" (pin_names (offset 0.254)) (in_bom yes) (on_board yes)
+      (property "Reference" "U" (id 0) (at -3.81 3.175 0)
+        (effects (font (size 1.27 1.27)))
+      )
+      (property "Value" "LM1117-3.3" (id 1) (at 0 3.175 0)
+        (effects (font (size 1.27 1.27)) (justify left))
+      )
+      (property "Footprint" "" (id 2) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm1117.pdf" (id 3) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_keywords" "linear regulator ldo fixed positive" (id 4) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_description" "800mA Low-Dropout Linear Regulator, 3.3V fixed output, TO-220/TO-252/TO-263/SOT-223" (id 5) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_fp_filters" "SOT?223* TO?263* TO?252* TO?220*" (id 6) (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (symbol "LM1117-3.3_0_1"
+        (rectangle (start -5.08 -5.08) (end 5.08 1.905)
+          (stroke (width 0.254) (type default) (color 0 0 0 0))
+          (fill (type background))
+        )
+      )
+      (symbol "LM1117-3.3_1_1"
+        (pin power_in line (at 0 -7.62 90) (length 2.54)
+          (name "GND" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27))))
+        )
+        (pin power_out line (at 7.62 0 180) (length 2.54)
+          (name "VO" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin power_in line (at -7.62 0 0) (length 2.54)
+          (name "VI" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
+        )
+      )
+    )
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
     (symbol "power:+3.3V" (power) (pin_names (offset 0)) (in_bom yes) (on_board yes)
       (property "Reference" "#PWR" (id 0) (at 0 -3.81 0)
         (effects (font (size 1.27 1.27)) hide)
@@ -1183,9 +1232,12 @@
   (junction (at 199.009 93.853) (diameter 0) (color 0 0 0 0)
     (uuid 0257299c-5cc3-4d5d-9599-14946864e076)
   )
+<<<<<<< HEAD
   (junction (at 207.899 80.01) (diameter 0) (color 0 0 0 0)
     (uuid 05fb8eee-cfcd-467d-a8f4-c70caca5ceaf)
   )
+=======
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
   (junction (at 215.519 47.3202) (diameter 0) (color 0 0 0 0)
     (uuid 070b6a14-a9bb-42b4-be17-630843a45c80)
   )
@@ -1244,7 +1296,11 @@
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 0e1654b0-1ed0-4d24-8089-82d3d860d305)
   )
+<<<<<<< HEAD
   (wire (pts (xy 187.325 78.74) (xy 190.119 78.74))
+=======
+  (wire (pts (xy 188.595 80.01) (xy 191.389 80.01))
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 0e2b6b01-23ea-49ca-9f28-2655a35023b6)
   )
@@ -1340,10 +1396,13 @@
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 3dffc2f9-8557-4c47-ab0a-f54c9393c6a1)
   )
+<<<<<<< HEAD
   (wire (pts (xy 207.899 78.74) (xy 207.899 80.01))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 3e48d2f8-4ac5-4ebf-8b04-642e7535ea4a)
   )
+=======
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
   (wire (pts (xy 32.258 105.664) (xy 28.448 105.664))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 41ba941e-20aa-4798-b334-23e878c26b6e)
@@ -1396,10 +1455,13 @@
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 52a06e00-91b6-4bf2-a12e-68eca1cc606b)
   )
+<<<<<<< HEAD
   (wire (pts (xy 207.899 80.01) (xy 212.725 80.01))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 5680bc57-9547-4adb-8615-aedd03732b04)
   )
+=======
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
   (wire (pts (xy 113.919 57.785) (xy 118.11 57.785))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 5d56a71d-1e8e-45ce-8fe5-b266bb839364)
@@ -1438,6 +1500,13 @@
     (uuid 6a9195a7-70ea-4817-b3f0-a6dbc3a4970e)
   )
 
+<<<<<<< HEAD
+=======
+  (wire (pts (xy 206.629 80.01) (xy 212.725 80.01))
+    (stroke (width 0) (type default) (color 0 0 0 0))
+    (uuid 6e3120a0-ad47-4733-9cca-f1241d14ce73)
+  )
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
   (wire (pts (xy 209.7024 33.02) (xy 215.519 33.02))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid 6e76fa3c-281c-47e3-bf85-9c0d6d53e281)
@@ -1571,10 +1640,13 @@
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid a84652ee-8691-44bc-89b9-257c555fabef)
   )
+<<<<<<< HEAD
   (wire (pts (xy 207.899 80.01) (xy 207.899 81.28))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid a8672e57-36b7-4eb9-8a87-96335b250ac9)
   )
+=======
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
   (wire (pts (xy 243.3066 41.4782) (xy 258.5466 41.4782))
     (stroke (width 0) (type default) (color 0 0 0 0))
     (uuid a9ad8103-202d-4d78-9517-a1248ec06b70)
@@ -14194,7 +14266,11 @@
   (symbol (lib_id "power:GND") (at 199.009 96.139 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 0adf9b88-1097-43ba-9083-994ddab67438)
+<<<<<<< HEAD
     (property "Reference" "#PWR0112" (id 0) (at 199.009 102.489 0)
+=======
+    (property "Reference" "#PWR?" (id 0) (at 199.009 102.489 0)
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (id 1) (at 199.009 100.5824 0))
@@ -14315,6 +14391,25 @@
     (pin "1" (uuid fa7b19d8-8077-4f9a-a868-71aea3330dc4))
   )
 
+<<<<<<< HEAD
+=======
+  (symbol (lib_id "Regulator_Linear:LM1117-3.3") (at 199.009 80.01 0) (unit 1)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (uuid 30c4ebec-1f18-46e9-9ded-f42496c0f4ab)
+    (property "Reference" "U?" (id 0) (at 199.009 74.4052 0))
+    (property "Value" "LM1117-3.3" (id 1) (at 199.009 76.9421 0))
+    (property "Footprint" "" (id 2) (at 199.009 80.01 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm1117.pdf" (id 3) (at 199.009 80.01 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 84206c3e-0f86-4a11-94c2-55f5bbc4e7a7))
+    (pin "2" (uuid 0740baee-666f-4628-a4cc-c114aef0a886))
+    (pin "3" (uuid c81da200-d27c-4d25-b81f-c29e7dbfdeaa))
+  )
+
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
   (symbol (lib_id "power:+5V") (at 32.258 103.124 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 3376bd56-9efd-4f2b-852a-e2dafccb6289)
@@ -14337,7 +14432,11 @@
     (property "Reference" "C3" (id 0) (at 210.2104 37.3634 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
+<<<<<<< HEAD
     (property "Value" "10uF" (id 1) (at 202.5396 41.6052 0)
+=======
+    (property "Value" "" (id 1) (at 202.5396 41.6052 0)
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "EESTN5:C_1206" (id 2) (at 209.7024 39.5732 0)
@@ -14462,13 +14561,37 @@
     (pin "1" (uuid cacdb896-4a73-436a-913e-28caee117dff))
   )
 
+<<<<<<< HEAD
+=======
+  (symbol (lib_id "EESTN5:Mounting_Hole") (at 85.9282 99.8474 90) (unit 1)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (uuid 4be4fefe-d2bb-4259-87fa-48579448609f)
+    (property "Reference" "H3" (id 0) (at 86.362 97.3074 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "Mounting_Hole" (id 1) (at 82.7532 99.8474 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Footprint" "EESTN5:pad_2mm" (id 2) (at 85.9282 99.8474 0)
+      (effects (font (size 1.524 1.524)) hide)
+    )
+    (property "Datasheet" "" (id 3) (at 85.9282 99.8474 0)
+      (effects (font (size 1.524 1.524)) hide)
+    )
+  )
+
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
   (symbol (lib_id "Device:C_Polarized_Small") (at 179.07 40.64 0) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid 4f33e196-d15a-4556-b2a5-49b203e8236e)
     (property "Reference" "C2" (id 0) (at 180.594 38.608 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
+<<<<<<< HEAD
     (property "Value" "220uF" (id 1) (at 180.594 40.64 0)
+=======
+    (property "Value" "" (id 1) (at 180.594 40.64 0)
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "EESTN5:C_1206" (id 2) (at 179.07 40.64 0)
@@ -14647,6 +14770,7 @@
     (pin "2" (uuid dc39f07f-9740-4a83-8ec3-35d121a80d3b))
   )
 
+<<<<<<< HEAD
   (symbol (lib_id "power:+5V") (at 187.325 78.74 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 808af99d-b10b-42fb-b0b6-0231ce4c4c52)
@@ -14658,6 +14782,19 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 187.325 78.74 0)
+=======
+  (symbol (lib_id "power:+5V") (at 188.595 80.01 0) (unit 1)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (uuid 808af99d-b10b-42fb-b0b6-0231ce4c4c52)
+    (property "Reference" "#PWR05" (id 0) (at 188.595 83.82 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "+5V" (id 1) (at 188.595 74.6506 0))
+    (property "Footprint" "" (id 2) (at 188.595 80.01 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (id 3) (at 188.595 80.01 0)
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid c5b98297-0980-466b-9197-48b20514544f))
@@ -14679,6 +14816,7 @@
     (pin "1" (uuid eb75fc90-9c7e-41eb-89be-d478edf0ee97))
   )
 
+<<<<<<< HEAD
   (symbol (lib_id "EESTN5:LM1117-SOT") (at 199.009 78.74 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 950756d1-03fe-43a0-95e7-909930c47f2a)
@@ -14698,6 +14836,23 @@
     (pin "2" (uuid 516d561c-e210-47a1-b528-cf70e07f88f1))
     (pin "3" (uuid 0dac2fad-51ba-45c3-9ce2-db75253acc13))
     (pin "4" (uuid 95513a05-1ba8-4d8a-991b-c2b0dc386b34))
+=======
+  (symbol (lib_id "EESTN5:Mounting_Hole") (at 90.3732 99.8474 90) (unit 1)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (uuid 94bfae73-3f65-471a-af16-7eeb1b27ee13)
+    (property "Reference" "H4" (id 0) (at 90.807 97.3074 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "Mounting_Hole" (id 1) (at 87.1982 99.8474 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Footprint" "EESTN5:pad_2mm" (id 2) (at 90.3732 99.8474 0)
+      (effects (font (size 1.524 1.524)) hide)
+    )
+    (property "Datasheet" "" (id 3) (at 90.3732 99.8474 0)
+      (effects (font (size 1.524 1.524)) hide)
+    )
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
   )
 
   (symbol (lib_id "ESP32-WROOM-32:ESP32-WROOM-32") (at 138.43 70.485 0) (unit 1)
@@ -14893,7 +15048,11 @@
     (property "Value" "1uF" (id 1) (at 112.8522 46.482 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
+<<<<<<< HEAD
     (property "Footprint" "" (id 2) (at 110.998 45.085 0)
+=======
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder" (id 2) (at 110.998 45.085 0)
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 110.998 45.085 0)
@@ -15149,9 +15308,12 @@
     (path "/c71e9da3-31b7-4cc4-9010-54c963d748e3"
       (reference "#PWR0111") (unit 1) (value "GND") (footprint "")
     )
+<<<<<<< HEAD
     (path "/0adf9b88-1097-43ba-9083-994ddab67438"
       (reference "#PWR0112") (unit 1) (value "GND") (footprint "")
     )
+=======
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
     (path "/60445c31-eb09-4e61-b2a0-8e32d6f8f980"
       (reference "#PWR0114") (unit 1) (value "GND") (footprint "")
     )
@@ -15179,8 +15341,16 @@
     (path "/38404d84-3920-4014-bb0a-e1f8f6b3830e"
       (reference "#PWR0131") (unit 1) (value "GND") (footprint "")
     )
+<<<<<<< HEAD
     (path "/c926f4dc-6932-4853-a34d-25b88b056791"
       (reference "C1") (unit 1) (value "1uF") (footprint "EESTN5:SOT223")
+=======
+    (path "/0adf9b88-1097-43ba-9083-994ddab67438"
+      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/c926f4dc-6932-4853-a34d-25b88b056791"
+      (reference "C1") (unit 1) (value "1uF") (footprint "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder")
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
     )
     (path "/4f33e196-d15a-4556-b2a5-49b203e8236e"
       (reference "C2") (unit 1) (value "220uF") (footprint "EESTN5:C_1206")
@@ -15203,6 +15373,15 @@
     (path "/3fa49881-7db8-4461-be27-1f36ccdb42c4"
       (reference "H2") (unit 1) (value "Mounting_Hole") (footprint "EESTN5:pad_2mm")
     )
+<<<<<<< HEAD
+=======
+    (path "/4be4fefe-d2bb-4259-87fa-48579448609f"
+      (reference "H3") (unit 1) (value "Mounting_Hole") (footprint "EESTN5:pad_2mm")
+    )
+    (path "/94bfae73-3f65-471a-af16-7eeb1b27ee13"
+      (reference "H4") (unit 1) (value "Mounting_Hole") (footprint "EESTN5:pad_2mm")
+    )
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
     (path "/d3017314-5e22-449c-bede-8419ac327caf"
       (reference "J1") (unit 1) (value "HC_SRO4") (footprint "EESTN5:pin_strip_4")
     )
@@ -15251,8 +15430,13 @@
     (path "/fc2b0ef8-a367-4ea9-a602-bd171c23de7c"
       (reference "U2") (unit 1) (value "L7805") (footprint "EESTN5:to220")
     )
+<<<<<<< HEAD
     (path "/950756d1-03fe-43a0-95e7-909930c47f2a"
       (reference "U3") (unit 1) (value "LM1117-SOT") (footprint "EESTN5:SOT223")
+=======
+    (path "/30c4ebec-1f18-46e9-9ded-f42496c0f4ab"
+      (reference "U?") (unit 1) (value "LM1117-3.3") (footprint "")
+>>>>>>> 456ee1f1759f26067ac693588b8371d15e6924a6
     )
   )
 )
