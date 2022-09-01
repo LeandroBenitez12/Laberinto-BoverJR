@@ -1,7 +1,7 @@
 #include "BluetoothSerial.h"
 // DEBUG
 #define DEBUG_DE_CASOS 0
-#define DEBUG_DE_SENSORES 1
+#define DEBUG_SENSORES 1
 #define DEBUG_PID 0
 // declaramos pines
 // motores
@@ -61,15 +61,12 @@ private:
     int velocidad = 200; 
 public:
 
-    Motor(int pin1, int pin2, int pinpwm, int pwm, int vel, int freq,int bits){
+    Motor(int pin1, int pin2, int pinpwm, int pwm){
         pin_1 = pin1;
         pin_2 = pin2;
         pin_pwm = pinpwm;
         channel = pwm;
-        velocidad = vel;
-        freq = freqpwm;
-        bits = resolucion;
-        
+
         ledcSetup(channel, freq, resolucion);
 	    ledcAttachPin(pin_pwm, channel);
 
@@ -112,7 +109,7 @@ class Ultrasonido{
         digitalWrite(pin_trig, LOW);
     }
     //metodos
-    int LeerUltrasonidos(int pin_trig, int pin_echo)
+    int LeerUltrasonidos()
     {
         long distancia;
         long duracion;
@@ -127,6 +124,45 @@ class Ultrasonido{
 
 
 };
+
+class Buzzer {
+  private:
+    int pin;
+
+  public:
+    Buzzer(int p) {
+      pin = p;
+      pinMode(pin, OUTPUT);
+    }
+    void setPrenderBuzzer() {
+      digitalWrite(pin, HIGH);
+    }
+    void setApagarBuzzer() {
+      digitalWrite(pin, LOW);
+    }
+
+};
+class Button {
+  private:
+    int pin = 9;
+    bool state = HIGH;
+
+    //metodo
+  public:
+    Button(int p) {
+      pin = p;
+
+      pinMode(pin, INPUT_PULLUP);
+    }
+
+    //metodos o acciones
+    bool getIsPress() {
+      bool estado = digitalRead(pin);
+      return estado;
+    }
+
+};
+
 //intancio los ultrasonidos
 Ultrasonido sensor_frontal = Ultrasonido(TRIG2, ECHO2);
 Ultrasonido sensor_derecho = Ultrasonido(TRIG1, ECHO1);
@@ -134,8 +170,15 @@ Ultrasonido sensor_izquierdo = Ultrasonido(TRIG4, ECHO4);
 
 //instancio los motores
 
-Motor mDer = Motor(MR1, MR2, ENA, PWMChannel1, velocidad_derecha, freq1, resolution1);
-Motor mIzq = Motor(ML1, ML2, ENB, PWMChannel2, velocidad_izquierda, freq2, resolution2);
+Motor mDer = Motor(MR1, MR2, ENA, PWMChannel1);
+Motor mIzq = Motor(ML1, ML2, ENB, PWMChannel2);
+
+//Instancio los buttons *punteros
+Button *strategy = new  Button(PIN_BUTTON_STRATEGY);
+Button *start = new  Button(PIN_BUTTON_START);
+
+//Instancio los buzzers
+Buzzer *b1 = new Buzzer(PIN_BUZZER);
 
 //funciones de los motores
 void Forward()
@@ -168,6 +211,13 @@ void Stop()
   MotorIzq(STOP);
 }
 
+//buzzers
+void BuzzerOn(){
+    b1->setPrenderBuzzer();
+}
+void BuzzerOff(){
+    b1->setApagarBuzzer();
+}
 
 void imprimir_distancia(){
     Serial.print("distancia_frontal"  );
@@ -178,6 +228,24 @@ void imprimir_distancia(){
     Serial.println(distancia_derecha);
 }
 
+enum MOVIMIENTOS{
+  INICIAL,
+  PASILLO,
+  PARED,
+  DESVIO_DERECHA,
+  DESVIO_IZQUIERDA,
+  CALLEJON
+};
+
+switch (Moviemiento)
+{
+case INICIAL:
+  
+  break;
+
+default:
+  break;
+}
 void setup(){
     Serial.begin(9600);
 }
@@ -186,9 +254,15 @@ void loop(){
 if (millis() > tiempo_actual + TICK_ULTRASONIDO)
   {
     tiempo_actual = millis();
-    distancia_frontal = sensor_frontal.LeerUltrasonidos(TRIG2, ECHO2);
-    distancia_izquierda = sensor_izquierdo.LeerUltrasonidos(TRIG4, ECHO4);
-    distancia_derecha = sensor_derecho.LeerUltrasonidos(TRIG1, ECHO1);
-    imprimir_distancia();
+    distancia_frontal = sensor_frontal.LeerUltrasonidos();
+    distancia_izquierda = sensor_izquierdo.LeerUltrasonidos();
+    distancia_derecha = sensor_derecho.LeerUltrasonidos();
+    
   }
+
+if (DEBUG_SENSORES)
+{
+  imprimir_distancia();
+}
+
 }
