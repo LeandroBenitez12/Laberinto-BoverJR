@@ -26,29 +26,57 @@ int distancia_izquierda;
 int distancia_frontal;
 int distancia_derecha;
 
+// const
+#define DISTANCIA_MINIMA 200
+#define DISTANCIA_LADOS 100
+#define DISTANCIA_MAXIMA 250
+#define TICK_PID 70
+#define TICK_ULTRASONIDO 10
+#define TICK_NOTIFICACION 500
+#define TICK_DELAY 399
+// veocidades motores pwm
+int velocidad_derecha = 200;
+int velocidad_izquierda = 200;
+int velocidad_media = 200;
+int velocidad_giro = 188;
+// pwm DE UN MOTOR
+const int freq1 = 5000;
+const int PWMChannel1 = 0; // LOS CANALES PWM TIENEN QUE SER DISTINTOS!!!!!!
+const int resolution1 = 8;
+// pwm DE UN 2DO MOTOR
+const int freq2 = 5000;
+const int PWMChannel2 = 1;
+const int resolution2 = 8;
+
 class Motor
 {
     //atributos
-private:
-    int velocidad = 200;    
+private:   
     int pin_1;
     int pin_2;
     int pin_pwm;
-    const int freq = 5000;
-    const int channel = 1;
-    const int bits = 8;
+    const int freqpwm = 5000;
+    int channel;
+    const int resolucion = 8;
+    int velocidad = 200; 
 public:
 
-    Motor(velocidad int pin1, int pin2, int pinpwm){
+    Motor(int pin1, int pin2, int pinpwm, int pwm, int vel, int freq,int bits){
         pin_1 = pin1;
         pin_2 = pin2;
         pin_pwm = pinpwm;
+        channel = pwm;
+        velocidad = vel;
+        freq = freqpwm;
+        bits = resolucion;
+        
+        ledcSetup(channel, freq, resolucion);
+	    ledcAttachPin(pin_pwm, channel);
 
         pinMode(pin_1, OUTPUT);
         pinMode(pin_2, OUTPUT);
 
-    	ledcSetup(channel, freq, bits);
-	    ledcAttachPin(pin_pwm, channel);
+    	
     }
 //metodos
     void Forward (){
@@ -105,7 +133,41 @@ Ultrasonido sensor_derecho = Ultrasonido(TRIG1, ECHO1);
 Ultrasonido sensor_izquierdo = Ultrasonido(TRIG4, ECHO4);
 
 //instancio los motores
-Motor m1 = Motor();
+
+Motor mDer = Motor(MR1, MR2, ENA, PWMChannel1, velocidad_derecha, freq1, resolution1);
+Motor mIzq = Motor(ML1, ML2, ENB, PWMChannel2, velocidad_izquierda, freq2, resolution2);
+
+//funciones de los motores
+void Forward()
+{
+  MDer(AVANZAR);
+  MIzq(AVANZAR);
+}
+// HACIA ATRAS
+void RightBackward()
+{
+  MDer(RETROCEDER);
+  MIzq(RETROCEDER);
+}
+// GIRO SOBRE SU PROPIO EJE A LA DERECHA
+void Left()
+{
+  MDer(RETROCEDER);
+  MIzq(AVANZAR);
+}
+// GIRO SOBRE SU PROPIO EJE A LA IZQUIERDA
+void Right()
+{
+  MDer(AVANZAR);
+  MIzq(RETROCEDER);
+}
+// PARAR
+void Stop()
+{
+  MotorDer(STOP);
+  MotorIzq(STOP);
+}
+
 
 void imprimir_distancia(){
     Serial.print("distancia_frontal"  );
