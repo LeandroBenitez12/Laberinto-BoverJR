@@ -213,7 +213,7 @@ void Stop()
 
 //buzzers
 void BuzzerOn(){
-    b1->setPrenderBuzzer();
+    b1->setPrenderBuzzer(); 
 }
 void BuzzerOff(){
     b1->setApagarBuzzer();
