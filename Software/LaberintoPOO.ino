@@ -13,14 +13,12 @@
 #define PIN_MOTOR_ML1 4
 #define PIN_MOTOR_ML2 2
 // ultrasonidos HR04
-#define ECHO1 35
-#define ECHO2 33
-#define ECHO3 26
-#define ECHO4 14
-#define TRIG1 32
-#define TRIG2 25
-#define TRIG3 27 
-#define TRIG4 12
+#define PIN_SENSOR_DERECHO_ECHO1 35
+#define PIN_SENSOR_ADELANTE_ECHO2 33
+#define PIN_SENSOR_IZQUIERDO_ECHO3 14
+#define PIN_SENSOR_DERECHO_TRIG1 32
+#define PIN_SENSOR_ADELANTE_TRIG2 25
+#define PIN_SENSOR_IZQUIERDO_TRIG3 12
 #define TICK_ULTRASONIDO 10
 unsigned long tiempo_actual = 0;
 unsigned long tiempo_actual_pid = 0;
@@ -206,9 +204,9 @@ class Button {
 };
 
 //intancio los ultrasonidos
-Ultrasonido sensor_frontal = Ultrasonido(TRIG2, ECHO2);
-Ultrasonido sensor_derecho = Ultrasonido(TRIG1, ECHO1);
-Ultrasonido sensor_izquierdo = Ultrasonido(TRIG4, ECHO4);
+Ultrasonido sensor_frontal = Ultrasonido(PIN_SENSOR_ADELANTE_TRIG2, PIN_SENSOR_ADELANTE_ECHO2);
+Ultrasonido sensor_derecho = Ultrasonido(PIN_SENSOR_DERECHO_TRIG1, PIN_SENSOR_DERECHO_ECHO1);
+Ultrasonido sensor_izquierdo = Ultrasonido(PIN_SENSOR_IZQUIERDO_TRIG3, PIN_SENSOR_IZQUIERDO_ECHO3);
 
 //instancio los motores
 
