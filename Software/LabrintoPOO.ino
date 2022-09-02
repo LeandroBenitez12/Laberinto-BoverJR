@@ -26,6 +26,10 @@ int distancia_izquierda;
 int distancia_frontal;
 int distancia_derecha;
 
+// Button
+#define PIN_BUZZER 23
+#define PIN_BUTTON_START 13
+
 // const
 #define DISTANCIA_MINIMA 200
 #define DISTANCIA_LADOS 100
@@ -33,7 +37,10 @@ int distancia_derecha;
 #define TICK_PID 70
 #define TICK_ULTRASONIDO 10
 #define TICK_NOTIFICACION 500
-#define TICK_DELAY 399
+#define TICK_DELAY 500
+#define TICK_DOBLAR 399
+#define TICK_GIRAR 798
+
 // veocidades motores pwm
 int velocidad_derecha = 200;
 int velocidad_izquierda = 200;
@@ -68,7 +75,7 @@ public:
         channel = pwm;
 
         ledcSetup(channel, freq, resolucion);
-	    ledcAttachPin(pin_pwm, channel);
+	      ledcAttachPin(pin_pwm, channel);
 
         pinMode(pin_1, OUTPUT);
         pinMode(pin_2, OUTPUT);
@@ -174,7 +181,6 @@ Motor mDer = Motor(MR1, MR2, ENA, PWMChannel1);
 Motor mIzq = Motor(ML1, ML2, ENB, PWMChannel2);
 
 //Instancio los buttons *punteros
-Button *strategy = new  Button(PIN_BUTTON_STRATEGY);
 Button *start = new  Button(PIN_BUTTON_START);
 
 //Instancio los buzzers
@@ -219,6 +225,7 @@ void BuzzerOff(){
     b1->setApagarBuzzer();
 }
 
+//imprimir distancias
 void imprimir_distancia(){
     Serial.print("distancia_frontal"  );
     Serial.println(distancia_frontal);
@@ -228,24 +235,149 @@ void imprimir_distancia(){
     Serial.println(distancia_derecha);
 }
 
+//casos de la maquina de estado
 enum MOVIMIENTOS{
   INICIAL,
   PASILLO,
   PARED,
   DESVIO_DERECHA,
   DESVIO_IZQUIERDA,
-  CALLEJON
+  CALLEJON,
+  POST_DOBLAR
 };
 
-switch (Moviemiento)
-{
-case INICIAL:
-  
-  break;
+//maquina de estado
+void Movimientos_robot() {
+switch (movimiento) {
+  case INICIAL: {
+    bool boton_start = start->getIsPress();
+    if (!boton_start) {
+    movimiento = PASILLO; 
+    }
+    else
+    {
+      Stop();
+    }
+    
+     break;
+  }
 
-default:
-  break;
+  case PASILLO: {
+    //PID
+    //asi el pid fira bien en los sentidos tipo si esta cerca de la pared derecha va hacia la izquierda
+    double Input = distancia_derecha - distancia_izquierda;
+
+    if (millis() > tiempo_actual_pid + TICK_PID) {
+      tiempo_actual_pid = millis();
+      PID1 = computePID(Input);
+    }
+    
+    if(PID) {
+    velocidad_derecha = (velocidad_media - (PID1));
+    velocidad_izquierda = (velocidad_media + (PID1));
+    
+    if (PID1 > 30) PID1 =  30;
+    if (PID1 < -30) PID1 = -30;
+
+    if (velocidad_izquierda < 155) velocidad_izquierda = 155;
+    if (velocidad_derecha < 155) velocidad_derecha = 155;
+    }
+
+    //cambio de caso a pared
+    if(distancia_frontal < DISTANCIA_MINIMA) movimiento = PARED;
+
+    break;
+  }
+
+  case PARED: {
+    Stop();
+    delay(TICK_DELAY);
+    
+    if(distancia_derecha < DISTANCIA_LADOS && distancia_izquierda > DISTANCIA_LADOS) movimiento = DESVIO_IZQUIERDA;
+    if(distancia_derecha > DISTANCIA_LADOS && distancia_izquierda < DISTANCIA_LADOS) movimiento = DESVIO_DERECHA;
+    if(distancia_derecha > DISTANCIA_LADOS && distancia_izquierda > DISTANCIA_LADOS) movimiento = DESVIO_IZQUIERDA;
+    if(distancia_derecha < DISTANCIA_LADOS && distancia_izquierda < DISTANCIA_LADOS) movimiento = CALLEJON;
+    
+    break;
+  }
+
+  case DESVIO_DERECHA: {
+    velocidad_derecha = velocidad_giro;
+    velocidad_izquierda = velocidad_giro;
+    delay(TICK_DELAY);
+    Right();
+    delay(TICK_DOBLAR);
+    movimiento = POST_DOBLAR;
+    
+    break;
+  }
+
+  case DESVIO_IZQUIERDA: {
+    velocidad_derecha = velocidad_giro;
+    velocidad_izquierda = velocidad_giro;
+    delay(TICK_DELAY);
+    Left();
+    delay(TICK_DOBLAR);
+    movimiento = POST_DOBLAR;
+    
+    break;
+  }
+
+  case CALLEJON: {
+    velocidad_derecha = velocidad_giro;
+    velocidad_izquierda = velocidad_giro;
+    delay(TICK_DELAY);
+    Left();
+    delay(TICK_GIRAR);
+    movimiento = POST_DOBLAR;
+    
+    break;
+  }
+
+  case POST_DOBLAR: {
+    Stop();
+    delay(TICK_DELAY);
+    Forward();
+    delay(TICK_DELAY);
+    movimiento = PASILLO;
+    break;
+  }
 }
+}
+
+// PID
+//------------------------------------------------------------------------------------------
+double kp = 0.3;
+double kd = 0;
+
+unsigned long currentTime, previousTime;
+double elapsedTime;
+double error;
+double lastError;
+double input, output, setPoint = 0;
+double deltaError;
+double PID1;
+
+double computePID(double input)
+{
+  currentTime = millis();               // get current time
+  elapsedTime = (double)(currentTime - previousTime); // compute time elapsed from previous computation
+  error = input - setPoint;
+  deltaError = error - lastError;
+  double out = kp * error + kd * deltaError;
+  lastError = error;      // remember current error
+  previousTime = currentTime; // remember current time
+
+  return out; // have function return the PID output
+}
+//------------------------------------------------------------------------------------------
+// establecemos conexion bluetooth
+#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+#endif
+
+BluetoothSerial SerialBT;
+
 void setup(){
     Serial.begin(9600);
 }
