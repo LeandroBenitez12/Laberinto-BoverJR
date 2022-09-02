@@ -2,7 +2,7 @@
 // DEBUG
 #define DEBUG_DE_CASOS 1
 #define DEBUG_SENSORES 1
-#define DEBUG_VELOCIDAD 0
+#define DEBUG_VELOCIDAD 1
 #define DEBUG_PID 0
 // declaramos pines
 // motores
