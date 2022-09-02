@@ -445,7 +445,8 @@ void loop(){
       distancia_izquierda = sensor_izquierdo.LeerUltrasonidos();
       distancia_derecha = sensor_derecho.LeerUltrasonidos();
 
-    }
+    } 
+    
   Movimientos_robot();
   if (DEBUG_SENSORES)
   {
