@@ -2,28 +2,28 @@
 // DEBUG
 #define DEBUG_DE_CASOS 1
 #define DEBUG_SENSORES 1
-#define DEBUG_VELOCIDAD 1
+#define DEBUG_VELOCIDAD 0
 #define DEBUG_PID 0
 // declaramos pines
 // motores
 #define PIN_PWM_ENA 15
-#define PIN_MOTOR_MR1 18
-#define PIN_MOTOR_MR2 5
+#define PIN_MOTOR_MR1 2
+#define PIN_MOTOR_MR2 4
 #define PIN_PWM_ENB 19
-#define PIN_MOTOR_ML1 4
-#define PIN_MOTOR_ML2 2
+#define PIN_MOTOR_ML1 18
+#define PIN_MOTOR_ML2 5
 // ultrasonidos HR04
-#define ECHO1 35
-#define ECHO2 33
-#define ECHO3 26
-#define ECHO4 14
-#define TRIG1 32
-#define TRIG2 25
-#define TRIG3 27 
-#define TRIG4 12
+#define PIN_SENSOR_DERECHO_ECHO1 35
+#define PIN_SENSOR_ADELANTE_ECHO2 33
+#define PIN_SENSOR_IZQUIERDO_ECHO3 14
+#define PIN_SENSOR_DERECHO_TRIG1 32
+#define PIN_SENSOR_ADELANTE_TRIG2 25
+#define PIN_SENSOR_IZQUIERDO_TRIG3 12
 #define TICK_ULTRASONIDO 10
 unsigned long tiempo_actual = 0;
 unsigned long tiempo_actual_pid = 0;
+
+
 
 int distancia_izquierda;
 int distancia_frontal;
@@ -49,7 +49,7 @@ int velocidad_derecha = 200;
 int velocidad_izquierda = 200;
 int velocidad_media = 200;
 int velocidad_giro = 188;
-const int PWMChannel1= 0;
+const int PWMChannel1 = 0;
 const int PWMChannel2 = 1;
 
 // PID
@@ -67,12 +67,12 @@ double PID1;
 
 double computePID(double input)
 {
-  currentTime = millis();               // get current time
+  currentTime = millis();                             // get current time
   elapsedTime = (double)(currentTime - previousTime); // compute time elapsed from previous computation
   error = input - setPoint;
   deltaError = error - lastError;
   double out = kp * error + kd * deltaError;
-  lastError = error;      // remember current error
+  lastError = error;          // remember current error
   previousTime = currentTime; // remember current time
 
   return out; // have function return the PID output
@@ -87,201 +87,211 @@ BluetoothSerial SerialBT;
 
 class Motor
 {
-    //atributos
-private:   
-    int pin_1;
-    int pin_2;
-    int pin_pwm;
-    const int freq = 5000;
-    int channel;
-    const int resolucion = 8;
-    int velocidad = 200; 
+  // atributos
+private:
+  int pin_1;
+  int pin_2;
+  int pin_pwm;
+  const int freq = 5000;
+  int channel;
+  const int resolucion = 8;
+  int velocidad = 200;
+
 public:
+  Motor(int pin1, int pin2, int pinpwm, int ch)
+  {
+    pin_1 = pin1;
+    pin_2 = pin2;
+    pin_pwm = pinpwm;
+    channel = ch;
 
-    Motor(int pin1, int pin2, int pinpwm, int pwm){
-        pin_1 = pin1;
-        pin_2 = pin2;
-        pin_pwm = pinpwm;
-        channel = pwm;
+    ledcSetup(channel, freq, resolucion);
+    ledcAttachPin(pin_pwm, channel);
 
-        ledcSetup(channel, freq, resolucion);
-        ledcAttachPin(pin_pwm, channel);
-
-        pinMode(pin_1, OUTPUT);
-        pinMode(pin_2, OUTPUT);
-
-      
-    }
-//metodos
-    int setVelocidad( int vel){
-      velocidad = vel;
-    }
-    void Forward (){
-        ledcWrite(pin_pwm, velocidad);
-        digitalWrite(pin_1, HIGH);
-        digitalWrite(pin_2, LOW);
-        
-    }
-    void Backward (){
-        ledcWrite(pin_pwm, velocidad);
-        digitalWrite(pin_1, LOW);
-        digitalWrite(pin_2, HIGH);
-        
-    }
-    void Stop (){
-        ledcWrite(pin_pwm, velocidad);
-        digitalWrite(pin_1, LOW);
-        digitalWrite(pin_2, LOW);
-        
-    }        
+    pinMode(pin_1, OUTPUT);
+    pinMode(pin_2, OUTPUT);
+  }
+  // metodos
+  int setVelocidad(int vel)
+  {
+    velocidad = vel;
+  }
+  void ADELANTE()
+  {
+    ledcWrite(channel, velocidad);
+    digitalWrite(pin_1, HIGH);
+    digitalWrite(pin_2, LOW);
+  }
+  void ATRAS()
+  {
+    ledcWrite(channel, velocidad);
+    digitalWrite(pin_1, LOW);
+    digitalWrite(pin_2, HIGH);
+  }
+  void PARAR()
+  {
+    ledcWrite(channel, velocidad);
+    digitalWrite(pin_1, LOW);
+    digitalWrite(pin_2, LOW);
+  }
 };
 
-class Ultrasonido{
-    //atributos
-    private:
-        int pin_trig;
-        int pin_echo;
 
-    public:
-        Ultrasonido(int trig, int echo){
-        pin_echo = echo;
-        pin_trig = trig;
+class Ultrasonido
+{
+  // atributos
+private:
+  int pin_trig;
+  int pin_echo;
 
-        pinMode(pin_echo, INPUT);
-        pinMode(pin_trig, OUTPUT);
-        digitalWrite(pin_trig, LOW);
-    }
-    //metodos
-    int LeerUltrasonidos()
-    {
-        long distancia;
-        long duracion;
-        // SENSOR
-        digitalWrite(pin_trig, HIGH);
-        delayMicroseconds(10); // Enviamos un pulso de 10us
-        digitalWrite(pin_trig, LOW);
-        duracion = pulseIn(pin_echo, HIGH);
-        distancia = duracion / 5.82;
-        return distancia;
-    }
+public:
+  Ultrasonido(int trig, int echo)
+  {
+    pin_echo = echo;
+    pin_trig = trig;
 
-
+    pinMode(pin_echo, INPUT);
+    pinMode(pin_trig, OUTPUT);
+    digitalWrite(pin_trig, LOW);
+  }
+  // metodos
+  int LeerUltrasonidos()
+  {
+    long distancia;
+    long duracion;
+    // SENSOR
+    digitalWrite(pin_trig, HIGH);
+    delayMicroseconds(10); // Enviamos un pulso de 10us
+    digitalWrite(pin_trig, LOW);
+    duracion = pulseIn(pin_echo, HIGH);
+    distancia = duracion / 5.82;
+    return distancia;
+  }
 };
 
-class Buzzer {
-  private:
-    int pin;
+class Buzzer
+{
+private:
+  int pin;
 
-  public:
-    Buzzer(int p) {
-      pin = p;
-      pinMode(pin, OUTPUT);
-    }
-    void setPrenderBuzzer() {
-      digitalWrite(pin, HIGH);
-    }
-    void setApagarBuzzer() {
-      digitalWrite(pin, LOW);
-    }
-
+public:
+  Buzzer(int p)
+  {
+    pin = p;
+    pinMode(pin, OUTPUT);
+  }
+  void setPrenderBuzzer()
+  {
+    digitalWrite(pin, HIGH);
+  }
+  void setApagarBuzzer()
+  {
+    digitalWrite(pin, LOW);
+  }
 };
-class Button {
-  private:
-    int pin = 9;
-    
-    //metodo
-  public:
-    Button(int p) {
-      pin = p;
+class Button
+{
+private:
+  int pin = 9;
 
-      pinMode(pin, INPUT_PULLDOWN);
-    }
+  // metodo
+public:
+  Button(int p)
+  {
+    pin = p;
 
-    //metodos o acciones
-    bool getIsPress() {
-      bool estado = digitalRead(pin);
-      return estado;
-    }
+    pinMode(pin, INPUT_PULLDOWN);
+  }
 
+  // metodos o acciones
+  bool getIsPress()
+  {
+    bool estado = digitalRead(pin);
+    return estado;
+  }
 };
 
-//intancio los ultrasonidos
-Ultrasonido sensor_frontal = Ultrasonido(TRIG2, ECHO2);
-Ultrasonido sensor_derecho = Ultrasonido(TRIG1, ECHO1);
-Ultrasonido sensor_izquierdo = Ultrasonido(TRIG4, ECHO4);
+// intancio los ultrasonidos
+Ultrasonido sensor_frontal = Ultrasonido(PIN_SENSOR_ADELANTE_TRIG2, PIN_SENSOR_ADELANTE_ECHO2);
+Ultrasonido sensor_derecho = Ultrasonido(PIN_SENSOR_DERECHO_TRIG1, PIN_SENSOR_DERECHO_ECHO1);
+Ultrasonido sensor_izquierdo = Ultrasonido(PIN_SENSOR_IZQUIERDO_TRIG3, PIN_SENSOR_IZQUIERDO_ECHO3);
 
-//instancio los motores
+// instancio los motores
 
-Motor MDer = Motor(PIN_MOTOR_MR1, PIN_MOTOR_MR2, PIN_PWM_ENA, PWMChannel1);
-Motor MIzq = Motor(PIN_MOTOR_ML1, PIN_MOTOR_ML2, PIN_PWM_ENB, PWMChannel2);
+Motor *MDer;
+Motor *MIzq;
 
-//Instancio los buttons *punteros
-Button *start = new  Button(PIN_BUTTON_START);
+// Instancio los buttons *punteros
+Button *start = new Button(PIN_BUTTON_START);
 
-//Instancio los buzzers
+// Instancio los buzzers
 Buzzer *b1 = new Buzzer(PIN_BUZZER);
 
-//funciones de los motores
+// funciones de los motores
 void Forward()
-{ 
-  MDer.setVelocidad(velocidad_derecha);
-  MIzq.setVelocidad(velocidad_izquierda);
-  MDer.Forward();
-  MIzq.Forward();
+{
+  MDer->setVelocidad(velocidad_derecha);
+  MIzq->setVelocidad(velocidad_izquierda);
+  MDer->ADELANTE();
+  MIzq->ADELANTE();
 }
 // HACIA ATRAS
 void Backward()
 {
-  MDer.setVelocidad(velocidad_derecha);
-  MIzq.setVelocidad(velocidad_izquierda);
-  MDer.Backward();
-  MIzq.Backward();
+  MDer->setVelocidad(velocidad_derecha);
+  MIzq->setVelocidad(velocidad_izquierda);
+  MDer->ATRAS();
+  MIzq->ATRAS();
 }
 // GIRO SOBRE SU PROPIO EJE A LA DERECHA
 void Left()
 {
-  MDer.setVelocidad(velocidad_derecha);
-  MIzq.setVelocidad(velocidad_izquierda);
-  MDer.Forward();
-  MIzq.Backward();
+  MDer->setVelocidad(velocidad_derecha);
+  MIzq->setVelocidad(velocidad_izquierda);
+  MDer->ADELANTE();
+  MIzq->ATRAS();
 }
 // GIRO SOBRE SU PROPIO EJE A LA IZQUIERDA
 void Right()
 {
-  MDer.setVelocidad(velocidad_derecha);
-  MIzq.setVelocidad(velocidad_izquierda);
-  MDer.Backward();
-  MIzq.Forward();
+  MDer->setVelocidad(velocidad_derecha);
+  MIzq->setVelocidad(velocidad_izquierda);
+  MDer->ATRAS();
+  MIzq->ADELANTE();
 }
 // PARAR
 void Stop()
 {
-  MDer.setVelocidad(0);
-  MIzq.setVelocidad(0);
-  MDer.Stop();
-  MIzq.Stop();
+  MDer->setVelocidad(0);
+  MIzq->setVelocidad(0);
+  MDer->PARAR();
+  MIzq->PARAR();
 }
 
-//buzzers
-void BuzzerOn(){
-    b1->setPrenderBuzzer(); 
+// buzzers
+void BuzzerOn()
+{
+  b1->setPrenderBuzzer();
 }
-void BuzzerOff(){
-    b1->setApagarBuzzer();
+void BuzzerOff()
+{
+  b1->setApagarBuzzer();
 }
 
-//imprimir distancias
-void imprimir_distancia(){
-    SerialBT.print("distancia_frontal"  );
-    SerialBT.println(distancia_frontal);
-    SerialBT.print("distancia_izquierda"  );
-    SerialBT.println(distancia_izquierda);
-    SerialBT.print("distancia_derecha"  );
-    SerialBT.println(distancia_derecha);
+// imprimir distancias
+void imprimir_distancia()
+{
+  SerialBT.print("distancia_frontal");
+  SerialBT.println(distancia_frontal);
+  SerialBT.print("distancia_izquierda");
+  SerialBT.println(distancia_izquierda);
+  SerialBT.print("distancia_derecha");
+  SerialBT.println(distancia_derecha);
 }
-    //-------------------------------------------------------------
-//casos de la maquina de estado
-enum MOVIMIENTOS{
+//-------------------------------------------------------------
+// casos de la maquina de estado
+enum MOVIMIENTOS
+{
   INICIAL,
   PASILLO,
   PARED,
@@ -321,128 +331,158 @@ void imprimir_casos(int ubicacion)
   {
     estado_robot = "POST_DOBLAR";
   }
-  
 
   SerialBT.print("State: ");
   SerialBT.print(estado_robot);
   SerialBT.print(" | ");
   SerialBT.print(boton_start);
   SerialBT.println(" | ");
-
 }
-void imprimir_velocidad(){
-    SerialBT.print(velocidad_derecha);
-    SerialBT.print(" | ");
-    SerialBT.println(velocidad_izquierda);
+void imprimir_velocidad()
+{
+  SerialBT.print(velocidad_derecha);
+  SerialBT.print(" | ");
+  SerialBT.println(velocidad_izquierda);
 }
 
 int movimiento = INICIAL;
-//maquina de estado
-void Movimientos_robot() {
-switch (movimiento) {
-  case INICIAL: {
+// maquina de estado
+void Movimientos_robot()
+{
+  switch (movimiento)
+  {
+  case INICIAL:
+  {
     boton_start = start->getIsPress();
-    if (boton_start) {
-    movimiento = PASILLO; 
+    if (boton_start)
+    {
+      movimiento = PASILLO;
     }
     else
     {
       Stop();
     }
-    
-     break;
+
+    break;
   }
 
-  case PASILLO: {
-    //PID
-    //asi el pid fira bien en los sentidos tipo si esta cerca de la pared derecha va hacia la izquierda
-    double Input = distancia_derecha - distancia_izquierda;
+  case PASILLO:
+  { 
+    Forward();
+    // PID
+    // asi el pid fira bien en los sentidos tipo si esta cerca de la pared derecha va hacia la izquierda
+  /*double Input = distancia_derecha - distancia_izquierda;
 
-    if (millis() > tiempo_actual_pid + TICK_PID) {
+    if (millis() > tiempo_actual_pid + TICK_PID)
+    {
       tiempo_actual_pid = millis();
       PID1 = computePID(Input);
     }
-    
-    if(PID1) {
-    velocidad_derecha = (velocidad_media - (PID1));
-    velocidad_izquierda = (velocidad_media + (PID1));
-    
-    if (PID1 > 30) PID1 =  30;
-    if (PID1 < -30) PID1 = -30;
 
-    if (velocidad_izquierda < 155) velocidad_izquierda = 155;
-    if (velocidad_derecha < 155) velocidad_derecha = 155;
-    }
+    if (PID1)
+    {
+      velocidad_derecha = (velocidad_media - (PID1));
+      velocidad_izquierda = (velocidad_media + (PID1));
 
-    //cambio de caso a pared
-    if(distancia_frontal < DISTANCIA_MINIMA) movimiento = PARED;
+      if (PID1 > 30)
+        PID1 = 30;
+      if (PID1 < -30)
+        PID1 = -30;
+
+      if (velocidad_izquierda < 155)
+        velocidad_izquierda = 155;
+      if (velocidad_derecha < 155)
+        velocidad_derecha = 155;
+    }*/
+
+    // cambio de caso a pared
+    if (distancia_frontal < DISTANCIA_MINIMA)
+      movimiento = PARED;
 
     break;
   }
 
-  case PARED: {
+  case PARED:
+  {
     Stop();
     delay(TICK_DELAY);
-    
-    if(distancia_derecha < DISTANCIA_LADOS && distancia_izquierda > DISTANCIA_LADOS) movimiento = DESVIO_IZQUIERDA;
-    if(distancia_derecha > DISTANCIA_LADOS && distancia_izquierda < DISTANCIA_LADOS) movimiento = DESVIO_DERECHA;
-    if(distancia_derecha > DISTANCIA_LADOS && distancia_izquierda > DISTANCIA_LADOS) movimiento = DESVIO_IZQUIERDA;
-    if(distancia_derecha < DISTANCIA_LADOS && distancia_izquierda < DISTANCIA_LADOS) movimiento = CALLEJON;
-    
+
+    if (distancia_derecha < DISTANCIA_LADOS && distancia_izquierda > DISTANCIA_LADOS)
+      movimiento = DESVIO_IZQUIERDA;
+    if (distancia_derecha > DISTANCIA_LADOS && distancia_izquierda < DISTANCIA_LADOS)
+      movimiento = DESVIO_DERECHA;
+    if (distancia_derecha > DISTANCIA_LADOS && distancia_izquierda > DISTANCIA_LADOS)
+      movimiento = DESVIO_IZQUIERDA;
+    if (distancia_derecha < DISTANCIA_LADOS && distancia_izquierda < DISTANCIA_LADOS)
+      movimiento = CALLEJON;
+
     break;
   }
 
-  case DESVIO_DERECHA: {
+  case DESVIO_DERECHA:
+  {
     velocidad_derecha = velocidad_giro;
     velocidad_izquierda = velocidad_giro;
     delay(TICK_DELAY);
     Right();
     delay(TICK_DOBLAR);
     movimiento = POST_DOBLAR;
-    
+
     break;
   }
 
-  case DESVIO_IZQUIERDA: {
+  case DESVIO_IZQUIERDA:
+  {
     velocidad_derecha = velocidad_giro;
     velocidad_izquierda = velocidad_giro;
     Left();
     delay(TICK_DOBLAR);
     movimiento = POST_DOBLAR;
-    
+
     break;
   }
 
-  case CALLEJON: {
+  case CALLEJON:
+  {
     velocidad_derecha = velocidad_giro;
     velocidad_izquierda = velocidad_giro;
     Left();
     delay(TICK_GIRAR);
     movimiento = POST_DOBLAR;
-    
+
     break;
   }
 
-  case POST_DOBLAR: {
+  case POST_DOBLAR:
+  {
     Stop();
     delay(TICK_DELAY);
-    if(distancia_frontal > DISTANCIA_MAXIMA){
-      movimiento = PASILLO;
+    Forward();
+    delay(TICK_DELAY);
+    movimiento = PASILLO;
+    
+   /* if (distancia_frontal > DISTANCIA_MAXIMA) movimiento = PASILLO;
     }
-    else{
+    else
+    {
       Left();
-    }
+    }*/
     break;
   }
-}
-}
-
-void setup(){
-    Serial.begin(9600);
-    SerialBT.begin("Bover");
+  }
 }
 
-void loop(){
+void setup()
+{ 
+  MDer = new  Motor(PIN_MOTOR_MR1, PIN_MOTOR_MR2, PIN_PWM_ENA, PWMChannel1);
+  MIzq = new Motor(PIN_MOTOR_ML1, PIN_MOTOR_ML2, PIN_PWM_ENB, PWMChannel2);
+  Serial.begin(9600);
+  SerialBT.begin("Bover"); 
+}
+
+void loop()
+{
+   
   Input = distancia_derecha - distancia_izquierda;
   if (millis() > tiempo_actual + TICK_ULTRASONIDO)
     {
@@ -451,7 +491,7 @@ void loop(){
       distancia_izquierda = sensor_izquierdo.LeerUltrasonidos();
       distancia_derecha = sensor_derecho.LeerUltrasonidos();
 
-    } 
+    }
 
   Movimientos_robot();
   if (DEBUG_SENSORES)
