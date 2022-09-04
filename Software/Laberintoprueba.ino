@@ -54,8 +54,8 @@ const int PWMChannel2 = 1;
 
 // PID
 //------------------------------------------------------------------------------------------
-double kp = 0.321;
-double kd = -0.12;
+double kp = 0.1721;
+double kd = 0;
 
 unsigned long currentTime, previousTime;
 double elapsedTime;
@@ -473,8 +473,8 @@ void Movimientos_robot()
 
 void setup()
 { 
-  MDer = new  Motor(PIN_MOTOR_MR1, PIN_MOTOR_MR2, PIN_PWM_ENA, PWMChannel1);
-  MIzq = new Motor(PIN_MOTOR_ML1, PIN_MOTOR_ML2, PIN_PWM_ENB, PWMChannel2);
+  MDer = new  Motor(PIN_MOTOR_MR1, PIN_MOTOR_MR2, PIN_PWM_ENB, PWMChannel1);
+  MIzq = new Motor(PIN_MOTOR_ML1, PIN_MOTOR_ML2, PIN_PWM_ENA, PWMChannel2);
   Serial.begin(9600);
   SerialBT.begin("Bover"); 
 }

@@ -45,16 +45,16 @@ bool boton_start;
 #define TICK_GIRAR 798
 
 // veocidades motores pwm
-int velocidad_derecha = 190;
-int velocidad_izquierda = 190;
-int velocidad_media = 190;
-int velocidad_giro = 188;
+int velocidad_derecha = 180;
+int velocidad_izquierda = 180;
+int velocidad_media = 180;
+int velocidad_giro = 175;
 const int PWMChannel1 = 0;
 const int PWMChannel2 = 1;
 
 // PID
 //------------------------------------------------------------------------------------------
-double kp = 0.32;
+double kp = 0.1721;
 double kd = 0;
 
 unsigned long currentTime, previousTime;
@@ -473,15 +473,15 @@ void Movimientos_robot()
 
 void setup()
 { 
-  MDer = new  Motor(PIN_MOTOR_MR1, PIN_MOTOR_MR2, PIN_PWM_ENA, PWMChannel1);
-  MIzq = new Motor(PIN_MOTOR_ML1, PIN_MOTOR_ML2, PIN_PWM_ENB, PWMChannel2);
+  MDer = new  Motor(PIN_MOTOR_MR1, PIN_MOTOR_MR2, PIN_PWM_ENB, PWMChannel1);
+  MIzq = new Motor(PIN_MOTOR_ML1, PIN_MOTOR_ML2, PIN_PWM_ENA, PWMChannel2);
   Serial.begin(9600);
   SerialBT.begin("Bover"); 
 }
 
 void loop()
 {
-   
+  movimiento = PASILLO;
   Input = distancia_derecha - distancia_izquierda;
   if (millis() > tiempo_actual_pid + TICK_PID)
     {
