@@ -481,7 +481,7 @@ void setup()
 
 void loop()
 {
-  movimiento = PASILLO;
+  
   Input = distancia_derecha - distancia_izquierda;
   if (millis() > tiempo_actual_pid + TICK_PID)
     {
@@ -496,7 +496,7 @@ void loop()
       distancia_derecha = sensor_derecho.LeerUltrasonidos();
 
     }
- 
+  movimiento = PASILLO;
    Movimientos_robot();
   if (DEBUG_SENSORES)
   {
