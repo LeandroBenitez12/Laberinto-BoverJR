@@ -1,29 +1,29 @@
 #include "BluetoothSerial.h"
 // DEBUG
-#define DEBUG_DE_CASOS 1
-#define DEBUG_SENSORES 1
-#define DEBUG_VELOCIDAD 1
+#define DEBUG_DE_CASOS 0
+#define DEBUG_SENSORES 0
+#define DEBUG_VELOCIDAD 0
 #define DEBUG_PID 0
 // declaramos pines
 // motores
 #define PIN_PWM_ENA 15
-#define PIN_MOTOR_MR1 18
-#define PIN_MOTOR_MR2 5
+#define PIN_MOTOR_MR1 2
+#define PIN_MOTOR_MR2 4
 #define PIN_PWM_ENB 19
-#define PIN_MOTOR_ML1 4
-#define PIN_MOTOR_ML2 2
+#define PIN_MOTOR_ML1 18
+#define PIN_MOTOR_ML2 5
 // ultrasonidos HR04
-#define ECHO1 35
-#define ECHO2 33
-#define ECHO3 26
-#define ECHO4 14
-#define TRIG1 32
-#define TRIG2 25
-#define TRIG3 27
-#define TRIG4 12
+#define PIN_SENSOR_DERECHO_ECHO1 35
+#define PIN_SENSOR_ADELANTE_ECHO2 33
+#define PIN_SENSOR_IZQUIERDO_ECHO3 14
+#define PIN_SENSOR_DERECHO_TRIG1 32
+#define PIN_SENSOR_ADELANTE_TRIG2 25
+#define PIN_SENSOR_IZQUIERDO_TRIG3 12
 #define TICK_ULTRASONIDO 10
 unsigned long tiempo_actual = 0;
 unsigned long tiempo_actual_pid = 0;
+
+
 
 int distancia_izquierda;
 int distancia_frontal;
@@ -40,21 +40,21 @@ bool boton_start;
 #define TICK_PID 70
 #define TICK_ULTRASONIDO 10
 #define TICK_NOTIFICACION 500
-#define TICK_DELAY 1000
+#define TICK_DELAY 500
 #define TICK_DOBLAR 399
 #define TICK_GIRAR 798
 
 // veocidades motores pwm
-int velocidad_derecha = 200;
-int velocidad_izquierda = 200;
-int velocidad_media = 200;
-int velocidad_giro = 188;
+int velocidad_derecha = 180;
+int velocidad_izquierda = 180;
+int velocidad_media = 180;
+int velocidad_giro = 175;
 const int PWMChannel1 = 0;
 const int PWMChannel2 = 1;
 
 // PID
 //------------------------------------------------------------------------------------------
-double kp = 0.3;
+double kp = 0.1721;
 double kd = 0;
 
 unsigned long currentTime, previousTime;
@@ -116,25 +116,26 @@ public:
   {
     velocidad = vel;
   }
-  void Forward()
+  void ADELANTE()
   {
     ledcWrite(channel, velocidad);
     digitalWrite(pin_1, HIGH);
     digitalWrite(pin_2, LOW);
   }
-  void Backward()
+  void ATRAS()
   {
     ledcWrite(channel, velocidad);
     digitalWrite(pin_1, LOW);
     digitalWrite(pin_2, HIGH);
   }
-  void Stop()
+  void PARAR()
   {
     ledcWrite(channel, velocidad);
     digitalWrite(pin_1, LOW);
     digitalWrite(pin_2, LOW);
   }
 };
+
 
 class Ultrasonido
 {
@@ -211,14 +212,14 @@ public:
 };
 
 // intancio los ultrasonidos
-Ultrasonido sensor_frontal = Ultrasonido(TRIG2, ECHO2);
-Ultrasonido sensor_derecho = Ultrasonido(TRIG1, ECHO1);
-Ultrasonido sensor_izquierdo = Ultrasonido(TRIG4, ECHO4);
+Ultrasonido sensor_frontal = Ultrasonido(PIN_SENSOR_ADELANTE_TRIG2, PIN_SENSOR_ADELANTE_ECHO2);
+Ultrasonido sensor_derecho = Ultrasonido(PIN_SENSOR_DERECHO_TRIG1, PIN_SENSOR_DERECHO_ECHO1);
+Ultrasonido sensor_izquierdo = Ultrasonido(PIN_SENSOR_IZQUIERDO_TRIG3, PIN_SENSOR_IZQUIERDO_ECHO3);
 
 // instancio los motores
 
-Motor MDer = Motor(PIN_MOTOR_MR1, PIN_MOTOR_MR2, PIN_PWM_ENA, PWMChannel1);
-Motor MIzq = Motor(PIN_MOTOR_ML1, PIN_MOTOR_ML2, PIN_PWM_ENB, PWMChannel2);
+Motor *MDer;
+Motor *MIzq;
 
 // Instancio los buttons *punteros
 Button *start = new Button(PIN_BUTTON_START);
@@ -229,42 +230,42 @@ Buzzer *b1 = new Buzzer(PIN_BUZZER);
 // funciones de los motores
 void Forward()
 {
-  MDer.setVelocidad(velocidad_derecha);
-  MIzq.setVelocidad(velocidad_izquierda);
-  MDer.Forward();
-  MIzq.Forward();
+  MDer->setVelocidad(velocidad_derecha);
+  MIzq->setVelocidad(velocidad_izquierda);
+  MDer->ADELANTE();
+  MIzq->ADELANTE();
 }
 // HACIA ATRAS
 void Backward()
 {
-  MDer.setVelocidad(velocidad_derecha);
-  MIzq.setVelocidad(velocidad_izquierda);
-  MDer.Backward();
-  MIzq.Backward();
+  MDer->setVelocidad(velocidad_derecha);
+  MIzq->setVelocidad(velocidad_izquierda);
+  MDer->ATRAS();
+  MIzq->ATRAS();
 }
 // GIRO SOBRE SU PROPIO EJE A LA DERECHA
 void Left()
 {
-  MDer.setVelocidad(velocidad_derecha);
-  MIzq.setVelocidad(velocidad_izquierda);
-  MDer.Forward();
-  MIzq.Backward();
+  MDer->setVelocidad(velocidad_derecha);
+  MIzq->setVelocidad(velocidad_izquierda);
+  MDer->ADELANTE();
+  MIzq->ATRAS();
 }
 // GIRO SOBRE SU PROPIO EJE A LA IZQUIERDA
 void Right()
 {
-  MDer.setVelocidad(velocidad_derecha);
-  MIzq.setVelocidad(velocidad_izquierda);
-  MDer.Backward();
-  MIzq.Forward();
+  MDer->setVelocidad(velocidad_derecha);
+  MIzq->setVelocidad(velocidad_izquierda);
+  MDer->ATRAS();
+  MIzq->ADELANTE();
 }
 // PARAR
 void Stop()
 {
-  MDer.setVelocidad(0);
-  MIzq.setVelocidad(0);
-  MDer.Stop();
-  MIzq.Stop();
+  MDer->setVelocidad(0);
+  MIzq->setVelocidad(0);
+  MDer->PARAR();
+  MIzq->PARAR();
 }
 
 // buzzers
@@ -355,6 +356,7 @@ void Movimientos_robot()
     boton_start = start->getIsPress();
     if (boton_start)
     {
+      delay(3000);
       movimiento = PASILLO;
     }
     else
@@ -366,33 +368,32 @@ void Movimientos_robot()
   }
 
   case PASILLO:
-  {
+  { 
+    
     // PID
     // asi el pid fira bien en los sentidos tipo si esta cerca de la pared derecha va hacia la izquierda
-    double Input = distancia_derecha - distancia_izquierda;
-
-    if (millis() > tiempo_actual_pid + TICK_PID)
-    {
-      tiempo_actual_pid = millis();
-      PID1 = computePID(Input);
-    }
-
-    if (PID1)
-    {
-      velocidad_derecha = (velocidad_media - (PID1));
-      velocidad_izquierda = (velocidad_media + (PID1));
-
-      if (PID1 > 30)
-        PID1 = 30;
-      if (PID1 < -30)
-        PID1 = -30;
-
-      if (velocidad_izquierda < 155)
+    if (velocidad_izquierda < 155)
         velocidad_izquierda = 155;
       if (velocidad_derecha < 155)
         velocidad_derecha = 155;
-    }
 
+    if (PID1)
+    {
+        if (PID1 > 30)
+        PID1 = 30;
+        if (PID1 < -30)
+        PID1 = -30;
+
+      velocidad_derecha = (velocidad_media - (PID1));
+      velocidad_izquierda = (velocidad_media + (PID1));
+
+      
+      if (velocidad_izquierda < 160)
+        velocidad_izquierda = 160;
+      if (velocidad_derecha < 160)
+        velocidad_derecha = 160;
+    }
+    Forward();
     // cambio de caso a pared
     if (distancia_frontal < DISTANCIA_MINIMA)
       movimiento = PARED;
@@ -455,35 +456,46 @@ void Movimientos_robot()
   {
     Stop();
     delay(TICK_DELAY);
-    if (distancia_frontal > DISTANCIA_MAXIMA)
-    {
-      movimiento = PASILLO;
+    Forward();
+    delay(TICK_DELAY);
+    movimiento = PASILLO;
+    
+   /* if (distancia_frontal > DISTANCIA_MAXIMA) movimiento = PASILLO;
     }
     else
     {
       Left();
-    }
+    }*/
     break;
   }
   }
 }
 
 void setup()
-{
+{ 
+  MDer = new  Motor(PIN_MOTOR_MR1, PIN_MOTOR_MR2, PIN_PWM_ENB, PWMChannel1);
+  MIzq = new Motor(PIN_MOTOR_ML1, PIN_MOTOR_ML2, PIN_PWM_ENA, PWMChannel2);
   Serial.begin(9600);
-  SerialBT.begin("Bover");
+  SerialBT.begin("Bover"); 
 }
 
 void loop()
 {
+  movimiento = PASILLO;
   Input = distancia_derecha - distancia_izquierda;
+  if (millis() > tiempo_actual_pid + TICK_PID)
+    {
+      tiempo_actual_pid = millis();
+      PID1 = computePID(Input);
+    }
   if (millis() > tiempo_actual + TICK_ULTRASONIDO)
-  {
-    tiempo_actual = millis();
-    distancia_frontal = sensor_frontal.LeerUltrasonidos();
-    distancia_izquierda = sensor_izquierdo.LeerUltrasonidos();
-    distancia_derecha = sensor_derecho.LeerUltrasonidos();
-  }
+    {
+      tiempo_actual = millis();
+      distancia_frontal = sensor_frontal.LeerUltrasonidos();
+      distancia_izquierda = sensor_izquierdo.LeerUltrasonidos();
+      distancia_derecha = sensor_derecho.LeerUltrasonidos();
+
+    }
 
   Movimientos_robot();
   if (DEBUG_SENSORES)
@@ -499,4 +511,5 @@ void loop()
   {
     imprimir_velocidad();
   }
+
 }

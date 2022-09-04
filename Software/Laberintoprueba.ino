@@ -497,7 +497,7 @@ void loop()
 
     }
  
-  Movimientos_robot();
+   Movimientos_robot();
   if (DEBUG_SENSORES)
   {
     imprimir_distancia();
