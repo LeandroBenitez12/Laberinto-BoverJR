@@ -45,17 +45,17 @@ bool boton_start;
 #define TICK_GIRAR 798
 
 // veocidades motores pwm
-int velocidad_derecha = 190;
-int velocidad_izquierda = 190;
-int velocidad_media = 190;
-int velocidad_giro = 188;
+int velocidad_derecha = 180;
+int velocidad_izquierda = 180;
+int velocidad_media = 180;
+int velocidad_giro = 175;
 const int PWMChannel1 = 0;
 const int PWMChannel2 = 1;
 
 // PID
 //------------------------------------------------------------------------------------------
-double kp = 0.32;
-double kd = 0;
+double kp = 0.321;
+double kd = -0.12;
 
 unsigned long currentTime, previousTime;
 double elapsedTime;
@@ -481,7 +481,7 @@ void setup()
 
 void loop()
 {
-   
+  movimiento = PASILLO;
   Input = distancia_derecha - distancia_izquierda;
   if (millis() > tiempo_actual_pid + TICK_PID)
     {
