@@ -45,16 +45,16 @@ bool boton_start;
 #define TICK_GIRAR 798
 
 // veocidades motores pwm
-int velocidad_derecha = 180;
-int velocidad_izquierda = 180;
-int velocidad_media = 180;
-int velocidad_giro = 175;
+int velocidad_derecha = 170;
+int velocidad_izquierda = 170;
+int velocidad_media = 170;
+int velocidad_giro = 165;
 const int PWMChannel1 = 0;
 const int PWMChannel2 = 1;
 
 // PID
 //------------------------------------------------------------------------------------------
-double kp = 0.1721;
+double kp = 0.4721;
 double kd = 0;
 
 unsigned long currentTime, previousTime;
