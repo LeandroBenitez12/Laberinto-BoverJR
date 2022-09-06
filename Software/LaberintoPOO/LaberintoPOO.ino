@@ -298,7 +298,8 @@ enum MOVIMIENTOS
   DESVIO_DERECHA,
   DESVIO_IZQUIERDA,
   CALLEJON,
-  POST_DOBLAR
+  POST_DOBLAR,
+  ANT_DOBLAR,
 };
 void imprimir_casos(int ubicacion)
 {
@@ -397,6 +398,9 @@ void Movimientos_robot()
     // cambio de caso a pared
     if (distancia_frontal < DISTANCIA_MINIMA)
       movimiento = PARED;
+    else if(distancia_izquierda > DISTANCIA_LADOS){
+      movimiento = ANT_DOBLAR;
+    }
 
     break;
   }
@@ -454,18 +458,23 @@ void Movimientos_robot()
 
   case POST_DOBLAR:
   {
+    Forward();
+    delay(TICK_DELAY);
+    Stop();
+    delay(TICK_DELAY);
+    movimiento = DESVIO_IZQUIERDA;
+    
+    break;
+  }
+
+  case ANT_DOBLAR:
+  {
     Stop();
     delay(TICK_DELAY);
     Forward();
     delay(TICK_DELAY);
-    movimiento = PASILLO;
-    
-   /* if (distancia_frontal > DISTANCIA_MAXIMA) movimiento = PASILLO;
-    }
-    else
-    {
-      Left();
-    }*/
+    movimiento = ;
+   
     break;
   }
   }

@@ -528,6 +528,17 @@ void Movimientos_robot()
     
     break;
   }
+
+  case ANT_DOBLAR:
+  {
+    Stop();
+    delay(TICK_DELAY);
+    Forward();
+    delay(TICK_DELAY);
+    movimiento = DESVIO_IZQUIERDA;
+   
+    break;
+  }
   }
 }
 
