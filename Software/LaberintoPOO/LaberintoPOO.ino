@@ -7,8 +7,8 @@
 // declaramos pines
 // motores
 #define PIN_PWM_ENA 15
-#define PIN_MOTOR_MR1 2
-#define PIN_MOTOR_MR2 4
+#define PIN_MOTOR_MR1 4
+#define PIN_MOTOR_MR2 2
 #define PIN_PWM_ENB 19
 #define PIN_MOTOR_ML1 18
 #define PIN_MOTOR_ML2 5
@@ -290,7 +290,7 @@ void imprimir_distancia()
 }
 //-------------------------------------------------------------
 // casos de la maquina de estado
-enum MOVIMIENTOS
+enum movimiento
 {
   INICIAL,
   PASILLO,
@@ -462,7 +462,7 @@ void Movimientos_robot()
     delay(TICK_DELAY);
     Stop();
     delay(TICK_DELAY);
-    movimiento = DESVIO_IZQUIERDA;
+    movimiento = PASILLO;
     
     break;
   }
@@ -473,7 +473,7 @@ void Movimientos_robot()
     delay(TICK_DELAY);
     Forward();
     delay(TICK_DELAY);
-    movimiento = ;
+    movimiento = DESVIO_IZQUIERDA;
    
     break;
   }

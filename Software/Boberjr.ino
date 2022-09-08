@@ -363,7 +363,7 @@ void imprimir_distancia()
 }
 //-------------------------------------------------------------
 // casos de la maquina de estado
-enum MOVIMIENTOS
+enum movimiento
 {
   INICIAL,
   PASILLO,
