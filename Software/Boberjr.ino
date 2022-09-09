@@ -26,8 +26,8 @@ int distancia_izquierda;
 int distancia_frontal;
 int distancia_derecha;
 // encoders
-#define PIN_ENCODER_DER
-#define PIN_ENCODER_IZQ
+#define PIN_ENCODER_DER 10
+#define PIN_ENCODER_IZQ 11
 float vuelta_completa = 100;
 int contador = 0;
 
@@ -236,24 +236,17 @@ public:
      return estado;
 }
 
-//funcion que cuenta los cambios de flancos
-int Contador(){
-  
-  contador++;
-
-  if(contador>=vuelta_completa)contador=0;
-  return contador;
-
-  }
   
 //cuento los grados del giro
 double Giro(){
   if (DeteccionFlanco()) {
-      contador = Contador();
+      contador++;
+      if(contador>=vuelta_completa)contador=0;
     }
   float giro = contador*360/vuelta_completa;
   return giro;
   }
+};
 
 // intancio los ultrasonidos
 Ultrasonido sensor_frontal = Ultrasonido(PIN_SENSOR_ADELANTE_TRIG2, PIN_SENSOR_ADELANTE_ECHO2);
@@ -318,26 +311,26 @@ void Stop()
 
 //FUNCIONES PARA GIRAR POR ANGULO
 void DoblarIzq(int angulo){
-
-    while(encoder_der->Giro()>=angulo) {
+    int giro = 0;
+    while(giro>=angulo) {
         MDer->setVelocidad(velocidad_giro);
         MDer->ADELANTE();
         }
-    while(encoder_izq->Giro()>=angulo) {
-        Mizq->setVelocidad(velocidad_giro);
-        Mizq->ATRAS();
+    while(giro>=angulo) {
+        MIzq->setVelocidad(velocidad_giro);
+        MIzq->ATRAS();
         }
     }
 
 void DoblarDer(int angulo){
-
-    while(encoder_der->Giro()>=angulo) {
+    int giro = 0;
+    while(giro>=angulo) {
         MDer->setVelocidad(velocidad_giro);
         MDer->ATRAS();
         }
-    while(encoder_izq->Giro()>=angulo) {
-        Mizq->setVelocidad(velocidad_giro);
-        Mizq->ADELANTE();
+    while(giro>=angulo) {
+        MIzq->setVelocidad(velocidad_giro);
+        MIzq->ADELANTE();
         }
     }
 
@@ -371,7 +364,8 @@ enum movimiento
   DESVIO_DERECHA,
   DESVIO_IZQUIERDA,
   CALLEJON,
-  POST_DOBLAR
+  POST_DOBLAR,
+  ANT_DOBLAR
 };
 void imprimir_casos(int ubicacion)
 {
@@ -569,7 +563,7 @@ void loop()
     }
 
   Movimientos_robot();
-  if (DEBUG_SENSORES)
+  if (DEBUG_SENSORES) 
   {
     imprimir_distancia();
   }
@@ -582,5 +576,5 @@ void loop()
   {
     imprimir_velocidad();
   }
-
+  
 }
