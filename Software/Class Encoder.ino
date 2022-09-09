@@ -39,20 +39,22 @@ int Contador(){
   return contador;
 
   }
-
+  
+//cuento los grados del giro
+double Giro(){
+  if (pin->DeteccionFlanco()) {
+      contador = pin->Contador();
+    }
+  float giro = contador*360/vuelta_completa;
+  return giro;
+  }
 
 };
 
 //instancio el encoder
 EncoderInflarrojo *Encoder = new EncoderInflarrojo(PIN_ENCODER);
 
-double Giro(){
-  if (Encoder->DeteccionFlanco()) {
-      contador = Encoder->Contador();
-    }
-  float giro = contador*360/vuelta_completa;
-  return giro;
-  }
+
 
 
 

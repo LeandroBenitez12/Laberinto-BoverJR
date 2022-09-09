@@ -7,8 +7,8 @@
 // declaramos pines
 // motores
 #define PIN_PWM_ENA 15
-#define PIN_MOTOR_MR1 4
-#define PIN_MOTOR_MR2 2
+#define PIN_MOTOR_MR1 2
+#define PIN_MOTOR_MR2 4
 #define PIN_PWM_ENB 19
 #define PIN_MOTOR_ML1 18
 #define PIN_MOTOR_ML2 5
@@ -22,12 +22,16 @@
 #define TICK_ULTRASONIDO 10
 unsigned long tiempo_actual = 0;
 unsigned long tiempo_actual_pid = 0;
-
-
-
 int distancia_izquierda;
 int distancia_frontal;
 int distancia_derecha;
+// encoders
+#define PIN_ENCODER_DER
+#define PIN_ENCODER_IZQ
+float vuelta_completa = 100;
+int contador = 0;
+
+
 
 // Button
 #define PIN_BUZZER 23
@@ -41,8 +45,6 @@ bool boton_start;
 #define TICK_ULTRASONIDO 10
 #define TICK_NOTIFICACION 500
 #define TICK_DELAY 500
-#define TICK_DOBLAR 399
-#define TICK_GIRAR 798
 
 // veocidades motores pwm
 int velocidad_derecha = 180;
@@ -211,6 +213,48 @@ public:
   }
 };
 
+class EncoderInflarrojo{
+
+private:
+    int pin;
+    bool flanco = HIGH;
+    bool estado_anterior = !flanco;
+
+public:
+
+     EncoderInflarrojo(int p){
+        
+        pin = p;
+        pinMode(pin,INPUT);
+    }
+
+//funcion para la deteccion del cambio de flanco
+     bool DeteccionFlanco() {
+     bool estado_actual = digitalRead(pin);
+     bool estado = estado_actual != estado_anterior && estado_actual == HIGH;
+     estado_anterior = estado_actual;
+     return estado;
+}
+
+//funcion que cuenta los cambios de flancos
+int Contador(){
+  
+  contador++;
+
+  if(contador>=vuelta_completa)contador=0;
+  return contador;
+
+  }
+  
+//cuento los grados del giro
+double Giro(){
+  if (DeteccionFlanco()) {
+      contador = Contador();
+    }
+  float giro = contador*360/vuelta_completa;
+  return giro;
+  }
+
 // intancio los ultrasonidos
 Ultrasonido sensor_frontal = Ultrasonido(PIN_SENSOR_ADELANTE_TRIG2, PIN_SENSOR_ADELANTE_ECHO2);
 Ultrasonido sensor_derecho = Ultrasonido(PIN_SENSOR_DERECHO_TRIG1, PIN_SENSOR_DERECHO_ECHO1);
@@ -226,6 +270,10 @@ Button *start = new Button(PIN_BUTTON_START);
 
 // Instancio los buzzers
 Buzzer *b1 = new Buzzer(PIN_BUZZER);
+
+// Instancio los encoders
+EncoderInflarrojo *encoder_der = new EncoderInflarrojo(PIN_ENCODER_DER);
+EncoderInflarrojo *encoder_izq = new EncoderInflarrojo(PIN_ENCODER_IZQ);
 
 // funciones de los motores
 void Forward()
@@ -268,6 +316,31 @@ void Stop()
   MIzq->PARAR();
 }
 
+//FUNCIONES PARA GIRAR POR ANGULO
+void DoblarIzq(int angulo){
+
+    while(encoder_der->Giro()>=angulo) {
+        MDer->setVelocidad(velocidad_giro);
+        MDer->ADELANTE();
+        }
+    while(encoder_izq->Giro()>=angulo) {
+        Mizq->setVelocidad(velocidad_giro);
+        Mizq->ATRAS();
+        }
+    }
+
+void DoblarDer(int angulo){
+
+    while(encoder_der->Giro()>=angulo) {
+        MDer->setVelocidad(velocidad_giro);
+        MDer->ATRAS();
+        }
+    while(encoder_izq->Giro()>=angulo) {
+        Mizq->setVelocidad(velocidad_giro);
+        Mizq->ADELANTE();
+        }
+    }
+
 // buzzers
 void BuzzerOn()
 {
@@ -298,8 +371,7 @@ enum movimiento
   DESVIO_DERECHA,
   DESVIO_IZQUIERDA,
   CALLEJON,
-  POST_DOBLAR,
-  ANT_DOBLAR,
+  POST_DOBLAR
 };
 void imprimir_casos(int ubicacion)
 {
@@ -398,9 +470,6 @@ void Movimientos_robot()
     // cambio de caso a pared
     if (distancia_frontal < DISTANCIA_MINIMA)
       movimiento = PARED;
-    else if(distancia_izquierda > DISTANCIA_LADOS){
-      movimiento = ANT_DOBLAR;
-    }
 
     break;
   }
@@ -424,22 +493,17 @@ void Movimientos_robot()
 
   case DESVIO_DERECHA:
   {
-    velocidad_derecha = velocidad_giro;
-    velocidad_izquierda = velocidad_giro;
+    DoblarDer(90);
     delay(TICK_DELAY);
-    Right();
-    delay(TICK_DOBLAR);
     movimiento = POST_DOBLAR;
-
+    
     break;
   }
 
   case DESVIO_IZQUIERDA:
   {
-    velocidad_derecha = velocidad_giro;
-    velocidad_izquierda = velocidad_giro;
-    Left();
-    delay(TICK_DOBLAR);
+    DoblarIzq(90);
+    delay(TICK_DELAY);
     movimiento = POST_DOBLAR;
 
     break;
@@ -447,10 +511,8 @@ void Movimientos_robot()
 
   case CALLEJON:
   {
-    velocidad_derecha = velocidad_giro;
-    velocidad_izquierda = velocidad_giro;
-    Left();
-    delay(TICK_GIRAR);
+    DoblarIzq(180);
+    delay(TICK_DELAY);
     movimiento = POST_DOBLAR;
 
     break;
@@ -458,9 +520,9 @@ void Movimientos_robot()
 
   case POST_DOBLAR:
   {
-    Forward();
-    delay(TICK_DELAY);
     Stop();
+    delay(TICK_DELAY);
+    Forward();
     delay(TICK_DELAY);
     movimiento = PASILLO;
     
