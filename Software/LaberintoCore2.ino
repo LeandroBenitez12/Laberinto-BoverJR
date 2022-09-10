@@ -1,3 +1,6 @@
+//creo la variable de la nueva tarea
+TaskHandle_t Task1;
+TaskHandle_t Task2;
 #include "BluetoothSerial.h"
 // DEBUG
 #define DEBUG_DE_CASOS 0
@@ -7,8 +10,8 @@
 // declaramos pines
 // motores
 #define PIN_PWM_ENA 15
-#define PIN_MOTOR_MR1 2
-#define PIN_MOTOR_MR2 4
+#define PIN_MOTOR_MR1 4
+#define PIN_MOTOR_MR2 2
 #define PIN_PWM_ENB 19
 #define PIN_MOTOR_ML1 18
 #define PIN_MOTOR_ML2 5
@@ -22,16 +25,12 @@
 #define TICK_ULTRASONIDO 10
 unsigned long tiempo_actual = 0;
 unsigned long tiempo_actual_pid = 0;
+
+
+
 int distancia_izquierda;
 int distancia_frontal;
 int distancia_derecha;
-// encoders
-#define PIN_ENCODER_DER 10
-#define PIN_ENCODER_IZQ 11
-float vuelta_completa = 100;
-int contador = 0;
-
-
 
 // Button
 #define PIN_BUZZER 23
@@ -45,6 +44,8 @@ bool boton_start;
 #define TICK_ULTRASONIDO 10
 #define TICK_NOTIFICACION 500
 #define TICK_DELAY 500
+#define TICK_DOBLAR 399
+#define TICK_GIRAR 798
 
 // veocidades motores pwm
 int velocidad_derecha = 180;
@@ -213,41 +214,6 @@ public:
   }
 };
 
-class EncoderInflarrojo{
-
-private:
-    int pin;
-    bool flanco = HIGH;
-    bool estado_anterior = !flanco;
-
-public:
-
-     EncoderInflarrojo(int p){
-        
-        pin = p;
-        pinMode(pin,INPUT);
-    }
-
-//funcion para la deteccion del cambio de flanco
-     bool DeteccionFlanco() {
-     bool estado_actual = digitalRead(pin);
-     bool estado = estado_actual != estado_anterior && estado_actual == HIGH;
-     estado_anterior = estado_actual;
-     return estado;
-}
-
-  
-//cuento los grados del giro
-double Giro(){
-  if (DeteccionFlanco()) {
-      contador++;
-      if(contador>=vuelta_completa)contador=0;
-    }
-  float giro = contador*360/vuelta_completa;
-  return giro;
-  }
-};
-
 // intancio los ultrasonidos
 Ultrasonido sensor_frontal = Ultrasonido(PIN_SENSOR_ADELANTE_TRIG2, PIN_SENSOR_ADELANTE_ECHO2);
 Ultrasonido sensor_derecho = Ultrasonido(PIN_SENSOR_DERECHO_TRIG1, PIN_SENSOR_DERECHO_ECHO1);
@@ -263,10 +229,6 @@ Button *start = new Button(PIN_BUTTON_START);
 
 // Instancio los buzzers
 Buzzer *b1 = new Buzzer(PIN_BUZZER);
-
-// Instancio los encoders
-EncoderInflarrojo *encoder_der = new EncoderInflarrojo(PIN_ENCODER_DER);
-EncoderInflarrojo *encoder_izq = new EncoderInflarrojo(PIN_ENCODER_IZQ);
 
 // funciones de los motores
 void Forward()
@@ -309,31 +271,6 @@ void Stop()
   MIzq->PARAR();
 }
 
-//FUNCIONES PARA GIRAR POR ANGULO
-void DoblarIzq(int angulo){
-    int giro = 0;
-    while(giro>=angulo) {
-        MDer->setVelocidad(velocidad_giro);
-        MDer->ADELANTE();
-        }
-    while(giro>=angulo) {
-        MIzq->setVelocidad(velocidad_giro);
-        MIzq->ATRAS();
-        }
-    }
-
-void DoblarDer(int angulo){
-    int giro = 0;
-    while(giro>=angulo) {
-        MDer->setVelocidad(velocidad_giro);
-        MDer->ATRAS();
-        }
-    while(giro>=angulo) {
-        MIzq->setVelocidad(velocidad_giro);
-        MIzq->ADELANTE();
-        }
-    }
-
 // buzzers
 void BuzzerOn()
 {
@@ -365,7 +302,7 @@ enum movimiento
   DESVIO_IZQUIERDA,
   CALLEJON,
   POST_DOBLAR,
-  ANT_DOBLAR
+  ANT_DOBLAR,
 };
 void imprimir_casos(int ubicacion)
 {
@@ -464,6 +401,9 @@ void Movimientos_robot()
     // cambio de caso a pared
     if (distancia_frontal < DISTANCIA_MINIMA)
       movimiento = PARED;
+    else if(distancia_izquierda > DISTANCIA_LADOS){
+      movimiento = ANT_DOBLAR;
+    }
 
     break;
   }
@@ -487,17 +427,22 @@ void Movimientos_robot()
 
   case DESVIO_DERECHA:
   {
-    DoblarDer(90);
+    velocidad_derecha = velocidad_giro;
+    velocidad_izquierda = velocidad_giro;
     delay(TICK_DELAY);
+    Right();
+    delay(TICK_DOBLAR);
     movimiento = POST_DOBLAR;
-    
+
     break;
   }
 
   case DESVIO_IZQUIERDA:
   {
-    DoblarIzq(90);
-    delay(TICK_DELAY);
+    velocidad_derecha = velocidad_giro;
+    velocidad_izquierda = velocidad_giro;
+    Left();
+    delay(TICK_DOBLAR);
     movimiento = POST_DOBLAR;
 
     break;
@@ -505,8 +450,10 @@ void Movimientos_robot()
 
   case CALLEJON:
   {
-    DoblarIzq(180);
-    delay(TICK_DELAY);
+    velocidad_derecha = velocidad_giro;
+    velocidad_izquierda = velocidad_giro;
+    Left();
+    delay(TICK_GIRAR);
     movimiento = POST_DOBLAR;
 
     break;
@@ -514,9 +461,9 @@ void Movimientos_robot()
 
   case POST_DOBLAR:
   {
-    Stop();
-    delay(TICK_DELAY);
     Forward();
+    delay(TICK_DELAY);
+    Stop();
     delay(TICK_DELAY);
     movimiento = PASILLO;
     
@@ -536,45 +483,81 @@ void Movimientos_robot()
   }
 }
 
-void setup()
-{ 
-  MDer = new  Motor(PIN_MOTOR_MR1, PIN_MOTOR_MR2, PIN_PWM_ENB, PWMChannel1);
-  MIzq = new Motor(PIN_MOTOR_ML1, PIN_MOTOR_ML2, PIN_PWM_ENA, PWMChannel2);
-  Serial.begin(9600);
-  SerialBT.begin("Bover"); 
-}
 
-void loop()
-{
-  movimiento = PASILLO;
-  Input = distancia_derecha - distancia_izquierda;
-  if (millis() > tiempo_actual_pid + TICK_PID)
+
+//creo la funcion de la nueva tarea
+void sensado(void *parameter) {
+    for(;;){
+    Input = distancia_derecha - distancia_izquierda;
+    if (millis() > tiempo_actual_pid + TICK_PID)
     {
-      tiempo_actual_pid = millis();
-      PID1 = computePID(Input);
+        tiempo_actual_pid = millis();
+        PID1 = computePID(Input);
     }
   if (millis() > tiempo_actual + TICK_ULTRASONIDO)
     {
-      tiempo_actual = millis();
-      distancia_frontal = sensor_frontal.LeerUltrasonidos();
-      distancia_izquierda = sensor_izquierdo.LeerUltrasonidos();
-      distancia_derecha = sensor_derecho.LeerUltrasonidos();
+        tiempo_actual = millis();
+        distancia_frontal = sensor_frontal.LeerUltrasonidos();
+        distancia_izquierda = sensor_izquierdo.LeerUltrasonidos();
+        distancia_derecha = sensor_derecho.LeerUltrasonidos();
 
     }
+    }
+}
 
-  Movimientos_robot();
-  if (DEBUG_SENSORES) 
-  {
-    imprimir_distancia();
-  }
-  if (DEBUG_DE_CASOS)
-  {
-    imprimir_casos(movimiento);
-  }
+void logica(void *parameter) {
+    for(;;) {
+        Movimientos_robot();
+    }
 
-  if (DEBUG_VELOCIDAD)
-  {
-    imprimir_velocidad();
-  }
-  
+}
+
+void setup() {
+    //funcion para crear la nueva tarea para que se ejecute en el nucleo 0
+    xTaskCreatePinnedToCore(
+        sensado, // funcion 
+        "taskSensado", //nombre de la funcion
+        1000, //tamaño de la pila
+        NULL, //parametro a pasarle a la tarea
+        1, // setea la prioridad de la tarea
+        &Task1, //nombre de la variable 
+        0 //en el nucleo en el que se ejecuta la tarea
+    )
+
+    //funcion para crear la nueva tarea para que se ejecute en el nucleo 1
+    xTaskCreatePinnedToCore(
+        logica, // funcion 
+        "taskLogica", //nombre de la funcion
+        1000, //tamaño de la pila
+        NULL, //parametro a pasarle a la tarea
+        1, // setea la prioridad de la tarea
+        &Task2, //nombre de la variable 
+        1 //en el nucleo en el que se ejecuta la tarea
+    )
+
+    //instancio motores  
+    MDer = new  Motor(PIN_MOTOR_MR1, PIN_MOTOR_MR2, PIN_PWM_ENB, PWMChannel1);
+    MIzq = new Motor(PIN_MOTOR_ML1, PIN_MOTOR_ML2, PIN_PWM_ENA, PWMChannel2);
+    Serial.begin(9600);
+    SerialBT.begin("Bover"); 
+    movimiento = PASILLO;
+}
+
+void loop() {
+    Movimientos_robot();
+
+        if (DEBUG_SENSORES)
+    {
+        imprimir_distancia();
+    }
+    if (DEBUG_DE_CASOS)
+    {
+        imprimir_casos(movimiento);
+    }
+
+    if (DEBUG_VELOCIDAD)
+    {
+        imprimir_velocidad();
+    }
+    
 }
