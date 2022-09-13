@@ -1,3 +1,6 @@
+//creo la variable de la nueva tarea
+TaskHandle_t Task1;
+TaskHandle_t Task2;
 #include "BluetoothSerial.h"
 // DEBUG
 #define DEBUG_DE_CASOS 0
@@ -7,8 +10,8 @@
 // declaramos pines
 // motores
 #define PIN_PWM_ENA 15
-#define PIN_MOTOR_MR1 2
-#define PIN_MOTOR_MR2 4
+#define PIN_MOTOR_MR1 4
+#define PIN_MOTOR_MR2 2
 #define PIN_PWM_ENB 19
 #define PIN_MOTOR_ML1 18
 #define PIN_MOTOR_ML2 5
@@ -45,16 +48,16 @@ bool boton_start;
 #define TICK_GIRAR 798
 
 // veocidades motores pwm
-int velocidad_derecha = 170;
-int velocidad_izquierda = 170;
-int velocidad_media = 170;
-int velocidad_giro = 165;
+int velocidad_derecha = 180;
+int velocidad_izquierda = 180;
+int velocidad_media = 180;
+int velocidad_giro = 175;
 const int PWMChannel1 = 0;
 const int PWMChannel2 = 1;
 
 // PID
 //------------------------------------------------------------------------------------------
-double kp = 0.4721;
+double kp = 0.1721;
 double kd = 0;
 
 unsigned long currentTime, previousTime;
@@ -290,7 +293,7 @@ void imprimir_distancia()
 }
 //-------------------------------------------------------------
 // casos de la maquina de estado
-enum MOVIMIENTOS
+enum movimiento
 {
   INICIAL,
   PASILLO,
@@ -298,7 +301,8 @@ enum MOVIMIENTOS
   DESVIO_DERECHA,
   DESVIO_IZQUIERDA,
   CALLEJON,
-  POST_DOBLAR
+  POST_DOBLAR,
+  ANT_DOBLAR,
 };
 void imprimir_casos(int ubicacion)
 {
@@ -397,6 +401,9 @@ void Movimientos_robot()
     // cambio de caso a pared
     if (distancia_frontal < DISTANCIA_MINIMA)
       movimiento = PARED;
+    else if(distancia_izquierda > DISTANCIA_LADOS){
+      movimiento = ANT_DOBLAR;
+    }
 
     break;
   }
@@ -454,62 +461,103 @@ void Movimientos_robot()
 
   case POST_DOBLAR:
   {
+    Forward();
+    delay(TICK_DELAY);
+    Stop();
+    delay(TICK_DELAY);
+    movimiento = PASILLO;
+    
+    break;
+  }
+
+  case ANT_DOBLAR:
+  {
     Stop();
     delay(TICK_DELAY);
     Forward();
     delay(TICK_DELAY);
-    movimiento = PASILLO;
-    
-   /* if (distancia_frontal > DISTANCIA_MAXIMA) movimiento = PASILLO;
-    }
-    else
-    {
-      Left();
-    }*/
+    movimiento = DESVIO_IZQUIERDA;
+   
     break;
   }
   }
 }
 
-void setup()
-{ 
-  MDer = new  Motor(PIN_MOTOR_MR1, PIN_MOTOR_MR2, PIN_PWM_ENB, PWMChannel1);
-  MIzq = new Motor(PIN_MOTOR_ML1, PIN_MOTOR_ML2, PIN_PWM_ENA, PWMChannel2);
-  Serial.begin(9600);
-  SerialBT.begin("Bover"); 
-}
 
-void loop()
-{
-  
-  Input = distancia_derecha - distancia_izquierda;
-  if (millis() > tiempo_actual_pid + TICK_PID)
+
+//creo la funcion para sensar los ultrasonidos
+void sensado(void *parameter) {
+    for(;;){
+    Input = distancia_derecha - distancia_izquierda;
+    if (millis() > tiempo_actual_pid + TICK_PID)
     {
-      tiempo_actual_pid = millis();
-      PID1 = computePID(Input);
+        tiempo_actual_pid = millis();
+        PID1 = computePID(Input);
     }
   if (millis() > tiempo_actual + TICK_ULTRASONIDO)
     {
-      tiempo_actual = millis();
-      distancia_frontal = sensor_frontal.LeerUltrasonidos();
-      distancia_izquierda = sensor_izquierdo.LeerUltrasonidos();
-      distancia_derecha = sensor_derecho.LeerUltrasonidos();
+        tiempo_actual = millis();
+        distancia_frontal = sensor_frontal.LeerUltrasonidos();
+        distancia_izquierda = sensor_izquierdo.LeerUltrasonidos();
+        distancia_derecha = sensor_derecho.LeerUltrasonidos();
 
     }
-  movimiento = PASILLO;
-   Movimientos_robot();
-  if (DEBUG_SENSORES)
-  {
-    imprimir_distancia();
-  }
-  if (DEBUG_DE_CASOS)
-  {
-    imprimir_casos(movimiento);
-  }
+    }
+}
 
-  if (DEBUG_VELOCIDAD)
-  {
-    imprimir_velocidad();
-  }
+//creo la funcion para la logica de movimiento
+void logica(void *parameter) {
+    for(;;) {
+        Movimientos_robot();
+    }
 
+}
+
+void setup() {
+    //funcion para crear la nueva tarea para que se ejecute en el nucleo 0
+    xTaskCreatePinnedToCore(
+        sensado, // funcion 
+        "taskSensado", //nombre de la funcion
+        1000, //tamaño de la pila
+        NULL, //parametro a pasarle a la tarea
+        1, // setea la prioridad de la tarea
+        &Task1, //nombre de la variable 
+        0); //en el nucleo en el que se ejecuta la tarea
+    
+
+    //funcion para crear la nueva tarea para que se ejecute en el nucleo 1
+    xTaskCreatePinnedToCore(
+        logica, // funcion 
+        "taskLogica", //nombre de la funcion
+        1000, //tamaño de la pila
+        NULL, //parametro a pasarle a la tarea
+        1, // setea la prioridad de la tarea
+        &Task2, //nombre de la variable 
+        1); //en el nucleo en el que se ejecuta la tarea
+    
+
+    //instancio motores  
+    MDer = new  Motor(PIN_MOTOR_MR1, PIN_MOTOR_MR2, PIN_PWM_ENB, PWMChannel1);
+    MIzq = new Motor(PIN_MOTOR_ML1, PIN_MOTOR_ML2, PIN_PWM_ENA, PWMChannel2);
+    Serial.begin(9600);
+    SerialBT.begin("Bover"); 
+    movimiento = PASILLO;
+}
+
+void loop() {
+
+        if (DEBUG_SENSORES)
+    {
+        imprimir_distancia();
+    }
+    if (DEBUG_DE_CASOS)
+    {
+        imprimir_casos(movimiento);
+    }
+
+    if (DEBUG_VELOCIDAD)
+    {
+        imprimir_velocidad();
+    }
+    
 }
