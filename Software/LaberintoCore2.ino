@@ -485,7 +485,7 @@ void Movimientos_robot()
 
 
 
-//creo la funcion de la nueva tarea
+//creo la funcion para sensar los ultrasonidos
 void sensado(void *parameter) {
     for(;;){
     Input = distancia_derecha - distancia_izquierda;
@@ -505,6 +505,7 @@ void sensado(void *parameter) {
     }
 }
 
+//creo la funcion para la logica de movimiento
 void logica(void *parameter) {
     for(;;) {
         Movimientos_robot();
@@ -521,8 +522,8 @@ void setup() {
         NULL, //parametro a pasarle a la tarea
         1, // setea la prioridad de la tarea
         &Task1, //nombre de la variable 
-        0 //en el nucleo en el que se ejecuta la tarea
-    )
+        0); //en el nucleo en el que se ejecuta la tarea
+    
 
     //funcion para crear la nueva tarea para que se ejecute en el nucleo 1
     xTaskCreatePinnedToCore(
@@ -532,8 +533,8 @@ void setup() {
         NULL, //parametro a pasarle a la tarea
         1, // setea la prioridad de la tarea
         &Task2, //nombre de la variable 
-        1 //en el nucleo en el que se ejecuta la tarea
-    )
+        1); //en el nucleo en el que se ejecuta la tarea
+    
 
     //instancio motores  
     MDer = new  Motor(PIN_MOTOR_MR1, PIN_MOTOR_MR2, PIN_PWM_ENB, PWMChannel1);
@@ -544,7 +545,6 @@ void setup() {
 }
 
 void loop() {
-    Movimientos_robot();
 
         if (DEBUG_SENSORES)
     {

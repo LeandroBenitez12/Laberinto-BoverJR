@@ -6,11 +6,11 @@
 // declaramos pines
 // motores
 #define ENA 15
-#define MR1 18
-#define MR2 5
+#define MR1 5
+#define MR2 18
 #define ENB 19
-#define ML1 4
-#define ML2 2
+#define ML1 2
+#define ML2 4
 // ultrasonidos
 #define ECHO1 35
 #define ECHO2 33
@@ -188,11 +188,11 @@ void Motor(int estado, int pin1, int pin2, int pwm, int velocidad)
 
 void MotorDer(int estado)
 {
-  Motor(estado, MR1, MR2, PWMChannel,VELOCIDAD1);
+  Motor(estado, MR1, MR2, PWMChannel,velocidad_derecha);
 }
 void MotorIzq(int estado)
 {
-  Motor(estado, ML1, ML2, PWMChannel2,VELOCIDAD2);
+  Motor(estado, ML1, ML2, PWMChannel2,velocidad_izquierda);
 }
 // HACIA ADELANTE
 void Forward()
@@ -284,7 +284,7 @@ void imprimir_casos(int ubicacion)
   SerialBT.print("State: ");
   SerialBT.print(estado_robot);
   SerialBT.print(" | ");
-  SerialBT.print(boton_start);
+  SerialBT.print(button_start);
   SerialBT.println(" | ");
 }
 void ImprimirDatos(int sd, int sai, int si)
@@ -314,7 +314,7 @@ void Movimientos_robot()
     }
     if (button_start)
     {
-      {ubicacion = PASILLO;}
+      {movimiento = PASILLO;}
     }
     else
       {
@@ -456,13 +456,13 @@ void loop()
     distancia_frontal = LeerUltrasonidos(TRIG2, ECHO2);
     distancia_derecha = LeerUltrasonidos(TRIG4, ECHO4);
   }
-  MovimientosDelRobot();
+  Movimientos_robot();
   if (SerialBT.available())
   {
 
     if (DEBUG_DE_CASOS)
     {
-      ImprimirCasos();
+      imprimir_casos(movimiento);
     }
     if (DEBUG_DE_SENSORES)
     {
