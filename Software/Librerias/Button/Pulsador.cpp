@@ -7,13 +7,13 @@ Pulsador::Pulsador(int p)
     pinMode(pin, INPUT);
 }
 
-void Pulsador::setFlanco(bool f)
+void Pulsador::SetFlanco(bool f)
 {
     flanco = f;
     estado_anterior = !flanco;
 }
 
-bool Pulsador::getIsPress()
+bool Pulsador::GetIsPress()
 {
     bool estado_actual = digitalRead(pin);
     bool estado = (estado_anterior != estado_actual) && estado_actual == flanco;

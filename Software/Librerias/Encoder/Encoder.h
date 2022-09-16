@@ -9,12 +9,14 @@ private:
     int pin;
     bool flanco = HIGH;
     bool estado_anterior = !flanco;
+    int contador = 0;
 
 public:
     Encoder(int p);
-    void setTurnMax(int g360);
-    bool flankDetection();
-    double angle();
+    void SetTurnMax(int g360);
+    void SetCont(int cont);
+    bool FlankDetection();
+    float Angle();
 };
 
 #endif

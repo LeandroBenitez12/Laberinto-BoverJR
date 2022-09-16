@@ -12,7 +12,7 @@ private:
 public:
   Ultrasonido(int trig, int echo);
   // metodos
-  int sensorRead();
+  int SensorRead();
 };
 
 #endif

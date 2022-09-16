@@ -17,10 +17,10 @@ private:
 public:
   Motor(int pin1, int pin2, int pinpwm, int ch);
   // metodos
-  void setVelocidad(int vel);
-  void forward();
-  void backward();
-  void stop();
+  void SetVelocidad(int vel);
+  void Forward();
+  void Backward();
+  void Stop();
 };
 
 #endif

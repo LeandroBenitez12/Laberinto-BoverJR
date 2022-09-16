@@ -10,8 +10,8 @@ class Pulsador {
 
   public:
     Pulsador(int p);
-    void setFlanco(bool f);
-    bool getIsPress();
+    void SetFlanco(bool f);
+    bool GetIsPress();
 };
 
 #endif

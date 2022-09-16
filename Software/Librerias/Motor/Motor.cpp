@@ -14,23 +14,23 @@ Motor::Motor(int pin1, int pin2, int pinpwm, int ch)
   pinMode(pin_2, OUTPUT);
 }
 // metodos
-void Motor::setVelocidad(int vel)
+void Motor::SetVelocidad(int vel)
 {
   velocidad = vel;
 }
-void Motor::forward()
+void Motor::Forward()
 {
   ledcWrite(channel, velocidad);
   digitalWrite(pin_1, HIGH);
   digitalWrite(pin_2, LOW);
 }
-void Motor::backward()
+void Motor::Backward()
 {
   ledcWrite(channel, velocidad);
   digitalWrite(pin_1, LOW);
   digitalWrite(pin_2, HIGH);
 }
-void Motor::stop()
+void Motor::Stop()
 {
   ledcWrite(channel, velocidad);
   digitalWrite(pin_1, LOW);
