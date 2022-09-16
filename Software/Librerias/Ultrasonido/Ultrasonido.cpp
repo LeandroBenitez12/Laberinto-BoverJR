@@ -10,7 +10,7 @@ Ultrasonido::Ultrasonido(int trig, int echo)
     digitalWrite(pin_trig, LOW);
 }
 // metodos
-int Ultrasonido::sensorRead()
+int Ultrasonido::SensorRead()
 {
     long distancia;
     long duracion;

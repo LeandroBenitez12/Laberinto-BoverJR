@@ -6,12 +6,12 @@ Encoder::Encoder(int p)
     pinMode(pin, INPUT);
 }
 
-void Encoder::setTurnMax(int g360)
+void Encoder::SetTurnMax(int g360)
 {
     vuelta_completa = g360;
 }
 
-bool Encoder::flankDetection()
+bool Encoder::FlankDetection()
 {
     bool estado_actual = digitalRead(pin);
     bool estado = estado_actual != estado_anterior && estado_actual == HIGH;
@@ -19,15 +19,20 @@ bool Encoder::flankDetection()
     return estado;
 }
 
-double Encoder::angle()
+void Encoder::SetCont(int cont)
 {
-    int contador = 0;
-    if (flankDetection())
+    contador = cont;
+}
+
+
+float Encoder::Angle()
+{
+    if (FlankDetection())
     {
         contador++;
-        if (contador >= vuelta_completa)
-            contador = 0;
+        if (contador >= vuelta_completa) contador = 0;
     }
-    float giro = contador * 360 / vuelta_completa;
+    
+    float giro = contador * 360.00 / vuelta_completa;
     return giro;
 }
