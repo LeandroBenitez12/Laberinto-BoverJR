@@ -5,7 +5,7 @@
 class Encoder{
 
 private:
-    int vuelta_completa = 100;
+    int vuelta_completa = 17;
     int pin;
     bool flanco = HIGH;
     bool estado_anterior = !flanco;
