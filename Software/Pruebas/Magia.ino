@@ -1,5 +1,4 @@
 #include "DriverDRV8833.h"
-
 //debug
 #define DEBUG 1
 #define TICK_DEBUG 500
@@ -18,13 +17,14 @@ bool button_start;
 
 //Sensor final
 #define PIN_SENSOR_FINAL 32
+#define TATAMI 300
 
 //veocidades motores pwm
 int speedRight = 255;
 int speedLeft = 255;
 int averageSpeed = 255;
 int speedTurn = 255;
-int lec;
+int piso_blanco;
 
 //instancio los objetos
 Engine *engineRigh = new  Engine(PIN_ENGINE_MR1, PIN_ENGINE_MR2);
@@ -91,11 +91,12 @@ void switchCase(){
             movement = CONTINUE;
             break;
         case CONTINUE:
-
             forward();
+            if( piso_blanco < TATAMI) movement = STOP;
             break;
         case STOP:
             stop();
+            if( piso_blanco > TATAMI) movement = FULL_TURN;
             break;
         case RIGHT_TURN :
             right();
@@ -118,7 +119,7 @@ void setup()
 
 void loop() 
 {
-    int lec = analogRead(PIN_SENSOR_FINAL);
+    piso_blanco = analogRead(PIN_SENSOR_FINAL);
     switchCase();
 
     
