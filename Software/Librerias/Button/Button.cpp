@@ -1,19 +1,19 @@
-#include "Pulsador.h"
+#include "Button.h"
 
-Pulsador::Pulsador(int p)
+Button::Button(int p)
 {
     pin = p;
 
     pinMode(pin, INPUT);
 }
 
-void Pulsador::SetFlanco(bool f)
+void Button::SetFlanco(bool f)
 {
     flanco = f;
     estado_anterior = !flanco;
 }
 
-bool Pulsador::GetIsPress()
+bool Button::GetIsPress()
 {
     bool estado_actual = digitalRead(pin);
     bool estado = (estado_anterior != estado_actual) && estado_actual == flanco;
