@@ -1,4 +1,5 @@
 #include "DriverDRV8833.h"
+#include "Pulsador.h"
 //debug
 #define DEBUG 1
 #define TICK_DEBUG 500
@@ -30,7 +31,8 @@ int piso_blanco;
 Engine *engineRigh = new  Engine(PIN_ENGINE_MR1, PIN_ENGINE_MR2);
 Engine *engineLeft = new Engine(PIN_ENGINE_ML1, PIN_ENGINE_ML2);
 
-
+//Instancio button 
+Pulsador*start = new Pulsador(PIN_BUTTON_START);
 // funciones de los motores
 void forward()
 {
@@ -72,6 +74,7 @@ void stop()
   engineLeft->Stop();
 }
 
+
 // casos de la maquina de estado
 enum movement
 {
@@ -88,7 +91,9 @@ int movement = STANDBY;
 void switchCase(){
     switch(movement){
         case STANDBY:
-            movement = CONTINUE;
+            button_start = start->GetIsPress();
+            if(button_start) movement = CONTINUE;
+            else movement = STANDBY;
             break;
         case CONTINUE:
             forward();
@@ -96,7 +101,7 @@ void switchCase(){
             break;
         case STOP:
             stop();
-            if( piso_blanco > TATAMI) movement = FULL_TURN;
+            if( piso_blanco > TATAMI) movement = CONTINUE;
             break;
         case RIGHT_TURN :
             right();
@@ -121,6 +126,7 @@ void loop()
 {
     piso_blanco = analogRead(PIN_SENSOR_FINAL);
     switchCase();
-
-    
+    Serial.print(button_start);
+    Serial.print("||");
+    Serial.println(piso_blanco);
 }
