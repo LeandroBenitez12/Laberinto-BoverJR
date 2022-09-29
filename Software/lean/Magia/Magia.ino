@@ -1,5 +1,6 @@
 #include "DriverDRV8833.h"
 #include "Pulsador.h"
+#include "SharpLab.h"
 //debug
 #define DEBUG 1
 #define TICK_DEBUG 500
@@ -11,6 +12,14 @@ unsigned long tiempo_actual = 0;
 #define PIN_ENGINE_MR2 22
 #define PIN_ENGINE_ML1 19
 #define PIN_ENGINE_ML2 18
+
+//Sensores de distancia sharp
+#define PIN_SENSOR_FRONTAL 35
+#define PIN_SENSOR_DERECHA 27
+#define PIN_SENSOR_IZQUIERDA 34
+double SharpFrontal;
+double SharpIzquierdo;
+double SharpDerecho;
 
 // Button
 #define PIN_BUTTON_START 39
@@ -33,7 +42,10 @@ Engine *engineLeft = new Engine(PIN_ENGINE_ML1, PIN_ENGINE_ML2);
 
 //Instancio button 
 Pulsador*start = new Pulsador(PIN_BUTTON_START);
-// funciones de los motores
+
+//Instancio Sensores Sharp
+Sharp*sensor_frontal = new Sharp(PIN_SENSOR_FRONTAL)
+// Metodos de los motores
 void forward()
 {
   engineRigh->SetVelocidad(speedRight);
@@ -124,9 +136,12 @@ void setup()
 
 void loop() 
 {
+    SharpFrontal =  sensor_frontal->SharpDist();
     piso_blanco = analogRead(PIN_SENSOR_FINAL);
     switchCase();
     Serial.print(button_start);
     Serial.print("||");
     Serial.println(piso_blanco);
+    Serial.print("||");
+    Serial.println(SharpFrontal);
 }
