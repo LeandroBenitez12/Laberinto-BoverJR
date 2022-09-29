@@ -44,7 +44,8 @@ Engine *engineLeft = new Engine(PIN_ENGINE_ML1, PIN_ENGINE_ML2);
 Pulsador*start = new Pulsador(PIN_BUTTON_START);
 
 //Instancio Sensores Sharp
-Sharp*sensor_frontal = new Sharp(PIN_SENSOR_FRONTAL)
+Sharp*sensor_frontal = new Sharp(PIN_SENSOR_FRONTAL);
+
 // Metodos de los motores
 void forward()
 {
@@ -141,7 +142,7 @@ void loop()
     switchCase();
     Serial.print(button_start);
     Serial.print("||");
-    Serial.println(piso_blanco);
+    Serial.print(piso_blanco);
     Serial.print("||");
     Serial.println(SharpFrontal);
 }
