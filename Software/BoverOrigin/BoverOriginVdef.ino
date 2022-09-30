@@ -179,7 +179,7 @@ void robotMovements()
   {
     stop();
     delay(TICK_STOP);
-    if(distancia_derecha < DISTANCIA_LADOS && distancia_izquierda < DISTANCIA_LADOS) movement = HALLWAY;
+    if(distancia_derecha < DISTANCIA_LADOS && distancia_izquierda < DISTANCIA_LADOS) movement = CONTINUE;
     else forward();
     
     break;
@@ -198,24 +198,26 @@ void robotMovements()
   }
 }
 
-void printStatus(movement)
+void printStatus()
 {
   if (millis() > tiempo_actual + TICK_DEBUG)
   {
-    String estado_robot = "";
-    if (movement == STANDBY) state = "STANDBY";
-    else if (movement == CONTINUE) state = "CONTINUE";
-    else if (movement == STOP) state = "STOP";
-    else if (movement == RIGHT_TURN) state = "RIGHT TURN";
-    else if (movement == LEFT_TURN) state = "LEFT TURN";
-    else if (movement == FULL_TURN) state = "FULL TURN";
-    else if (movement == POST_TURN) state = "POST TURN";
-    else if (movement == ANT_TURN) state = "ANT TURN";
-
+    String state = "";
+    switch (movement)
+    {
+      case STANDBY: state = "STANDBY", break;
+      case CONTINUE: state = "CONTINUE", break;
+      case STOP: state = state = "STOP", break;
+      case RIGHT_TURN: state = "RIGHT TURN", break;
+      case LEFT_TURN: state = "LEFT TURN", break;
+      case FULL_TURN: state = "FULL TURN", break;
+      case POST_TURN: state = "POST TURN", break;
+      case ANT_TURN: state = "ANT TURN", break;
+    }
     SerialBT.print("State: ");
     SerialBT.print(state);
   }
-}
+  }
 
 void setup() 
 {
@@ -228,7 +230,7 @@ void loop()
 
   if(DEBUG)
   {
-    printStatus(movement);
+    printStatus();
   }
 
 } 
