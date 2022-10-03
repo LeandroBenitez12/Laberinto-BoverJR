@@ -15,8 +15,8 @@ unsigned long tiempo_actual = 0;
 
 //Sensores de distancia sharp
 #define PIN_SENSOR_FRONTAL 35
-#define PIN_SENSOR_DERECHA 27
-#define PIN_SENSOR_IZQUIERDA 34
+#define PIN_SENSOR_DERECHO 27
+#define PIN_SENSOR_IZQUIERDO 34
 double SharpFrontal;
 double SharpIzquierdo;
 double SharpDerecho;
@@ -44,7 +44,9 @@ Engine *engineLeft = new Engine(PIN_ENGINE_ML1, PIN_ENGINE_ML2);
 Pulsador*start = new Pulsador(PIN_BUTTON_START);
 
 //Instancio Sensores Sharp
-Sharp*sensor_frontal = new Sharp(PIN_SENSOR_FRONTAL)
+Sharp*sensor_frontal = new Sharp(PIN_SENSOR_FRONTAL);
+Sharp*sensor_derecho = new Sharp(PIN_SENSOR_DERECHO);
+Sharp*sensor_izquierdo = new Sharp(PIN_SENSOR_IZQUIERDO);
 // Metodos de los motores
 void forward()
 {
@@ -137,11 +139,17 @@ void setup()
 void loop() 
 {
     SharpFrontal =  sensor_frontal->SharpDist();
+    SharpDerecho = sensor_derecho->SharpDist();
+    SharpIzquierdo = sensor_izquierdo->SharpDist(); 
+
     piso_blanco = analogRead(PIN_SENSOR_FINAL);
     switchCase();
     Serial.print(button_start);
     Serial.print("||");
     Serial.println(piso_blanco);
+    Serial.print(SharpIzquierdo);
     Serial.print("||");
-    Serial.println(SharpFrontal);
+    Serial.print(SharpFrontal);
+    Serial.print("||");
+    Serial.println(SharpDerecho);
 }
