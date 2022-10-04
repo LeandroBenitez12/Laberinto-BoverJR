@@ -1,5 +1,6 @@
 #include "DriverDRV8833.h"
 #include "Pulsador.h"
+#include "SharpLab.h"
 //debug
 #define DEBUG 1
 #define TICK_DEBUG 500
@@ -12,6 +13,14 @@ unsigned long tiempo_actual = 0;
 #define PIN_ENGINE_ML1 19
 #define PIN_ENGINE_ML2 18
 
+//Sensores de distancia sharp
+#define PIN_SENSOR_FRONTAL 35
+#define PIN_SENSOR_DERECHO 27
+#define PIN_SENSOR_IZQUIERDO 34
+double SharpFrontal;
+double SharpIzquierdo;
+double SharpDerecho;
+
 // Button
 #define PIN_BUTTON_START 39
 bool button_start;
@@ -19,7 +28,8 @@ bool button_start;
 //Sensor final
 #define PIN_SENSOR_FINAL 32
 #define TATAMI 300
-
+#define DISTANCIA_MINIMA_DE_GIRO 13
+#define DISTANCIA_MINIMA_ADELANTE 10
 //veocidades motores pwm
 int speedRight = 255;
 int speedLeft = 255;
@@ -33,7 +43,12 @@ Engine *engineLeft = new Engine(PIN_ENGINE_ML1, PIN_ENGINE_ML2);
 
 //Instancio button 
 Pulsador*start = new Pulsador(PIN_BUTTON_START);
-// funciones de los motores
+
+//Instancio Sensores Sharp
+Sharp*sensor_frontal = new Sharp(PIN_SENSOR_FRONTAL);
+Sharp*sensor_derecho = new Sharp(PIN_SENSOR_DERECHO);
+Sharp*sensor_izquierdo = new Sharp(PIN_SENSOR_IZQUIERDO);
+// Metodos de los motores
 void forward()
 {
   engineRigh->SetVelocidad(speedRight);
@@ -97,11 +112,11 @@ void switchCase(){
             break;
         case CONTINUE:
             forward();
-            if( piso_blanco < TATAMI) movement = STOP;
+            if( SharpDerecho < DISTANCIA_MINIMA_DE_GIRO && SharpFrontal < DISTANCIA_MINIMA_ADELANTE && SharpIzquierdo < DISTANCIA_MINIMA_DE_GIRO) movement = RIGHT_TURN;
             break;
         case STOP:
             stop();
-            if( piso_blanco > TATAMI) movement = CONTINUE;
+            //if( piso_blanco > TATAMI) movement = CONTINUE;
             break;
         case RIGHT_TURN :
             right();
@@ -124,9 +139,23 @@ void setup()
 
 void loop() 
 {
+    SharpFrontal =  sensor_frontal->SharpDist();
+    SharpDerecho = sensor_derecho->SharpDist();
+    SharpIzquierdo = sensor_izquierdo->SharpDist(); 
+
     piso_blanco = analogRead(PIN_SENSOR_FINAL);
     switchCase();
+    Serial.print(" boton : ");
     Serial.print(button_start);
-    Serial.print("||");
-    Serial.println(piso_blanco);
+    Serial.print(" || ");
+    Serial.print(" Piso:  ");
+    Serial.print(piso_blanco);
+    Serial.print(" Izquierda");
+    Serial.print(SharpIzquierdo);
+    Serial.print(" || ");
+    Serial.print(" Adelante");
+    Serial.print(SharpFrontal);
+    Serial.print(" || ");
+    Serial.print(" Derecha");
+    Serial.println(SharpDerecho);
 }
