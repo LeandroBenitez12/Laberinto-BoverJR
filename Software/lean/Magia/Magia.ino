@@ -28,7 +28,8 @@ bool button_start;
 //Sensor final
 #define PIN_SENSOR_FINAL 32
 #define TATAMI 300
-
+#define DISTANCIA_MINIMA_DE_GIRO 13
+#define DISTANCIA_MINIMA_ADELANTE 10
 //veocidades motores pwm
 int speedRight = 255;
 int speedLeft = 255;
@@ -111,11 +112,11 @@ void switchCase(){
             break;
         case CONTINUE:
             forward();
-            if( piso_blanco < TATAMI) movement = STOP;
+            if( SharpDerecho < DISTANCIA_MINIMA_DE_GIRO && SharpFrontal < DISTANCIA_MINIMA_ADELANTE && SharpIzquierdo < DISTANCIA_MINIMA_DE_GIRO) movement = RIGHT_TURN;
             break;
         case STOP:
             stop();
-            if( piso_blanco > TATAMI) movement = CONTINUE;
+            //if( piso_blanco > TATAMI) movement = CONTINUE;
             break;
         case RIGHT_TURN :
             right();
@@ -144,13 +145,17 @@ void loop()
 
     piso_blanco = analogRead(PIN_SENSOR_FINAL);
     switchCase();
+    Serial.print(" boton : ");
     Serial.print(button_start);
-    Serial.print("||");
+    Serial.print(" || ");
+    Serial.print(" Piso:  ");
     Serial.print(piso_blanco);
-    Serial.println(piso_blanco);
+    Serial.print(" Izquierda");
     Serial.print(SharpIzquierdo);
-    Serial.print("||");
+    Serial.print(" || ");
+    Serial.print(" Adelante");
     Serial.print(SharpFrontal);
-    Serial.print("||");
+    Serial.print(" || ");
+    Serial.print(" Derecha");
     Serial.println(SharpDerecho);
 }
