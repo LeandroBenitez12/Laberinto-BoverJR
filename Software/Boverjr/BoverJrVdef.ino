@@ -10,6 +10,8 @@
 #define DEBUG 1
 #define TICK_DEBUG 500
 unsigned long currentTimeDebug = 0;
+unsigned long currentTimeDebugSensors = 0;
+unsigned long currentTimeDebugPID = 0;
 
 // declaramos pines
 // motores
@@ -26,9 +28,9 @@ bool button_start;
 #define PIN_END_SENSOR 32
 
 //Sharps
-#define PIN_SHARP_RIGH
-#define PIN_SHARP_LEFT
-#define PIN_SHARP_FRONT
+#define PIN_SHARP_RIGH 27
+#define PIN_SHARP_LEFT 43
+#define PIN_SHARP_FRONT 35
 float frontDistance;
 float rightDistance;
 float leftDistance;
@@ -67,9 +69,9 @@ Button *start = new Button(PIN_BUTTON_START);
 
 QRE1113 *endSensor = new QRE1113(PIN_END_SENSOR);
 
-Sharp *SharpFront = new Sharp(1);
-Sharp *SharpRigh = new Sharp(1);
-Sharp *SharpLeft = new Sharp(1);
+Sharp *SharpFront = new Sharp(PIN_SHARP_FRONT);
+Sharp *SharpRigh = new Sharp(PIN_SHARP_RIGH);
+Sharp *SharpLeft = new Sharp(PIN_SHARP_LEFT);
 
 Pid *engine = new Pid(kp, kd, setPoint, TICK_PID);
 
@@ -148,19 +150,11 @@ void movementLogic()
   {
     if (PID1)
     {
-        if (PID1 > 30)
-        PID1 = 30;
-        if (PID1 < -30)
-        PID1 = -30;
+      if (PID1 > 30) PID1 = 30;
+      if (PID1 < -30) PID1 = -30;
 
       speedRight = (averageSpeed - (PID1));
       speedLeft = (averageSpeed + (PID1));
-
-      
-      if (speedLeft < 160)
-        speedLeft = 160;
-      if (speedRight < 160)
-        speedRight = 160;
     }
     forward();
     if (frontDistance < MAX_FRONT_DISTANCE) movement = STOP;
@@ -211,8 +205,7 @@ void movementLogic()
   case POST_TURN:
   {
     forward();
-    delay(TICK_FORWARD);
-    movement = CONTINUE;
+    if (rightDistance < MAX_SIDE_DISTANCE && leftDistance < MAX_SIDE_DISTANCE) movement = CONTINUE;
     break;
   }
 
@@ -224,6 +217,35 @@ void movementLogic()
     break;
   }
 
+  }
+}
+
+
+void printSensors()
+{
+  if (millis() > currentTimeDebugSensors + TICK_DEBUG)
+  {
+    currentTimeDebugSensors = millis();
+    SerialBT.print("frontDistance: ");
+    SerialBT.print(frontDistance);
+    SerialBT.print(" || rightDistance: ");
+    SerialBT.print(rightDistance);
+    SerialBT.print(" || leftDistance: ");
+    SerialBT.println(leftDistance);
+  }
+}
+
+void printPID()
+{
+  if (millis() > currentTimeDebugPID + TICK_DEBUG)
+  {
+    currentTimeDebugPID = millis();
+    SerialBT.print("PID: ");
+    SerialBT.println(PID1);
+    SerialBT.print("speedRight: ");
+    SerialBT.print(speedRight);
+    SerialBT.print(" || speedLeft: ");
+    SerialBT.println(speedLeft);
   }
 }
 
@@ -253,7 +275,7 @@ void printStatus()
       break;
     }
     SerialBT.print("State: ");
-    SerialBT.print(state);
+    SerialBT.println(state);
   }
   }
 
@@ -271,5 +293,10 @@ void loop()
   float input = rightDistance - leftDistance;
   PID1 = engine->ComputePid(input);
   movementLogic();
-  if(DEBUG) printStatus();
+  if(DEBUG)
+  {
+    printStatus();
+    printSensors();
+    printPID();
+  } 
 }
