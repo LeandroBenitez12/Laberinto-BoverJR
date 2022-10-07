@@ -41,14 +41,14 @@ float leftDistance;
 int speedRight = 100;
 int speedLeft = 100;
 int averageSpeed = 100;
-int speedTurn = 130;
+int speedTurn = 115;
 
 #define TICK_STOP 1000
 #define TICK_TURN 350
 #define TICK_FORWARD 200
 
 //variables pid
-double kp = 2;
+double kp = 0.1;
 double kd = 0;
 double setPoint;
 float PID1;
