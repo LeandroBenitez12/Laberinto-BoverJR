@@ -7,7 +7,7 @@
 
 
 //debug
-#define DEBUG 1
+#define DEBUG 0
 #define TICK_DEBUG 400
 unsigned long currentTimeDebug = 0;
 unsigned long currentTimeDebugSensors = 0;
@@ -34,21 +34,21 @@ bool button_start;
 float frontDistance;
 float rightDistance;
 float leftDistance;
-#define MAX_FRONT_DISTANCE 10
+#define MAX_FRONT_DISTANCE 15
 #define MAX_SIDE_DISTANCE 7
 
 //veocidades motores pwm
-int speedRight = 150;
-int speedLeft = 150;
-int averageSpeed = 150;
+int speedRight = 100;
+int speedLeft = 100;
+int averageSpeed = 100;
 int speedTurn = 130;
 
 #define TICK_STOP 1000
-#define TICK_TURN 500
-#define TICK_FORWARD 300
+#define TICK_TURN 350
+#define TICK_FORWARD 200
 
 //variables pid
-double kp = 0.1721;
+double kp = 2;
 double kd = 0;
 double setPoint;
 float PID1;
@@ -166,10 +166,10 @@ void movementLogic()
   {
     stop();
     delay(TICK_STOP);
-    if (rightDistance < MAX_SIDE_DISTANCE && leftDistance > MAX_SIDE_DISTANCE) movement = LEFT_TURN;
-    if (rightDistance > MAX_SIDE_DISTANCE && leftDistance < MAX_SIDE_DISTANCE) movement = RIGHT_TURN;
-    if (rightDistance > MAX_SIDE_DISTANCE && leftDistance > MAX_SIDE_DISTANCE) movement = LEFT_TURN;
-    if (rightDistance < MAX_SIDE_DISTANCE && leftDistance < MAX_SIDE_DISTANCE) movement = FULL_TURN;
+    if (rightDistance <= MAX_SIDE_DISTANCE && leftDistance > MAX_SIDE_DISTANCE) movement = LEFT_TURN;
+    if (rightDistance >= MAX_SIDE_DISTANCE && leftDistance < MAX_SIDE_DISTANCE) movement = RIGHT_TURN;
+    if (rightDistance >= MAX_SIDE_DISTANCE && leftDistance > MAX_SIDE_DISTANCE) movement = LEFT_TURN;
+    if (rightDistance <= MAX_SIDE_DISTANCE && leftDistance < MAX_SIDE_DISTANCE) movement = FULL_TURN;
     break;
   }
 
@@ -209,13 +209,13 @@ void movementLogic()
     break;
   }
 
-  case ANT_TURN:
+  /*case ANT_TURN:
   {
     forward();
     delay(TICK_FORWARD);
     movement = LEFT_TURN;
     break;
-  }
+  }*/
 
   }
 }
