@@ -5,7 +5,6 @@
 class Encoder{
 
 private:
-    int vuelta_completa = 17;
     int pin;
     bool flanco = HIGH;
     bool estado_anterior = !flanco;
@@ -13,10 +12,9 @@ private:
 
 public:
     Encoder(int p);
-    void SetTurnMax(int g360);
     void SetCont(int cont);
     bool FlankDetection();
-    float Angle();
+    int Cont();
 };
 
 #endif

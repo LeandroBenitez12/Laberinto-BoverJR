@@ -28,7 +28,7 @@ bool button_start;
 #define PIN_END_SENSOR 32
 
 //Sharps
-#define PIN_SHARP_RIGH 27
+#define PIN_SHARP_RIGHT 27
 #define PIN_SHARP_LEFT 34
 #define PIN_SHARP_FRONT 35
 float frontDistance;
@@ -70,7 +70,7 @@ Button *start = new Button(PIN_BUTTON_START);
 QRE1113 *endSensor = new QRE1113(PIN_END_SENSOR);
 
 Sharp *SharpFront = new Sharp(PIN_SHARP_FRONT);
-Sharp *SharpRigh = new Sharp(PIN_SHARP_RIGH);
+Sharp *SharpRigh = new Sharp(PIN_SHARP_RIGHT);
 Sharp *SharpLeft = new Sharp(PIN_SHARP_LEFT);
 
 Pid *engine = new Pid(kp, kd, setPoint, TICK_PID);
