@@ -40,14 +40,14 @@ float leftDistance;
 #define MAX_SIDE_DISTANCE 7
 
 // veocidades motores pwm
-int speedRight = 150;
-int speedLeft = 150;
-int averageSpeed = 150;
-int speedTurn = 130;
+int speedRight = 100;
+int speedLeft = 100;
+int averageSpeed = 100;
+int speedTurn = 120;
 
 #define TICK_STOP 1000
-#define TICK_TURN 500
-#define TICK_FORWARD 300
+#define TICK_TURN 360
+#define TICK_FORWARD 200
 
 // variables pid
 double kp = 0.1721;

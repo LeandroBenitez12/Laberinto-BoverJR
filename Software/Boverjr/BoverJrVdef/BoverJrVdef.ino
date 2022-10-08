@@ -34,8 +34,8 @@ bool button_start;
 float frontDistance;
 float rightDistance;
 float leftDistance;
-#define MAX_FRONT_DISTANCE 15
-#define MAX_SIDE_DISTANCE 7
+#define MAX_FRONT_DISTANCE 20
+#define MAX_SIDE_DISTANCE 12
 
 //veocidades motores pwm
 int speedRight = 100;
@@ -44,7 +44,7 @@ int averageSpeed = 100;
 int speedTurn = 115;
 
 #define TICK_STOP 1000
-#define TICK_TURN 350
+#define TICK_TURN 360
 #define TICK_FORWARD 200
 
 //variables pid
@@ -52,7 +52,7 @@ double kp = 0.1;
 double kd = 0;
 double setPoint;
 float PID1;
-double TICK_PID =  70;
+double TICK_PID =  50;
 
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
