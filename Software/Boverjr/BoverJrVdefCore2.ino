@@ -36,8 +36,8 @@ bool button_start;
 float frontDistance;
 float rightDistance;
 float leftDistance;
-#define MAX_FRONT_DISTANCE 10
-#define MAX_SIDE_DISTANCE 7
+#define MAX_FRONT_DISTANCE 20
+#define MAX_SIDE_DISTANCE 15
 
 // veocidades motores pwm
 int speedRight = 100;
