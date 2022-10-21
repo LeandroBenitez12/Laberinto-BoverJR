@@ -37,6 +37,25 @@ float leftDistance;
 #define MAX_FRONT_DISTANCE 20
 #define MAX_SIDE_DISTANCE 12
 
+//encoder 
+int interruptPinRight = 2;
+int interruptPinLeft = 2;
+volatile long rightCont = 0;
+volatile long leftCont = 0;
+#define TURN_90 30
+#define TURN_180 60
+#define FORWARD 20
+
+void rightEncRead()
+{
+    rightCont++;
+}
+
+void LeftEncRead()
+{
+    leftCont++;
+}
+
 //veocidades motores pwm
 int speedRight = 100;
 int speedLeft = 100;
@@ -116,6 +135,54 @@ void stop()
   engineLeft->Stop();
 }
 
+turnRight()
+{
+  contador = 0;
+  while(rightCont < TURN_90 && leftCont < TURN_90)
+  {
+    engineRigh->SetSpeed(speedTurn);
+    engineLeft->SetSpeed(speedTurn);
+    engineRigh->Backward();
+    engineLeft->Forward();
+  }
+}
+
+turnLeft()
+{
+  contador = 0;
+  while(rightCont < TURN_90 && leftCont < TURN_90)
+  {
+    engineRigh->SetSpeed(speedTurn);
+    engineLeft->SetSpeed(speedTurn);
+    engineRigh->Forward();
+    engineLeft->Backward();
+  }
+}
+
+fulTurn()
+{
+  contador = 0;
+  while(rightCont < TURN_180 && leftCont < TURN_180)
+  {
+    engineRigh->SetSpeed(speedTurn);
+    engineLeft->SetSpeed(speedTurn);
+    engineRigh->Forward();
+    engineLeft->Backward();
+  }
+}
+
+continue()
+{
+  contador = 0;
+  while(rightCont < FORWARD && leftCont < FORWARD)
+  {
+    engineRigh->SetSpeed(averageSpeed);
+    engineLeft->SetSpeed(averageSpeed);
+    engineRigh->Forward();
+    engineLeft->Forward();
+  }
+}
+
 enum movement
 {
   STANDBY,
@@ -158,7 +225,7 @@ void movementLogic()
     }
     forward();
     if (frontDistance < MAX_FRONT_DISTANCE) movement = STOP;
-    //if (leftDistance > MAX_SIDE_DISTANCE) movement = ANT_TURN;
+    if (leftDistance > MAX_SIDE_DISTANCE) movement = ANT_TURN;
     break;
   }
 
@@ -175,49 +242,45 @@ void movementLogic()
 
   case RIGHT_TURN:
   {
-    right();
+    turnRight();
     delay(TICK_TURN);
     movement = POST_TURN;
-    
     break;
   }
 
   case LEFT_TURN:
   {
-    left();
+    turnLeft();
     delay(TICK_TURN);
     movement = POST_TURN;
-
     break;
   }
 
   case FULL_TURN:
   {
-    right();
+    fulTurn();
     delay(TICK_TURN);
     delay(TICK_TURN);
     movement = POST_TURN;
-
     break;
   }
 
   case POST_TURN:
   {
-    forward();
+    continue();
     delay(TICK_FORWARD);
     movement = CONTINUE;
     break;
   }
 
-  /*case ANT_TURN:
+  case ANT_TURN:
   {
-    forward();
+    continue();
     delay(TICK_FORWARD);
     movement = LEFT_TURN;
     break;
-  }*/
-
   }
+}
 }
 
 
@@ -282,7 +345,10 @@ void printStatus()
 void setup() 
 {
   SerialBT.begin("Bover");
+  pinMode(PIN_ENCODER_A, INPUT);
   Serial.begin(9600);
+  attachInterrupt(digitalPinToInterrupt(interruptPinRight),rightEncRead, RISING);
+  attachInterrupt(digitalPinToInterrupt(interruptPinLeft),leftEncRead, RISING);
 }
  
 

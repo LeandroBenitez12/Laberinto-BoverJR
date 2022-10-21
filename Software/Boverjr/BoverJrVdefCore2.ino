@@ -6,7 +6,6 @@
 #include "BluetoothSerial.h"
 
 TaskHandle_t Task1;
-TaskHandle_t Task2;
 
 // debug
 #define DEBUG 1
@@ -305,33 +304,16 @@ void sensors(void *parameter)
   }
 }
 
-void movement(void *parameter) {
-    for(;;) {
-        movementLogic();
-    }
-}
-
 void setup()
 {
   //funcion para crear la nueva tarea para que se ejecute en el nucleo 0
   xTaskCreatePinnedToCore(
     sensors, // funcion 
     "tasksensors", //nombre de la funcion
-    1000, //tamaño de la pila
+    2048, //tamaño de la pila
     NULL, //parametro a pasarle a la tarea
     1, // setea la prioridad de la tarea
     &Task1, //nombre de la variable 
-    0); //en el nucleo en el que se ejecuta la tarea
-    
-
-    //funcion para crear la nueva tarea para que se ejecute en el nucleo 1
-  xTaskCreatePinnedToCore(
-    movement, // funcion 
-    "taskMovement", //nombre de la funcion
-    1000, //tamaño de la pila
-    NULL, //parametro a pasarle a la tarea
-    1, // setea la prioridad de la tarea
-    &Task2, //nombre de la variable 
     1); //en el nucleo en el que se ejecuta la tarea
   SerialBT.begin("Bover");
   Serial.begin(9600);
@@ -339,6 +321,7 @@ void setup()
 
 void loop()
 {
+  movementLogic();
   if (DEBUG)
   {
     printStatus();

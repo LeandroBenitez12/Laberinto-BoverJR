@@ -1,6 +1,5 @@
 //creo la variable de la nueva tarea
 TaskHandle_t Task1;
-TaskHandle_t Task2;
 #include "BluetoothSerial.h"
 // DEBUG
 #define DEBUG_DE_CASOS 0
