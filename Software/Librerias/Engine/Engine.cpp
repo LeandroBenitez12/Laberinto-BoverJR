@@ -4,7 +4,6 @@ Engine::Engine(int in1, int in2)
 {
     pin_in1 = in1;
     pin_in2 = in2;
-
     pinMode(pin_in1, OUTPUT);
     pinMode(pin_in2, OUTPUT);
 }

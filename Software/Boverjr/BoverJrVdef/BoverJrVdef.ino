@@ -13,7 +13,6 @@ unsigned long currentTimeDebug = 0;
 unsigned long currentTimeDebugSensors = 0;
 unsigned long currentTimeDebugPID = 0;
 
-// declaramos pines
 // motores
 #define PIN_ENGINE_MR1 23
 #define PIN_ENGINE_MR2 22
