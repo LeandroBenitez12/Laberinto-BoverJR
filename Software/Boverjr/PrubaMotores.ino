@@ -1,14 +1,14 @@
-#include "DriverDRV8833.h"
+#include "Engine.h"
 
 #define PIN_ENGINE_MR1 23
 #define PIN_ENGINE_MR2 22
 #define PIN_ENGINE_ML1 19
 #define PIN_ENGINE_ML2 18
 
-int speedRight = 150;
-int speedLeft = 150;
-int averageSpeed = 150;
-int speedTurn = 130;
+int speedRight = 70;
+int speedLeft = 70;
+int averageSpeed = 60;
+int speedTurn = 60;
 
 Engine *engineRigh = new  Engine(PIN_ENGINE_MR1, PIN_ENGINE_MR2);
 Engine *engineLeft = new Engine(PIN_ENGINE_ML1, PIN_ENGINE_ML2);

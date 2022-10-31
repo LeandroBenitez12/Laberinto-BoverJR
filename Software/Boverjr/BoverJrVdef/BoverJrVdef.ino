@@ -7,7 +7,7 @@
 
 
 //debug
-#define DEBUG 0
+#define DEBUG 1
 #define TICK_DEBUG 400
 unsigned long currentTimeDebug = 0;
 unsigned long currentTimeDebugSensors = 0;
@@ -37,8 +37,8 @@ float leftDistance;
 #define MAX_SIDE_DISTANCE 12
 
 //encoder 
-int interruptPinRight = 2;
-int interruptPinLeft = 2;
+#define INTERRUPT_PIN_LEFT 21
+#define INTERRUPT_PIN_RIGHT 26
 volatile long rightCont = 0;
 volatile long leftCont = 0;
 #define TURN_90 30
@@ -50,7 +50,7 @@ void rightEncRead()
     rightCont++;
 }
 
-void LeftEncRead()
+void leftEncRead()
 {
     leftCont++;
 }
@@ -134,9 +134,10 @@ void stop()
   engineLeft->Stop();
 }
 
-turnRight()
+void turnRight()
 {
-  contador = 0;
+  rightCont = 0;
+  leftCont = 0;
   while(rightCont < TURN_90 && leftCont < TURN_90)
   {
     engineRigh->SetSpeed(speedTurn);
@@ -146,9 +147,10 @@ turnRight()
   }
 }
 
-turnLeft()
+ void turnLeft()
 {
-  contador = 0;
+  rightCont = 0;
+  leftCont = 0;
   while(rightCont < TURN_90 && leftCont < TURN_90)
   {
     engineRigh->SetSpeed(speedTurn);
@@ -158,9 +160,10 @@ turnLeft()
   }
 }
 
-fulTurn()
+ void fullTurn()
 {
-  contador = 0;
+  rightCont = 0;
+  leftCont = 0;
   while(rightCont < TURN_180 && leftCont < TURN_180)
   {
     engineRigh->SetSpeed(speedTurn);
@@ -170,9 +173,10 @@ fulTurn()
   }
 }
 
-continue()
+void continuar()
 {
-  contador = 0;
+  rightCont = 0;
+  leftCont = 0;
   while(rightCont < FORWARD && leftCont < FORWARD)
   {
     engineRigh->SetSpeed(averageSpeed);
@@ -207,7 +211,7 @@ void movementLogic()
     {
       movement = CONTINUE;
     }
-
+    //digitalWrite(2,HIGH);
     stop();
     break;
   }
@@ -257,7 +261,7 @@ void movementLogic()
 
   case FULL_TURN:
   {
-    fulTurn();
+    fullTurn();
     delay(TICK_TURN);
     delay(TICK_TURN);
     movement = POST_TURN;
@@ -266,7 +270,7 @@ void movementLogic()
 
   case POST_TURN:
   {
-    continue();
+    continuar();
     delay(TICK_FORWARD);
     movement = CONTINUE;
     break;
@@ -274,7 +278,7 @@ void movementLogic()
 
   case ANT_TURN:
   {
-    continue();
+    continuar();
     delay(TICK_FORWARD);
     movement = LEFT_TURN;
     break;
@@ -344,10 +348,10 @@ void printStatus()
 void setup() 
 {
   SerialBT.begin("Bover");
-  pinMode(PIN_ENCODER_A, INPUT);
   Serial.begin(9600);
-  attachInterrupt(digitalPinToInterrupt(interruptPinRight),rightEncRead, RISING);
-  attachInterrupt(digitalPinToInterrupt(interruptPinLeft),leftEncRead, RISING);
+  //pinMode(2,OUTPUT);
+  attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN_RIGHT),rightEncRead, RISING);
+  attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN_LEFT),leftEncRead, RISING);
 }
  
 

@@ -6,6 +6,11 @@ class Engine
 {
 private:
   int speed = 200;
+  // propiedades PWM
+  const int frecuencia = 5000;
+  const int canalA = 0;
+  const int canalB = 1;
+  const int resolucion = 8;
   int pin_in1;
   int pin_in2;
 
