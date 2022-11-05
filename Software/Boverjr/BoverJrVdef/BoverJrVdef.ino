@@ -7,7 +7,7 @@
 
 
 //debug
-#define DEBUG 0
+#define DEBUG 1
 #define TICK_DEBUG 400
 unsigned long currentTimeDebug = 0;
 unsigned long currentTimeDebugSensors = 0;
@@ -17,8 +17,8 @@ unsigned long currentTimeDebugPID = 0;
 // motores
 #define PIN_ENGINE_MR1 23
 #define PIN_ENGINE_MR2 22
-#define PIN_ENGINE_ML1 18
-#define PIN_ENGINE_ML2 19
+#define PIN_ENGINE_ML1 19
+#define PIN_ENGINE_ML2 18
 
 // Button
 #define PIN_BUTTON_START 39
@@ -28,8 +28,8 @@ bool button_start;
 #define PIN_END_SENSOR 32
 
 //Sharps
-#define PIN_SHARP_RIGHT 27
-#define PIN_SHARP_LEFT 34
+#define PIN_SHARP_RIGHT 34
+#define PIN_SHARP_LEFT 27
 #define PIN_SHARP_FRONT 35
 float frontDistance;
 float rightDistance;
@@ -38,40 +38,39 @@ float leftDistance;
 #define MAX_SIDE_DISTANCE 12
 
 //encoder 
-int interruptPinRight = 2;
-int interruptPinLeft = 2;
+int interruptPinRight = 26;
+int interruptPinLeft = 21;
 volatile long rightCont = 0;
 volatile long leftCont = 0;
-#define TURN_90 30
-#define TURN_180 60
-#define FORWARD 20
+#define TICK_TURN_RIGHT_90 17
+#define TICK_TURN_LEFT_90 120
+#define TICK_TURN_180 34
+#define TICK_POST_TURN 37
+#define TICK_ANT_TURN 30
+#define TICK_IGNORE_TURN 40
 
 void rightEncRead()
 {
     rightCont++;
 }
 
-void LeftEncRead()
+void leftEncRead()
 {
     leftCont++;
 }
 
 //veocidades motores pwm
-int speedRight = 100;
-int speedLeft = 100;
-int averageSpeed = 100;
-int speedTurn = 115;
-
-#define TICK_STOP 1000
-#define TICK_TURN 360
-#define TICK_FORWARD 200
+int speedRight = 80;
+int speedLeft = 80;
+int averageSpeed = 80;
+int speedTurn = 80;
 
 //variables pid
-double kp = 0.1;
+double kp = 0.175;
 double kd = 0;
 double setPoint;
 float PID1;
-double TICK_PID =  50;
+double TICK_PID = 50;
 
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
@@ -135,10 +134,11 @@ void stop()
   engineLeft->Stop();
 }
 
-turnRight()
+void turnRight()
 {
-  contador = 0;
-  while(rightCont < TURN_90 && leftCont < TURN_90)
+  rightCont = 0;
+  leftCont = 0;
+  while(rightCont < TICK_TURN_RIGHT_90 || leftCont < TICK_TURN_RIGHT_90)
   {
     engineRigh->SetSpeed(speedTurn);
     engineLeft->SetSpeed(speedTurn);
@@ -147,10 +147,11 @@ turnRight()
   }
 }
 
-turnLeft()
+void turnLeft()
 {
-  contador = 0;
-  while(rightCont < TURN_90 && leftCont < TURN_90)
+  rightCont = 0;
+  leftCont = 0;
+  while(rightCont < TICK_TURN_LEFT_90 || leftCont < TICK_TURN_LEFT_90)
   {
     engineRigh->SetSpeed(speedTurn);
     engineLeft->SetSpeed(speedTurn);
@@ -159,10 +160,11 @@ turnLeft()
   }
 }
 
-fulTurn()
+void fulTurn()
 {
-  contador = 0;
-  while(rightCont < TURN_180 && leftCont < TURN_180)
+  rightCont = 0;
+  leftCont = 0;
+  while(rightCont < TICK_TURN_180 || leftCont < TICK_TURN_180)
   {
     engineRigh->SetSpeed(speedTurn);
     engineLeft->SetSpeed(speedTurn);
@@ -171,10 +173,37 @@ fulTurn()
   }
 }
 
-continue()
+void antTurn()
 {
-  contador = 0;
-  while(rightCont < FORWARD && leftCont < FORWARD)
+  rightCont = 0;
+  leftCont = 0;
+  while(rightCont < TICK_ANT_TURN || leftCont < TICK_ANT_TURN)
+  {
+    engineRigh->SetSpeed(averageSpeed);
+    engineLeft->SetSpeed(averageSpeed);
+    engineRigh->Forward();
+    engineLeft->Forward();
+  }
+}
+
+void posTurn()
+{
+  rightCont = 0;
+  leftCont = 0;
+  while(rightCont < TICK_POST_TURN || leftCont < TICK_POST_TURN)
+  {
+    engineRigh->SetSpeed(averageSpeed);
+    engineLeft->SetSpeed(averageSpeed);
+    engineRigh->Forward();
+    engineLeft->Forward();
+  }
+}
+
+void ignoreTurn()
+{
+  rightCont = 0;
+  leftCont = 0;
+  while(rightCont < TICK_IGNORE_TURN || leftCont < TICK_IGNORE_TURN)
   {
     engineRigh->SetSpeed(averageSpeed);
     engineLeft->SetSpeed(averageSpeed);
@@ -192,6 +221,7 @@ enum movement
   LEFT_TURN,
   FULL_TURN,
   POST_TURN,
+  IGNORE_TURN,
   ANT_TURN
 };
 
@@ -226,13 +256,14 @@ void movementLogic()
     forward();
     if (frontDistance < MAX_FRONT_DISTANCE) movement = STOP;
     if (leftDistance > MAX_SIDE_DISTANCE) movement = ANT_TURN;
+    else if (rightDistance > MAX_SIDE_DISTANCE) movement = IGNORE_TURN;
     break;
   }
 
   case STOP:
   {
     stop();
-    delay(TICK_STOP);
+    delay(100);
     if (rightDistance <= MAX_SIDE_DISTANCE && leftDistance > MAX_SIDE_DISTANCE) movement = LEFT_TURN;
     if (rightDistance >= MAX_SIDE_DISTANCE && leftDistance < MAX_SIDE_DISTANCE) movement = RIGHT_TURN;
     if (rightDistance >= MAX_SIDE_DISTANCE && leftDistance > MAX_SIDE_DISTANCE) movement = LEFT_TURN;
@@ -243,7 +274,6 @@ void movementLogic()
   case RIGHT_TURN:
   {
     turnRight();
-    delay(TICK_TURN);
     movement = POST_TURN;
     break;
   }
@@ -251,7 +281,6 @@ void movementLogic()
   case LEFT_TURN:
   {
     turnLeft();
-    delay(TICK_TURN);
     movement = POST_TURN;
     break;
   }
@@ -259,25 +288,28 @@ void movementLogic()
   case FULL_TURN:
   {
     fulTurn();
-    delay(TICK_TURN);
-    delay(TICK_TURN);
     movement = POST_TURN;
     break;
   }
 
   case POST_TURN:
   {
-    continue();
-    delay(TICK_FORWARD);
+    posTurn();
     movement = CONTINUE;
     break;
   }
 
   case ANT_TURN:
   {
-    continue();
-    delay(TICK_FORWARD);
+    antTurn();
     movement = LEFT_TURN;
+    break;
+  }
+
+  case IGNORE_TURN:
+  {
+    ignoreTurn();
+    movement = CONTINUE;
     break;
   }
 }
@@ -345,8 +377,6 @@ void printStatus()
 void setup() 
 {
   SerialBT.begin("Bover");
-  pinMode(PIN_ENCODER_A, INPUT);
-  Serial.begin(9600);
   attachInterrupt(digitalPinToInterrupt(interruptPinRight),rightEncRead, RISING);
   attachInterrupt(digitalPinToInterrupt(interruptPinLeft),leftEncRead, RISING);
 }
