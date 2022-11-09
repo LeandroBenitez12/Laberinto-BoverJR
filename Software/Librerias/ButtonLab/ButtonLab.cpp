@@ -1,4 +1,4 @@
-#include "ButtonLab.h"
+#include "ButtonLab.h""
 
 Button::Button(int p)
 {
@@ -19,14 +19,12 @@ int Button::GetIsPress()
     previousState = actualState;
     if(State)
     {
-      while(actualState)
-      {
-        actualState = digitalRead(pin);
-        cont = cont++;
-      }
-      if(cont > 700)
-        return 1;
-      else if(cont < 700)
-        return 2;
-    }   
+        while(actualState)
+        {
+            bool actualState = digitalRead(pin);
+            cont++;
+        }
+    if(cont > 800) return 1;
+    if(cont < 800) return 2;
+    }
 }
