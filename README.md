@@ -32,14 +32,21 @@ Estructura del Repositorio
 
 
 Cómo Contribuir
+
 ¡Valoramos cualquier contribución que puedas brindar para mejorar nuestro proyecto! Si deseas colaborar, sugerir mejoras o corregir problemas, sigue estos pasos:
+
 Haz un fork de este repositorio y clona tu copia localmente.
+
 Realiza los cambios y mejoras en tu rama, incluso si es para sugerir posibles soluciones o nuevas ideas.
+
 Asegúrate de agregar o actualizar la documentación con tus contribuciones.
+
 Realiza un pull request a nuestra rama principal para que podamos revisar y considerar tus aportes.
 
 Contacto
+
 Nos encantaría recibir tus comentarios, sugerencias y cualquier tipo de feedback que nos ayude a mejorar nuestro proyecto. Si deseas ponerte en contacto con nosotros, no dudes en escribirnos a:
+
 Leandro Benitez: leandrobenitezz2004@gmail.com
 
 Agradecimientos
