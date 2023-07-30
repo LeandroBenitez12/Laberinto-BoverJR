@@ -11,7 +11,7 @@ Durante el proceso de creación, hemos estado trabajando arduamente para impleme
 
 Características del Proyecto en Desarrollo
 
-Resolución autónoma de laberintos: Estamos trabajando para permitir que el robot navegue y encuentre la salida de un laberinto sin intervención externa.
+Resolución autónoma de laberintos: Estamos trabajando para permitir que el robot navegue y encuentre la salida de un laberinto sin intervención externa y en el menor tiempo posible.
 
 Algoritmos de búsqueda: Hemos comenzado a implementar diferentes algoritmos de búsqueda para dotar al robot de la capacidad de tomar decisiones inteligentes mientras explora el laberinto.
 
@@ -19,7 +19,7 @@ Controladores PID: Utilizamos controladores PID para mejorar la precisión y est
 
 Sensores Sharp: Integración de sensores Sharp para detectar obstáculos y evitar colisiones durante el recorrido del laberinto.
 
-ESP32 y Arduino: El robot se basa en un ESP32 programado con el entorno Arduino, lo que nos brindó flexibilidad y recursos para desarrollar un sistema eficiente.
+ESP32 y Arduino: El robot se basa en un ESP32 programado con el entorno Arduino, lo que nos brindó flexibilidad y recursos para desarrollar un sistema eficiente y la utilizacion de el Blueetooh para debugear.
 
 Librerías personalizadas: Creamos librerías específicas para nuestro robot, lo que facilitó el manejo y organización del código.
 
