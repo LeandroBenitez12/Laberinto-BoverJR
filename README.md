@@ -5,7 +5,8 @@ Robot en Desarrollo para la Resolución de Laberintos 🚧
 
 Descripción del Proyecto
 
-Este repositorio contiene el código y los recursos utilizados para el desarrollo de un robot resolvente de laberintos, creado por Leandro Benitez, Ezequiel Sierra y Taiel Stecatto iniciado en 2022 acompañado de nuestro Profesor Ing. Bustos Mariano en el "Industrial de Temperley" como parte de un emocionante proyecto para la resolución autónoma de laberintosy la participacion competitiva a nivel nacional en la LNR Argentina. Durante el proceso de creación, hemos estado trabajando arduamente para implementar algoritmos de búsqueda, controladores PID, y trabajar con sensores Sharp y la programación en un microcontrolador ESP32 con el entorno Arduino. También hemos diseñado y creado nuestras propias librerías específicas para el robot, además de experimentar con la utilización de máquinas de estados y Programación orientada a Objetos para lograr un funcionamiento eficiente y preciso.
+Este repositorio contiene el código y los recursos utilizados para el desarrollo de un robot resolvente de laberintos, creado por Leandro Benitez, Ezequiel Sierra y Taiel Stecatto iniciado en 2022 acompañado de nuestro Profesor Ing. Bustos Mariano en el "Industrial de Temperley" ,como parte de un emocionante proyecto para la resolución autónoma de laberintos y la participacion competitiva a nivel nacional en la LNR Argentina. 
+Durante el proceso de creación, hemos estado trabajando arduamente para implementar algoritmos de búsqueda, controladores PID, y trabajar con sensores Sharp y la programación en un microcontrolador ESP32 con el entorno Arduino. También hemos diseñado y creado nuestras propias librerías específicas para el robot, además de experimentar con la utilización de máquinas de estados y Programación orientada a Objetos para lograr un funcionamiento eficiente y preciso.
 
 
 Características del Proyecto en Desarrollo
