@@ -173,8 +173,10 @@
       ],
       "track_widths": [
         0.0,
+        0.0,
         0.4,
         0.5,
+        0.6,
         0.75,
         1.0,
         1.5
@@ -410,7 +412,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "Flecha_Verde_V1.kicad_pro",
+    "filename": "BoverJr_PCBWAY.kicad_pro",
     "version": 1
   },
   "net_settings": {
