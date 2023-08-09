@@ -1,4 +1,4 @@
-21948313640586897
+21953388481067614
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -53424,6 +53424,13 @@ BORNERA3_Vertical
 3
 3
 EESTN5
+BOVER_NAME
+
+
+0
+0
+0
+EESTN5
 Bateria_Lipo_2S_800mah
 Bateria Lipo Velocista
 Bateria
@@ -53964,6 +53971,13 @@ LOGO_INET
 0
 EESTN5
 LOGO_INET_CHICO
+
+
+0
+0
+0
+EESTN5
+Leandro
 
 
 0
@@ -54718,6 +54732,13 @@ esp32-s2-wrooom
 0
 63
 43
+EESTN5
+ezequiel
+
+
+0
+0
+0
 EESTN5
 hole_1mm
 Hole 1mm
