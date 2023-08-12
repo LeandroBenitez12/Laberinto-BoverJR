@@ -1,4 +1,4 @@
-21953388719248956
+21955080534350593
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -54543,6 +54543,13 @@ SOIC PowerPad, 8 pins
 0
 8
 8
+EESTN5
+SW_MINI-SPDT-SW
+
+
+0
+3
+3
 EESTN5
 SW_PUSH-12mm
 SW PUSH 12mm 
