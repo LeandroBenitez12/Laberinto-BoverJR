@@ -5,4 +5,5 @@
   (lib (name "NOMBRES")(type "KiCad")(uri "C:/Users/juana/Dropbox/GIT/Librerias-Kicad/NOMBRES.kicad_sym")(options "")(descr ""))
   (lib (name "NOMBRES2")(type "KiCad")(uri "C:/Users/juana/Dropbox/GIT/Librerias-Kicad/NOMBRES2.kicad_sym")(options "")(descr ""))
   (lib (name "NAME_BOVER")(type "KiCad")(uri "C:/Users/juana/Dropbox/GIT/Librerias-Kicad/NAME_BOVER.kicad_sym")(options "")(descr ""))
+  (lib (name "pcbway_logo")(type "KiCad")(uri "C:/Users/juana/Dropbox/GIT/Librerias-Kicad/pcbway_logo.kicad_sym")(options "")(descr ""))
 )

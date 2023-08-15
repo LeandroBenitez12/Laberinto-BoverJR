@@ -1,4 +1,4 @@
-21955080534350593
+21956772675244317
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -54823,6 +54823,13 @@ led
 0
 2
 2
+EESTN5
+logo_pcbway
+
+
+0
+0
+0
 EESTN5
 micro_bite
 
