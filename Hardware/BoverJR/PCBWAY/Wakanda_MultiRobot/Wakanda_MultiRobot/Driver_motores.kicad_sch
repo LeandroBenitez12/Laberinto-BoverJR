@@ -5717,7 +5717,7 @@
       )
       (project "Wakanda_MultiRobot"
         (path "/7706e104-9d42-4651-8ea1-0974927a2230/0a488edf-d039-4a58-8e18-6b013530cf76"
-          (reference "#PWR014") (unit 1)
+          (reference "#PWR0103") (unit 1)
         )
       )
     )
@@ -5823,7 +5823,7 @@
     (property "Reference" "J10" (at 164.465 36.195 0)
       (effects (font (size 1.524 1.524)))
     )
-    (property "Value" "M2" (at 163.068 51.308 0)
+    (property "Value" "M1" (at 163.068 51.308 0)
       (effects (font (size 1.524 1.524)))
     )
     (property "Footprint" "EESTN5:BORNERA2_AZUL" (at 165.735 42.545 0)
@@ -5852,7 +5852,7 @@
       )
       (project "Wakanda_MultiRobot"
         (path "/7706e104-9d42-4651-8ea1-0974927a2230/0a488edf-d039-4a58-8e18-6b013530cf76"
-          (reference "J10") (unit 1)
+          (reference "J11") (unit 1)
         )
       )
     )
@@ -5892,7 +5892,7 @@
       )
       (project "Wakanda_MultiRobot"
         (path "/7706e104-9d42-4651-8ea1-0974927a2230/0a488edf-d039-4a58-8e18-6b013530cf76"
-          (reference "#PWR016") (unit 1)
+          (reference "#PWR0102") (unit 1)
         )
       )
     )
@@ -5932,7 +5932,7 @@
       )
       (project "Wakanda_MultiRobot"
         (path "/7706e104-9d42-4651-8ea1-0974927a2230/0a488edf-d039-4a58-8e18-6b013530cf76"
-          (reference "#PWR011") (unit 1)
+          (reference "#PWR0107") (unit 1)
         )
       )
     )
@@ -6053,7 +6053,7 @@
       )
       (project "Wakanda_MultiRobot"
         (path "/7706e104-9d42-4651-8ea1-0974927a2230/0a488edf-d039-4a58-8e18-6b013530cf76"
-          (reference "J10") (unit 1)
+          (reference "J12") (unit 1)
         )
       )
     )
@@ -6068,7 +6068,7 @@
     (property "Value" "100nF" (at 125.2474 57.404 0)
       (effects (font (size 1.016 1.016)) (justify left))
     )
-    (property "Footprint" "EESTN5:C_1206" (at 126.0602 59.055 0)
+    (property "Footprint" "EESTN5:C_0805" (at 126.0602 59.055 0)
       (effects (font (size 0.762 0.762)) hide)
     )
     (property "Datasheet" "" (at 125.095 55.245 0)
@@ -6215,7 +6215,7 @@
       )
       (project "Wakanda_MultiRobot"
         (path "/7706e104-9d42-4651-8ea1-0974927a2230/0a488edf-d039-4a58-8e18-6b013530cf76"
-          (reference "#PWR010") (unit 1)
+          (reference "#PWR0104") (unit 1)
         )
       )
     )
@@ -6255,7 +6255,7 @@
       )
       (project "Wakanda_MultiRobot"
         (path "/7706e104-9d42-4651-8ea1-0974927a2230/0a488edf-d039-4a58-8e18-6b013530cf76"
-          (reference "#PWR09") (unit 1)
+          (reference "#PWR0105") (unit 1)
         )
       )
     )
@@ -6295,7 +6295,7 @@
       )
       (project "Wakanda_MultiRobot"
         (path "/7706e104-9d42-4651-8ea1-0974927a2230/0a488edf-d039-4a58-8e18-6b013530cf76"
-          (reference "#PWR015") (unit 1)
+          (reference "#PWR0106") (unit 1)
         )
       )
     )
@@ -6376,7 +6376,7 @@
       )
       (project "Wakanda_MultiRobot"
         (path "/7706e104-9d42-4651-8ea1-0974927a2230/0a488edf-d039-4a58-8e18-6b013530cf76"
-          (reference "#PWR012") (unit 1)
+          (reference "#PWR0101") (unit 1)
         )
       )
     )
@@ -6391,7 +6391,7 @@
     (property "Value" "100nF" (at 125.2474 95.504 0)
       (effects (font (size 1.016 1.016)) (justify left))
     )
-    (property "Footprint" "EESTN5:C_1206" (at 126.0602 97.155 0)
+    (property "Footprint" "EESTN5:C_0805" (at 126.0602 97.155 0)
       (effects (font (size 0.762 0.762)) hide)
     )
     (property "Datasheet" "" (at 125.095 93.345 0)
