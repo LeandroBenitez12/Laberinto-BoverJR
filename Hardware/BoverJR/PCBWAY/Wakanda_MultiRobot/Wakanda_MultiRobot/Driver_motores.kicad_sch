@@ -8930,7 +8930,7 @@
     (property "Reference" "J10" (at 164.465 74.295 0)
       (effects (font (size 1.524 1.524)))
     )
-    (property "Value" "M1" (at 165.862 89.408 0)
+    (property "Value" "M2" (at 165.862 89.408 0)
       (effects (font (size 1.524 1.524)))
     )
     (property "Footprint" "EESTN5:BORNERA2_AZUL" (at 163.195 80.645 0)
