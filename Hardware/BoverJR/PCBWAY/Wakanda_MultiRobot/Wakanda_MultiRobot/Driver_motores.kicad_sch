@@ -8747,7 +8747,7 @@
     (property "Value" "100uF 35V" (at 132.715 57.785 0)
       (effects (font (size 1.016 1.016)) (justify left))
     )
-    (property "Footprint" "EESTN5:CAP_ELEC_10X8mm" (at 133.985 59.055 0)
+    (property "Footprint" "EESTN5:CAP_ELEC_5x11mm" (at 133.985 59.055 0)
       (effects (font (size 0.762 0.762)) hide)
     )
     (property "Datasheet" "" (at 131.445 55.245 0)
