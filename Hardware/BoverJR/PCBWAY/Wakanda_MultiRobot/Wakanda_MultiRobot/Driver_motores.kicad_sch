@@ -99,29 +99,6 @@
         )
       )
     )
-    (symbol "2018---MiniSumo---NANO---DRV8872-rescue:Mounting_Hole-EESTN51" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
-      (property "Reference" "H" (at 0 5.08 0)
-        (effects (font (size 1.27 1.27)))
-      )
-      (property "Value" "2018---MiniSumo---NANO---DRV8872-rescue_Mounting_Hole-EESTN51" (at 0 3.175 0)
-        (effects (font (size 1.27 1.27)) hide)
-      )
-      (property "Footprint" "" (at 0 0 0)
-        (effects (font (size 1.524 1.524)) hide)
-      )
-      (property "Datasheet" "" (at 0 0 0)
-        (effects (font (size 1.524 1.524)) hide)
-      )
-      (property "ki_fp_filters" "Mounting?Hole* Hole*" (at 0 0 0)
-        (effects (font (size 1.27 1.27)) hide)
-      )
-      (symbol "Mounting_Hole-EESTN51_0_1"
-        (circle (center 0 0) (radius 1.27)
-          (stroke (width 1.27) (type default))
-          (fill (type none))
-        )
-      )
-    )
     (symbol "DRV8872-EESTN51_1" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
       (property "Reference" "U2" (at 0 6.35 0)
         (effects (font (size 1.524 1.524)))
@@ -8653,45 +8630,6 @@
       (project "Wakanda_MultiRobot"
         (path "/7706e104-9d42-4651-8ea1-0974927a2230/0a488edf-d039-4a58-8e18-6b013530cf76"
           (reference "#PWR0107") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "2018---MiniSumo---NANO---DRV8872-rescue:Mounting_Hole-EESTN51") (at 97.028 102.235 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
-    (uuid 574789d0-52fb-45ca-9d5f-eef1ec812ded)
-    (property "Reference" "LOGO1" (at 97.028 97.155 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Value" "Mounting_Hole" (at 97.028 99.06 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Footprint" "EESTN5:LOGO_EESTN5" (at 97.028 102.235 0)
-      (effects (font (size 1.524 1.524)) hide)
-    )
-    (property "Datasheet" "" (at 97.028 102.235 0)
-      (effects (font (size 1.524 1.524)) hide)
-    )
-    (instances
-      (project "2023-wakanda-V1"
-        (path "/19267798-4e4c-4aeb-bec3-b7452995418d/f8226101-1b75-4d42-8152-d386adfd0d30"
-          (reference "LOGO1") (unit 1)
-        )
-      )
-      (project "2022-XDecito"
-        (path "/5528bcad-2950-4673-90eb-c37e6952c475/00000000-0000-0000-0000-00005b0f2c2d"
-          (reference "LOGO1") (unit 1)
-        )
-      )
-      (project "Driver_motores"
-        (path "/7669a348-9f1c-4f34-9714-a6db73698347"
-          (reference "LOGO1") (unit 1)
-        )
-      )
-      (project "Wakanda_MultiRobot"
-        (path "/7706e104-9d42-4651-8ea1-0974927a2230/0a488edf-d039-4a58-8e18-6b013530cf76"
-          (reference "LOGO1") (unit 1)
         )
       )
     )

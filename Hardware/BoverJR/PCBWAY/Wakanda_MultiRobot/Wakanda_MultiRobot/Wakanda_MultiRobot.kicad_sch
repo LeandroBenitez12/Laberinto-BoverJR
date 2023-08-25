@@ -17721,7 +17721,7 @@
     (property "Value" "10uF" (at 57.15 44.704 0)
       (effects (font (size 1.016 1.016)) (justify left))
     )
-    (property "Footprint" "Capacitor_THT:CP_Axial_L10.0mm_D4.5mm_P15.00mm_Horizontal" (at 56.134 46.609 0)
+    (property "Footprint" "EESTN5:CAP_ELEC_SMD_4X5.5" (at 56.134 46.609 0)
       (effects (font (size 0.762 0.762)) hide)
     )
     (property "Datasheet" "" (at 53.594 42.799 0)
@@ -17733,40 +17733,6 @@
       (project "Wakanda_MultiRobot"
         (path "/7706e104-9d42-4651-8ea1-0974927a2230"
           (reference "C10") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "2018---MiniSumo---NANO---DRV8872-rescue:Mounting_Hole-EESTN51") (at 279.019 27.178 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
-    (uuid 93b285d9-19ac-455b-8677-12ea6faaf99d)
-    (property "Reference" "P4" (at 279.019 24.257 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Value" "Mounting_Hole" (at 279.019 24.003 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Footprint" "EESTN5:Separador_M3_5mm" (at 279.019 27.178 0)
-      (effects (font (size 1.524 1.524)) hide)
-    )
-    (property "Datasheet" "" (at 279.019 27.178 0)
-      (effects (font (size 1.524 1.524)) hide)
-    )
-    (instances
-      (project "wakanda-board"
-        (path "/19267798-4e4c-4aeb-bec3-b7452995418d"
-          (reference "P4") (unit 1)
-        )
-      )
-      (project "2022-XDecito"
-        (path "/5528bcad-2950-4673-90eb-c37e6952c475"
-          (reference "P3") (unit 1)
-        )
-      )
-      (project "Wakanda_MultiRobot"
-        (path "/7706e104-9d42-4651-8ea1-0974927a2230"
-          (reference "P4") (unit 1)
         )
       )
     )
@@ -18272,18 +18238,18 @@
     (pin "5" (uuid c6945e7f-cdf3-4f6b-8b8f-e1990ada0032))
     (pin "8" (uuid 1d5c5582-d24b-482e-a724-da6538a68c39))
     (pin "9" (uuid 79a75af2-0c3c-4864-8aca-15bf22a6c955))
-    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7b2))
-    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7b2))
-    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7b2))
-    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7b2))
-    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7b2))
-    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7b2))
-    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7b2))
-    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7b2))
-    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7b2))
-    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7b2))
-    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7b2))
-    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7b2))
+    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7d3))
+    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7d3))
+    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7d3))
+    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7d3))
+    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7d3))
+    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7d3))
+    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7d3))
+    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7d3))
+    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7d3))
+    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7d3))
+    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7d3))
+    (pin "GND" (uuid ffccb3e9-e65c-4c3a-b305-838d626ce7d3))
     (pin "NC" (uuid 41a558e0-88e1-41c2-96e8-f4870afaac78))
     (instances
       (project "Wakanda_MultiRobot"
@@ -18332,7 +18298,7 @@
       )
       (project "Wakanda_MultiRobot"
         (path "/7706e104-9d42-4651-8ea1-0974927a2230"
-          (reference "P1") (unit 1)
+          (reference "P4") (unit 1)
         )
       )
     )
@@ -18347,7 +18313,7 @@
     (property "Value" "100uF" (at 78.74 45.593 0)
       (effects (font (size 1.016 1.016)) (justify left))
     )
-    (property "Footprint" "Capacitor_THT:CP_Axial_L10.0mm_D4.5mm_P15.00mm_Horizontal" (at 77.47 47.498 0)
+    (property "Footprint" "EESTN5:CAP_ELEC_SMD_4X5.5" (at 77.47 47.498 0)
       (effects (font (size 0.762 0.762)) hide)
     )
     (property "Datasheet" "" (at 74.93 43.688 0)
