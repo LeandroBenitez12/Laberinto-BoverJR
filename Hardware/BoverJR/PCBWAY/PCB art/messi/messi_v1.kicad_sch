@@ -61,6 +61,30 @@
     )
   )
 
+  (symbol (lib_id "EESTN5:Mounting_Hole") (at 144.399 91.44 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 668cf6fa-a469-44ab-8488-6427f7d25c86)
+    (property "Reference" "H4" (at 147.32 92.075 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "Mounting_Hole" (at 144.399 88.265 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Footprint" "EESTN5:maradov1_bcu" (at 144.399 91.44 0)
+      (effects (font (size 1.524 1.524)) hide)
+    )
+    (property "Datasheet" "" (at 144.399 91.44 0)
+      (effects (font (size 1.524 1.524)) hide)
+    )
+    (instances
+      (project "messi_v1"
+        (path "/1156a248-667a-47ac-b655-16a5991e6b18"
+          (reference "H4") (unit 1)
+        )
+      )
+    )
+  )
+
   (symbol (lib_id "EESTN5:Mounting_Hole") (at 144.399 80.518 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 95fce6d1-cc66-4e38-8adf-e1f3e3ed9aeb)
