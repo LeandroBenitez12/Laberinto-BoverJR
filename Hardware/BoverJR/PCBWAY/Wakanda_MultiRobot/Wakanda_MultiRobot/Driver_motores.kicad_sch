@@ -8871,7 +8871,7 @@
     (property "Value" "M2" (at 165.862 89.408 0)
       (effects (font (size 1.524 1.524)))
     )
-    (property "Footprint" "EESTN5:BORNERA2_AZUL" (at 163.195 80.645 0)
+    (property "Footprint" "EESTN5-v2:BORNERA2_AZUL_VIAS" (at 163.195 80.645 0)
       (effects (font (size 1.524 1.524)) hide)
     )
     (property "Datasheet" "" (at 163.195 80.645 0)
