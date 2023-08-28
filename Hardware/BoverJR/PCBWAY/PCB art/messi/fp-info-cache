@@ -1,4 +1,4 @@
-21975419322835832
+21978805886698627
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -54747,12 +54747,26 @@ Wemos_D1_Mini_Board
 16
 16
 EESTN5
+afa_mm
+
+
+0
+0
+0
+EESTN5
 arduino_nano_header
 Arduino Nano Header
 Arduino
 0
 30
 30
+EESTN5
+bover_mm
+
+
+0
+0
+0
 EESTN5
 bover_nombre
 
