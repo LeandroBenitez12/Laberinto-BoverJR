@@ -34,18 +34,18 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 0.762,
-          "height": 1.524,
-          "width": 1.524
+          "drill": 1.0,
+          "height": 1.25,
+          "width": 2.0
         },
         "silk_line_width": 0.15,
         "silk_text_italic": false,
         "silk_text_size_h": 1.0,
         "silk_text_size_v": 1.0,
-        "silk_text_thickness": 0.15,
+        "silk_text_thickness": 0.25,
         "silk_text_upright": false,
         "zones": {
-          "min_clearance": 0.19999999999999998
+          "min_clearance": 0.75
         }
       },
       "diff_pair_dimensions": [
@@ -173,9 +173,10 @@
       ],
       "track_widths": [
         0.0,
-        0.5,
         0.75,
-        1.0
+        1.0,
+        1.5,
+        2.0
       ],
       "via_dimensions": [
         {
@@ -408,7 +409,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "bover_art.kicad_pro",
+    "filename": "QRE1113_Line_Sensors_x8_PCBWAY.kicad_pro",
     "version": 1
   },
   "net_settings": {
@@ -444,7 +445,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "QRE1113_Line_Sensors_x8.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
@@ -485,7 +486,7 @@
   },
   "sheets": [
     [
-      "53944894-2740-4284-9b31-496e1b437475",
+      "e61bd12c-98c1-486c-9a9e-4493d45b2bcb",
       ""
     ]
   ],
