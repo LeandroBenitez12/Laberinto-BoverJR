@@ -1,4 +1,4 @@
-21978805886698627
+21992353310529500
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -53410,6 +53410,13 @@ BORNERA2_AZUL
 2
 2
 EESTN5
+BORNERA2_AZUL_VIAS
+2-way 5.08mm pitch terminal block, Phoenix MKDS series
+
+0
+34
+2
+EESTN5
 BORNERA2_DUO
 2-way 5.08mm pitch terminal block, Phoenix MKDS series
 
@@ -53429,6 +53436,13 @@ BORNERA3_AZUL
 
 0
 3
+3
+EESTN5
+BORNERA3_AZUL_VIAS
+3-way 5,08mm pitch terminal block, Phoenix MKDS series
+
+0
+51
 3
 EESTN5
 BORNERA3_Vertical
@@ -54565,6 +54579,13 @@ SOIC PowerPad, 8 pins
 8
 8
 EESTN5
+SSOP-8_disipa
+SOIC PowerPad, 8 pins
+
+0
+32
+8
+EESTN5
 SW_MINI-SPDT-SW
 
 
@@ -54698,6 +54719,13 @@ QFP 0.8
 32
 32
 EESTN5
+TRANS_SS8050-G
+
+
+0
+3
+3
+EESTN5
 TRIMER_V
 trimmer, Piher PT6-xV
 trimmer
@@ -54781,6 +54809,13 @@ bover_nombre2
 0
 0
 0
+EESTN5
+cap_0603
+<b>CAPACITOR</b>
+
+0
+2
+2
 EESTN5
 esp32-s2-wrooom
 
@@ -54929,6 +54964,13 @@ micro_bite
 0
 0
 EESTN5
+micro_usb
+
+
+0
+11
+11
+EESTN5
 nRF24L01_Breakout
 nRF24L01 breakout board
 nRF24L01 adapter breakout
@@ -55005,6 +55047,20 @@ CONN DEV
 0
 6
 6
+EESTN5
+rele
+
+
+0
+5
+5
+EESTN5
+resistor_0603
+<b>RESISTOR</b>
+
+0
+2
+2
 EESTN5
 sod123
 SOD123
