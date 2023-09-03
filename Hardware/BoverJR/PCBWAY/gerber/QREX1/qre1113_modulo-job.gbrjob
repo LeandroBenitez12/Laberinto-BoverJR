@@ -5,17 +5,17 @@
       "Application": "Pcbnew",
       "Version": "7.0.1"
     },
-    "CreationDate": "2023-08-30T15:08:01-03:00"
+    "CreationDate": "2023-08-30T15:18:29-03:00"
   },
   "GeneralSpecs": {
     "ProjectId": {
-      "Name": "Wakanda_MultiRobot",
-      "GUID": "57616b61-6e64-4615-9f4d-756c7469526f",
+      "Name": "qre1113_modulo",
+      "GUID": "71726531-3131-4335-9f6d-6f64756c6f2e",
       "Revision": "rev?"
     },
     "Size": {
-      "X": 50.1,
-      "Y": 50.1
+      "X": 12.1,
+      "Y": 9.1
     },
     "LayerNumber": 2,
     "BoardThickness": 1.6,
@@ -24,57 +24,57 @@
   "DesignRules": [
     {
       "Layers": "Outer",
-      "PadToPad": 0.0,
-      "PadToTrack": 0.0,
+      "PadToPad": 0.2,
+      "PadToTrack": 0.2,
       "TrackToTrack": 0.2,
-      "MinLineWidth": 0.25,
-      "TrackToRegion": 0.25,
-      "RegionToRegion": 0.25
+      "MinLineWidth": 0.75,
+      "TrackToRegion": 0.2,
+      "RegionToRegion": 0.2
     }
   ],
   "FilesAttributes": [
     {
-      "Path": "Wakanda_MultiRobot-F_Cu.gbr",
+      "Path": "qre1113_modulo-F_Cu.gbr",
       "FileFunction": "Copper,L1,Top",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "Wakanda_MultiRobot-B_Cu.gbr",
+      "Path": "qre1113_modulo-B_Cu.gbr",
       "FileFunction": "Copper,L2,Bot",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "Wakanda_MultiRobot-F_Paste.gbr",
+      "Path": "qre1113_modulo-F_Paste.gbr",
       "FileFunction": "SolderPaste,Top",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "Wakanda_MultiRobot-B_Paste.gbr",
+      "Path": "qre1113_modulo-B_Paste.gbr",
       "FileFunction": "SolderPaste,Bot",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "Wakanda_MultiRobot-F_Silkscreen.gbr",
+      "Path": "qre1113_modulo-F_Silkscreen.gbr",
       "FileFunction": "Legend,Top",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "Wakanda_MultiRobot-B_Silkscreen.gbr",
+      "Path": "qre1113_modulo-B_Silkscreen.gbr",
       "FileFunction": "Legend,Bot",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "Wakanda_MultiRobot-F_Mask.gbr",
+      "Path": "qre1113_modulo-F_Mask.gbr",
       "FileFunction": "SolderMask,Top",
       "FilePolarity": "Negative"
     },
     {
-      "Path": "Wakanda_MultiRobot-B_Mask.gbr",
+      "Path": "qre1113_modulo-B_Mask.gbr",
       "FileFunction": "SolderMask,Bot",
       "FilePolarity": "Negative"
     },
     {
-      "Path": "Wakanda_MultiRobot-Edge_Cuts.gbr",
+      "Path": "qre1113_modulo-Edge_Cuts.gbr",
       "FileFunction": "Profile",
       "FilePolarity": "Positive"
     }
