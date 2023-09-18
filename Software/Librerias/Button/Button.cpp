@@ -1,4 +1,4 @@
-#include "ButtonLab.h"
+#include "Button.h"
 
 Button::Button(int p)
 {
@@ -6,27 +6,17 @@ Button::Button(int p)
     pinMode(pin, INPUT);
 }
 
-void Button::SetFlanco(bool f)
+void Button::SetFlank(bool f)
 {
     flank = f;
     previousState = !flank;
 }
 
-int Button::GetIsPress()
+bool Button::GetIsPress()
 {
     bool actualState = digitalRead(pin);
-    bool State = (previousState != actualState) && actualState == flank;
+    bool state = (previousState != actualState) && actualState == flank;
     previousState = actualState;
-    if(State)
-    {
-      while(actualState)
-      {
-        actualState = digitalRead(pin);
-        cont = cont++;
-      }
-      if(cont > 700)
-        return 1;
-      else if(cont < 700)
-        return 2;
-    }   
+    // delay(100);
+    return state;
 }

@@ -1,6 +1,7 @@
 #include "PID.h"
 
-Pid::Pid(double p, double d, double sp, double tick)
+
+Pid::Pid(double p, double d,double sp, double tick)
 {
     kp = p;
     kd = d;
@@ -8,9 +9,10 @@ Pid::Pid(double p, double d, double sp, double tick)
     TICK_PID = tick;
 }
 
+
 double Pid::ComputePid(double inp)
 {
-    if (millis() > currentTimePID + TICK_PID)
+    if(millis() > currentTimePID + TICK_PID)
     {
         currentTimePID = millis();
         Input = inp;
@@ -18,6 +20,8 @@ double Pid::ComputePid(double inp)
         deltaError = error - lastError;
         double out = kp * error + kd * deltaError;
         lastError = error;
+
         return out;
     }
+    
 }
