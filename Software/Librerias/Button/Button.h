@@ -1,5 +1,5 @@
-#ifndef _BUTTON_LAB_H
-#define _BUTTON_LAB_H
+#ifndef _BUTTON_H
+#define _BUTTON_H
 #include "Arduino.h"
 
 class Button {
