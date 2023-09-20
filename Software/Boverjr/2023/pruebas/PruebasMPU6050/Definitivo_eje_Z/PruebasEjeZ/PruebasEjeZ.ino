@@ -3,7 +3,13 @@
 #include "I2Cdev.h"
 #include "MPU6050.h"
 #include "Wire.h"
+#include "BluetoothSerial.h"
 
+#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+#endif
+
+BluetoothSerial SerialBT;
 // La dirección del MPU6050 puede ser 0x68 o 0x69, dependiendo 
 // del estado de AD0. Si no se especifica, 0x68 estará implicito
 MPU6050 mpu;
@@ -12,7 +18,7 @@ MPU6050 mpu;
 int16_t gx, gy, gz;
 
 unsigned long currenTime = 0;
-#define TICK_PRINT 500
+#define TICK_PRINT_Z 500
 
 long tiempo_prev, dt;
 float girosc_ang_x, girosc_ang_y, girosc_ang_z;
@@ -20,6 +26,7 @@ float girosc_ang_x_prev, girosc_ang_y_prev, girosc_ang_z_prev;
 
 void setup() {
   Serial.begin(115200);    //Iniciando puerto serial
+  SerialBT.begin("Bover JR");
   Wire.begin();           //Iniciando I2C  
   mpu.initialize();    //Iniciando el mpu
 
@@ -28,7 +35,15 @@ void setup() {
   tiempo_prev=millis();
 }
 
-
+void printReadZ(){
+  if(millis() > currenTime + TICK_PRINT_Z)
+  {
+    //Mostrar los angulos 
+    SerialBT.print(" Rotacion en z: ");
+    SerialBT.println(girosc_ang_z);
+    currenTime = millis();
+  }
+}
 
 void loop() {
   // Leer las velocidades angulares 
@@ -43,13 +58,6 @@ void loop() {
 
   girosc_ang_z_prev=girosc_ang_z;
 
- 
-  if(millis() > currenTime + TICK_PRINT)
-  {
-    //Mostrar los angulos 
-    Serial.print("tRotacion en z: ");
-    Serial.println(girosc_ang_z);
-    currenTime = millis();
-  }
+  printReadZ();
 
 }
