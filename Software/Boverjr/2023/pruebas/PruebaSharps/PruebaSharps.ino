@@ -1,8 +1,8 @@
 #include <SharpLab.h>
 #include "BluetoothSerial.h"
 
-#define PIN_SHARP_RIGH 27
-#define PIN_SHARP_LEFT 43
+#define PIN_SHARP_RIGH 17
+#define PIN_SHARP_LEFT 23
 #define PIN_SHARP_FRONT 35
 float frontDistance;
 float rightDistance;
@@ -38,7 +38,7 @@ void printSensors()
 
 void setup()
 {
-  SerialBT.begin("Bover");
+  SerialBT.begin("Bover JR");
   Serial.begin(9600);
 }
 
