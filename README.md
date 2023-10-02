@@ -1,11 +1,12 @@
 # Robot en Desarrollo para la Resolución de Laberintos 🚧
 
+![image](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/fc53aeef-5db7-40ba-8f84-613de3c5e623)
 ![Laberinto BoverJR](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/8e0e0711-0f1c-469e-903a-441d05014f11)
 
 ## Descripción del Proyecto
 
 Este repositorio contiene el código y los recursos utilizados para el desarrollo de un robot resolvente de laberintos, creado por Leandro Benitez, Ezequiel Sierra iniciado en 2022 acompañado de nuestro Profesor Ing. Bustos Mariano en el "Industrial de Temperley" ,como parte de un emocionante proyecto para la resolución autónoma de laberintos y la participacion competitiva a nivel nacional en la LNR Argentina. Durante el proceso de creación, hemos estado trabajando arduamente para implementar algoritmos de búsqueda, controladores PID, y trabajar con sensores Sharp y la programación en un microcontrolador ESP32 con el entorno Arduino. También hemos diseñado y creado nuestras propias librerías específicas para el robot, además de experimentar con la utilización de máquinas de estados y Programación orientada a Objetos para lograr un funcionamiento eficiente y preciso.
-Actualmente nos encontramos Sponsoreados por PCBWAY.COM donde diseñamos la nueva Version de Bover JR y esperamos competir durante 2023 y 2024 en la LNR , quiero agradecer a PCBWAY por financiar el PCB!!!
+Actualmente nos encontramos Sponsoreados por PCBWAY.COM donde diseñamos la nueva Version de Bover JR y esperamos competir durante 2023 y 2024 en la LNR , quiero agradecer a **PCBWAY** por financiar el PCB!!!
 
 ## Características del Proyecto en Desarrollo
 
@@ -35,16 +36,29 @@ Actualmente nos encontramos Sponsoreados por PCBWAY.COM donde diseñamos la nuev
 Nos encantaría recibir tus comentarios, sugerencias y cualquier tipo de feedback que nos ayude a mejorar nuestro proyecto. Si deseas ponerte en contacto con nosotros, no dudes en escribirnos a:
 
 - Leandro Benitez: leandrobenitezz2004@gmail.com
+- Empresa : bovergroup@gmail.com
+
+## Sigue actualizado al proyecto siguiendonos en: 
+<p align="left">
+<a href="https://www.linkedin.com/in/leandro-benitez-995299211/" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="leandrobenitez" height="30" width="40" /></a>
+<a href="https://www.instagram.com/bovergroup/" target="blank"><img align="center" src="https://seeklogo.com/images/I/instagram-new-2016-logo-D9D42A0AD4-seeklogo.com.png" alt="leandrobenitez" height="40" width="40" /></a>
+<a href="https://www.tiktok.com/@bovergroup" target="blank"><img align="center" src="https://seeklogo.com/images/T/tiktok-app-icon-logo-0F5AD7AE01-seeklogo.com.png" alt="tiktok" height="40" width="40" /></a>
+<a href="https://www.youtube.com/channel/UCQPRyj8CMgbOlkj3WffF_tw" target="blank"><img align="center" src="https://seeklogo.com/images/Y/youtube-icon-logo-521820CDD7-seeklogo.com.png" alt="youtube" height="30" width="40" /></a>
+</p>
+
 
 ## Agradecimientos
 
-Queremos expresar nuestro agradecimiento a todas las personas que nos han brindado apoyo y colaboración en este proyecto, especialmente a PCBWAY.COM por sponsorear este proyecto. ¡Sin su ayuda, no habríamos llegado tan lejos en nuestro desarrollo!
+Queremos expresar nuestro agradecimiento a todas las personas que nos han brindado apoyo y colaboración en este proyecto, especialmente a **PCBWAY.COM** por sponsorear este proyecto. ¡Sin su ayuda, no habríamos llegado tan lejos en nuestro desarrollo!
 
 ![Laberinto BoverJR](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/4e4e53b1-e5e6-4691-9619-d417209de591)
 ![Laberinto BoverJR](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/d50ac377-7201-42da-962b-15cb5874c8b7)
 ![Laberinto BoverJR](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/b0dd3f8c-162c-4cc2-8012-adb96595a418)
 ![Laberinto BoverJR](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/e94b0c0e-6da6-49c8-a3d7-7009d5a12b78)
 ![Laberinto BoverJR](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/f38d6a19-3825-473d-ae85-92a67c5c4408)
+![image](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/926bf049-f514-41b0-b6cc-3085ceb5d284)
+![image](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/26ac8aea-198e-4bc6-a77e-82f2f16d6833)
+![image](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/3fbfac87-b106-4f07-b628-7e345b7d17ae)
 
 ## Videos
 
