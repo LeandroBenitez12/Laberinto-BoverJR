@@ -4,7 +4,8 @@
 
 ## Descripción del Proyecto
 
-Este repositorio contiene el código y los recursos utilizados para el desarrollo de un robot resolvente de laberintos, creado por Leandro Benitez, Ezequiel Sierra y Taiel Stecatto iniciado en 2022 acompañado de nuestro Profesor Ing. Bustos Mariano en el "Industrial de Temperley" ,como parte de un emocionante proyecto para la resolución autónoma de laberintos y la participacion competitiva a nivel nacional en la LNR Argentina. Durante el proceso de creación, hemos estado trabajando arduamente para implementar algoritmos de búsqueda, controladores PID, y trabajar con sensores Sharp y la programación en un microcontrolador ESP32 con el entorno Arduino. También hemos diseñado y creado nuestras propias librerías específicas para el robot, además de experimentar con la utilización de máquinas de estados y Programación orientada a Objetos para lograr un funcionamiento eficiente y preciso.
+Este repositorio contiene el código y los recursos utilizados para el desarrollo de un robot resolvente de laberintos, creado por Leandro Benitez, Ezequiel Sierra iniciado en 2022 acompañado de nuestro Profesor Ing. Bustos Mariano en el "Industrial de Temperley" ,como parte de un emocionante proyecto para la resolución autónoma de laberintos y la participacion competitiva a nivel nacional en la LNR Argentina. Durante el proceso de creación, hemos estado trabajando arduamente para implementar algoritmos de búsqueda, controladores PID, y trabajar con sensores Sharp y la programación en un microcontrolador ESP32 con el entorno Arduino. También hemos diseñado y creado nuestras propias librerías específicas para el robot, además de experimentar con la utilización de máquinas de estados y Programación orientada a Objetos para lograr un funcionamiento eficiente y preciso.
+Actualmente nos encontramos Sponsoreados por PCBWAY.COM donde diseñamos la nueva Version de Bover JR y esperamos competir durante 2023 y 2024 en la LNR , quiero agradecer a PCBWAY por financiar el PCB!!!
 
 ## Características del Proyecto en Desarrollo
 
@@ -18,7 +19,7 @@ Este repositorio contiene el código y los recursos utilizados para el desarroll
 ## Estructura del Repositorio
 
 - **/Software:** Aquí se encuentran los códigos que estuvimos trabajando en el laberinto con sus librerías.
-- **/Hardware:** Dejamos a disposición el PCB chasis de diferentes versiones del robot Bover y otros prototipos de prueba.
+- **/Design 3D:** Aqui se encuentran los 3D diseñados para el robot Bover JR 
 
 ## Cómo Contribuir
 
@@ -37,7 +38,7 @@ Nos encantaría recibir tus comentarios, sugerencias y cualquier tipo de feedbac
 
 ## Agradecimientos
 
-Queremos expresar nuestro agradecimiento a todas las personas que nos han brindado apoyo y colaboración en este proyecto. ¡Sin su ayuda, no habríamos llegado tan lejos en nuestro desarrollo!
+Queremos expresar nuestro agradecimiento a todas las personas que nos han brindado apoyo y colaboración en este proyecto, especialmente a PCBWAY.COM por sponsorear este proyecto. ¡Sin su ayuda, no habríamos llegado tan lejos en nuestro desarrollo!
 
 ![Laberinto BoverJR](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/4e4e53b1-e5e6-4691-9619-d417209de591)
 ![Laberinto BoverJR](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/d50ac377-7201-42da-962b-15cb5874c8b7)
@@ -55,4 +56,5 @@ https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/9e88a07d-
 https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/d4477cc3-5138-43af-baba-faa490c5ad7a
 
 
-Estamos entusiasmados con los avances que hemos logrado hasta el momento, pero reconocemos que aún hay mucho trabajo por delante. Apreciamos tu comprensión y paciencia mientras continuamos mejorando y refinando nuestro robot resolvente de laberintos. ¡Esperamos que, en el futuro, podamos compartir un proyecto aún más impresionante contigo! 🤖🏆
+Estamos entusiasmados con los avances que hemos logrado hasta el momento, pero reconocemos que aún hay mucho trabajo por delante. Apreciamos tu comprensión y paciencia mientras continuamos mejorando y refinando nuestro robot resolvente de laberintos. Puedes seguir actualizado al proyecto siguiendonos en nuestras redes sociales:
+🤖🏆
