@@ -16,18 +16,18 @@ unsigned long currentTimePID = 0;
 unsigned long currentTimeSensors = 0;
 
 //Motores
-#define PIN_RIGHT_ENGINE_IN1 19
-#define PIN_RIGHT_ENGINE_IN2 18
-#define PIN_LEFT_ENGINE_IN1 26
-#define PIN_LEFT_ENGINE_IN2 27
+#define PIN_RIGHT_ENGINE_IN1 26
+#define PIN_RIGHT_ENGINE_IN2 27
+#define PIN_LEFT_ENGINE_IN1 18
+#define PIN_LEFT_ENGINE_IN2 19
 #define PWM_CHANNEL_RIGHT_IN1 1
 #define PWM_CHANNEL_RIGHT_IN2 2
 #define PWM_CHANNEL_LEFT_IN1 3
 #define PWM_CHANNEL_LEFT_IN2 4
 
 //Sharps
-#define PIN_SHARP_RIGHT 35
-#define PIN_SHARP_LEFT 27
+#define PIN_SHARP_RIGHT 25
+#define PIN_SHARP_LEFT 35
 float rightDistance;
 float leftDistance;
 
@@ -37,7 +37,7 @@ int speedLeft = 80;
 int averageSpeed = 100;
 
 //variables pid
-double kp = 0.175;
+double kp = 1.2;
 double kd = 0;
 double setPoint;
 float BoverPID;
@@ -92,7 +92,28 @@ void setup() {
 }
 
 void loop() {
-  if(buttonStart->GetIsPress()) start = 1;
+  if (SerialBT.available()) {
+    char command = SerialBT.read();
+    if (command == 'I') 
+    {
+      start = true;
+    } 
+    
+    else if (command == 'P') 
+    {
+      start = false;
+      robot->Stop(); // Detener los motores cuando se recibe el comando 'P'
+    }
+
+    else if (command == 'K') 
+    {
+      String kpValue = SerialBT.readStringUntil('\n');
+      kp = kpValue.toFloat(); // Convertir la cadena a un valor flotante y asignarlo a kd
+      SerialBT.print("Kp: ");
+      SerialBT.println(kp);
+    }
+  }
+
   if(start)
   {
     SensorsRead();
