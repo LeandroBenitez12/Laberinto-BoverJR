@@ -17,6 +17,7 @@ unsigned long tiempo_actual = 0;
 #endif
 
 BluetoothSerial SerialBT;
+Button *buttonStart = new Button(PIN_BUTTON_START);
 
 Sharp *SharpFront = new Sharp(PIN_SHARP_FRONT);
 Sharp *SharpRigh = new Sharp(PIN_SHARP_RIGH);
