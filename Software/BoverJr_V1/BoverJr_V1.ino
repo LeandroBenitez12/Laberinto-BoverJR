@@ -11,7 +11,7 @@
 BluetoothSerial SerialBT;
 
 //debug
-#define TICK_DEBUG 500
+#define TICK_DEBUG 1500
 #define DEBUG_STATUS 1
 #define DEBUG_SENSORS 1
 #define DEBUG_PID 1
@@ -48,7 +48,7 @@ int averageSpeed = 100;
 double kp = 1.2;
 double kd = 0;
 double setPoint;
-float BoverPID;
+float gananciaPID;
 double TICK_PID = 50;
 
 //Boton
@@ -71,15 +71,13 @@ void SensorsRead()
   leftDistance = SharpLeft->SensorRead();
 }
 
-
-
 void printPID()
 {
   if (millis() > currentTimePID + TICK_DEBUG)
   {
     currentTimePID = millis();
     SerialBT.print("PID: ");
-    SerialBT.println(BoverPID);
+    SerialBT.println(gananciaPID);
     SerialBT.print("speedRight: ");
     SerialBT.print(speedRight);
     SerialBT.print(" || speedLeft: ");
@@ -122,18 +120,21 @@ void movementLogic()
   case STANDBY:
   {
     Bover->Stop();
-    if (buttonStart->GetIsPress())
-      movement = CONTINUE;
+    Serial.print("Que pared Seguir( '0' = IZQ/ '1' = DER):   ");
+    bool  = SerialBT.read();
+    Serial.print("INICIAR? ");
+    bool stateStart = SerialBT.read();
+    if (stateStart) movement = CONTINUE;
     break;
   }
 
   case CONTINUE:
   {
     float input = rightDistance - leftDistance;
-    BoverPID = PID->ComputePid(input);
+    gananciaPID = PID->ComputePid(input);
     if(DEBUG_PID) printPID();
-    speedRight = (averageSpeed - (BoverPID));
-    speedLeft = (averageSpeed + (BoverPID));
+    speedRight = (averageSpeed - (gananciaPID));
+    speedLeft = (averageSpeed + (gananciaPID));
     Bover->Forward(speedRight, speedLeft);
 
     if (frontDistance < MAX_FRONT_DISTANCE) movement = STOP;
@@ -216,5 +217,14 @@ void setup()
 
 void loop() 
 {
-
+  if (SerialBT.available()) {
+    
+    Serial.print("INICIAR? ");
+    bool stateStart = SerialBT.read();
+      if(stateStart is true) {
+        SensorsRead();
+        movementLogic();
+        if (DEBUG_SENSORS) printSensors();
+      }
+  }
 }
