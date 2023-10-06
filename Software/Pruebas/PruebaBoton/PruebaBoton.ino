@@ -30,10 +30,10 @@ void printSensors()
         tiempo_actual = millis();
         Serial.print("frontDistance: ");
         Serial.print(frontDistance);
-        //Serial.print(" || rightDistance: ");
-        //Serial.print(rightDistance);
-        //Serial.print(" || leftDistance: ");
-        //Serial.println(leftDistance);
+        Serial.print(" || rightDistance: ");
+        Serial.print(rightDistance);
+        Serial.print(" || leftDistance: ");
+        Serial.println(leftDistance);
     }
 }
 
@@ -45,8 +45,18 @@ void setup()
 
 void loop()
 {
-    frontDistance = SharpFront->SharpDist();
-    // rightDistance = SharpRigh->SharpDist();
-    // leftDistance = SharpLeft->SharpDist();
-    printSensors();
-}
+    if (SerialBT.available()) {
+        bool incomingChar = SerialBT.read();
+        Serial.print("Dato recibido: ");
+        Serial.println(incomingChar);
+        if(stateStart is true) {
+            // Tu código adicional aquí
+            frontDistance = SharpFront->SharpDist();
+            // rightDistance = SharpRigh->SharpDist();
+            // leftDistance = SharpLeft->SharpDist();
+            printSensors();
+        }
+        }
+        // Aquí puedes agregar la lógica para procesar los datos recibidos.
+    }
+  
