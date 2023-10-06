@@ -1,15 +1,10 @@
-#include <SharpLab.h>
+#include <Button.h>
 #include "BluetoothSerial.h"
 
-#define PIN_SHARP_RIGH 17
-#define PIN_SHARP_LEFT 23
-#define PIN_SHARP_FRONT 35
-float frontDistance;
-float rightDistance;
-float leftDistance;
+#define PIN_BUTTON_START 32
 
 unsigned long tiempo_actual = 0;
-#define TICK_DEBUG 500
+#define TICK_DEBUG 1500
 #define DEBUG 1
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
@@ -17,23 +12,21 @@ unsigned long tiempo_actual = 0;
 #endif
 
 BluetoothSerial SerialBT;
-Button *buttonStart = new Button(PIN_BUTTON_START);
-
-Sharp *SharpFront = new Sharp(PIN_SHARP_FRONT);
-Sharp *SharpRigh = new Sharp(PIN_SHARP_RIGH);
-Sharp *SharpLeft = new Sharp(PIN_SHARP_LEFT);
+Button *buttonStart1 = new Button(PIN_BUTTON_START);
 
 void printSensors()
 {
     if (millis() > tiempo_actual + TICK_DEBUG)
     {
         tiempo_actual = millis();
-        Serial.print("frontDistance: ");
-        Serial.print(frontDistance);
-        Serial.print(" || rightDistance: ");
-        Serial.print(rightDistance);
-        Serial.print(" || leftDistance: ");
-        Serial.println(leftDistance);
+        bool stateStart = buttonStart1->GetIsPress();
+        Serial.print("Dato recibido: ");
+        if(stateStart == true) {
+            Serial.println(" Press");
+        }
+        else {
+            Serial.println("No");
+        }
     }
 }
 
@@ -45,18 +38,8 @@ void setup()
 
 void loop()
 {
-    if (SerialBT.available()) {
-        bool incomingChar = SerialBT.read();
-        Serial.print("Dato recibido: ");
-        Serial.println(incomingChar);
-        if(stateStart is true) {
-            // Tu código adicional aquí
-            frontDistance = SharpFront->SharpDist();
-            // rightDistance = SharpRigh->SharpDist();
-            // leftDistance = SharpLeft->SharpDist();
-            printSensors();
-        }
-        }
+    printSensors();
+}
         // Aquí puedes agregar la lógica para procesar los datos recibidos.
-    }
+    
   

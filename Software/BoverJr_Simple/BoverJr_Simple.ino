@@ -12,6 +12,7 @@ BluetoothSerial SerialBT;
 
 //debug
 #define TICK_DEBUG_ALL 1000
+#define DEBUG_BUTTON 1
 #define DEBUG_STATUS 1
 #define DEBUG_SENSORS 1
 #define DEBUG_PID 1
@@ -35,29 +36,29 @@ unsigned long currentTimeDebugAll = 0;
 float rightDistance;
 float leftDistance;
 float frontDistance;
-#define MAX_FRONT_DISTANCE 12
-#define MAX_SIDE_DISTANCE 23
-#define MAX_DISTANCE_ANT_TURN 27
+#define MAX_FRONT_DISTANCE 15
+#define MAX_SIDE_DISTANCE 27
+#define MAX_DISTANCE_ANT_TURN 29
 
 //veocidades motores pwm
-#define VELOCIDAD_GIROS_90 160
-#define GIROS_90_DELAY 200
-#define GIROS_180_DELAY 400
-#define ENTRAR_EN_PASILLO 200
-#define STOPS_PARA_PENSAR 100
-int speedRight = 80;
-int speedLeft = 80;
+#define VELOCIDAD_GIROS_90 220
+#define GIROS_90_DELAY 110
+#define GIROS_180_DELAY 210
+#define ENTRAR_EN_PASILLO 90
+#define STOPS_PARA_PENSAR 50
+int speedRight = 180;
+int speedLeft = 180;
 int speedRightPID;
 int speedLeftPID;
-int averageSpeedRight = 120;
-int averageSpeedLeft = 110;
+int averageSpeedRight = 255;
+int averageSpeedLeft = 245;
 
 //variables pid
-double kp = 1.2;
-double kd = 0.3;
+double kp = 0.6;
+double kd = 0.14;
 double setPoint;
 float gananciaPID;
-double TICK_PID = 50;
+double TICK_PID = 20;
 
 //Boton
 #define PIN_BUTTON_START 32
@@ -70,17 +71,19 @@ EngineController *Bover = new EngineController(rightEngine, leftEngine);
 Isensor *SharpRigh = new Sharp_GP2Y0A21(PIN_SHARP_RIGHT);
 Isensor *SharpLeft = new Sharp_GP2Y0A21(PIN_SHARP_LEFT);
 Isensor *SharpFront = new Sharp_GP2Y0A21(PIN_SHARP_FRONT);
-Button *buttonStart = new Button(PIN_BUTTON_START);
 Pid *PID = new Pid(kp, kd, setPoint, TICK_PID);
 
+Button *buttonStart1 = new Button(PIN_BUTTON_START);
 void SensorsRead()
 {
+  
   frontDistance = SharpFront->SensorRead();
   rightDistance = SharpRigh->SensorRead();
   leftDistance = SharpLeft->SensorRead();
 }
 
 bool stateStartButton;
+
 void printButton(){
   SerialBT.print("Button Start: ");
   SerialBT.println(stateStartButton);
@@ -106,6 +109,8 @@ void printSensors()
 {
   SerialBT.print("frontDistance: ");
   SerialBT.print(frontDistance);
+  SerialBT.print(" == cruda: ");
+  SerialBT.println(analogRead(33));
   SerialBT.print(" || rightDistance: ");
   SerialBT.print(rightDistance);
   SerialBT.print(" || leftDistance: ");
@@ -161,13 +166,18 @@ void movementLogic()
   {
   case STANDBY:
   {
-    stateStartButton = buttonStart->GetIsPress();
+    bool stateStartButton = buttonStart1->GetIsPress();
     Bover->Stop();
-    SerialBT.print("Que pared Seguir( '0' = IZQ/ '1' = DER):   ");
-    wall = SerialBT.read();
-    SerialBT.print("INICIAR? ");
-    bool stateStartBluetooh = SerialBT.read();
-    if (stateStartBluetooh || stateStartButton) movement = CONTINUE;
+    //SerialBT.print("Seguir(0 = IZQ || 1 = DER):   ");
+    //SerialBT.println(wall);
+    //wall = SerialBT.read();
+    //SerialBT.print("INICIAR: ");
+    //bool stateStartBluetooh = SerialBT.read();
+    if (stateStartButton) {
+      delay(1000);
+      movement = CONTINUE;
+    
+    }
     break;
   }
 
@@ -259,9 +269,9 @@ void movementLogic()
     movement = CONTINUE;
     break;
   }
-}
-}
 
+}
+}
 
 void printStatus(){
   String state = "";
@@ -304,7 +314,7 @@ void printAll(){
 void setup() 
 {
   SerialBT.begin("Bover");
-  pinMode(PIN_BUTTON_START, INPUT_PULLUP);
+  //pinMode(PIN_BUTTON_START, INPUT_PULLUP);
 }
 
 void loop() 
