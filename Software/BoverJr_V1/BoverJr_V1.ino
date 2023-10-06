@@ -17,6 +17,7 @@ BluetoothSerial SerialBT;
 #define DEBUG_PID 1
 unsigned long currentTimePID = 0;
 unsigned long currentTimeSensors = 0;
+unsigned long currentTimeDebugStatus = 0;
 
 //Motores
 #define PIN_RIGHT_ENGINE_IN1 26
@@ -99,6 +100,29 @@ void printSensors()
   }
 }
 
+void turnRight(){
+  Bover->Right(150, 150);
+  delay(190);
+}
+
+void turnLeft(){
+  Bover->Left(150, 150);
+  delay(190);
+}
+
+void postTurn(){
+  Bover->Forward(150, 150);
+  delay(190);
+}
+void antTurn(){
+  Bover->Forward(150, 150);
+  delay(5);
+}
+
+void ignoreTurn(){
+  Bover->Forward(150, 150);
+  delay(200);
+}
 enum movement
 {
   STANDBY,
@@ -183,7 +207,7 @@ void movementLogic()
 
   case POST_TURN:
   {
-    posTurn();
+    postTurn();
     Bover->Stop();
     delay(200);
     movement = CONTINUE;
@@ -210,6 +234,39 @@ void movementLogic()
 }
 }
 
+
+void printStatus()
+{
+  if (millis() > currentTimeDebugStatus + TICK_DEBUG)
+  {
+    currentTimeDebug = millis();
+    String state = "";
+    switch (movement)
+    {
+      case STANDBY: state = "STANDBY";
+      break;
+      case CONTINUE: state = "CONTINUE";
+      break;
+      case STOP: state = state = "STOP"; 
+      break;
+      case RIGHT_TURN: state = "RIGHT TURN"; 
+      break;
+      case LEFT_TURN: state = "LEFT TURN"; 
+      break;
+      case FULL_TURN: state = "FULL TURN"; 
+      break;
+      case POST_TURN: state = "POST TURN";
+      break;
+      case ANT_TURN: state = "ANT TURN";
+      break;
+      case IGNORE_TURN: state = "IGNORE_TURN";
+      break;
+    }
+    SerialBT.print("State: ");
+    SerialBT.println(state);
+  }
+  }
+
 void setup() 
 {
   SerialBT.begin("Bover");
@@ -225,6 +282,7 @@ void loop()
         SensorsRead();
         movementLogic();
         if (DEBUG_SENSORS) printSensors();
+        if ( DEBUG_STATUS ) 
       }
   }
 }
