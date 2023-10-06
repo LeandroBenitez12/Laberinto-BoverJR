@@ -43,11 +43,11 @@ float frontDistance;
 //veocidades motores pwm
 int speedRight = 80;
 int speedLeft = 80;
-int averageSpeed = 100;
-
+int averageSpeedRight = 120;
+int averageSpeedLeft = 110;
 //variables pid
 double kp = 1.2;
-double kd = 0;
+double kd = 0.3;
 double setPoint;
 float gananciaPID;
 double TICK_PID = 50;
@@ -119,6 +119,11 @@ void antTurn(){
   delay(5);
 }
 
+void fullTurn(){
+  Bover->Right(150, 150);
+  delay(350);
+} 
+
 void ignoreTurn(){
   Bover->Forward(150, 150);
   delay(200);
@@ -144,9 +149,9 @@ void movementLogic()
   case STANDBY:
   {
     Bover->Stop();
-    Serial.print("Que pared Seguir( '0' = IZQ/ '1' = DER):   ");
-    bool  = SerialBT.read();
-    Serial.print("INICIAR? ");
+    SerialBT.print("Que pared Seguir( '0' = IZQ/ '1' = DER):   ");
+    bool wall = SerialBT.read();
+    SerialBT.print("INICIAR? ");
     bool stateStart = SerialBT.read();
     if (stateStart) movement = CONTINUE;
     break;
@@ -157,8 +162,8 @@ void movementLogic()
     float input = rightDistance - leftDistance;
     gananciaPID = PID->ComputePid(input);
     if(DEBUG_PID) printPID();
-    speedRight = (averageSpeed - (gananciaPID));
-    speedLeft = (averageSpeed + (gananciaPID));
+    speedRight = (averageSpeedRight - (gananciaPID));
+    speedLeft = (averageSpeedLeft + (gananciaPID));
     Bover->Forward(speedRight, speedLeft);
 
     if (frontDistance < MAX_FRONT_DISTANCE) movement = STOP;
@@ -198,7 +203,7 @@ void movementLogic()
 
   case FULL_TURN:
   {
-    fulTurn();
+    fullTurn();
     Bover->Stop();
     delay(200);
     movement = POST_TURN;
@@ -235,11 +240,10 @@ void movementLogic()
 }
 
 
-void printStatus()
-{
+void printStatus(){
   if (millis() > currentTimeDebugStatus + TICK_DEBUG)
   {
-    currentTimeDebug = millis();
+    currentTimeDebugStatus = millis();
     String state = "";
     switch (movement)
     {
@@ -274,15 +278,11 @@ void setup()
 
 void loop() 
 {
-  if (SerialBT.available()) {
+  if (SerialBT.available()) {     
+    SensorsRead();
+    movementLogic();
+    if (DEBUG_SENSORS) printSensors();
+    if ( DEBUG_STATUS ) printStatus();
     
-    Serial.print("INICIAR? ");
-    bool stateStart = SerialBT.read();
-      if(stateStart is true) {
-        SensorsRead();
-        movementLogic();
-        if (DEBUG_SENSORS) printSensors();
-        if ( DEBUG_STATUS ) 
-      }
   }
 }

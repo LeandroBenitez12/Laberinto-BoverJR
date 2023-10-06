@@ -17,14 +17,14 @@ void setup()
 
 void loop()
 {
-    robot->Forward(200);
-    delay(3000);
-    robot->Backward(200);
-    delay(3000);
-    robot->Left(200);
-    delay(3000);
-    robot->Right(200);
-    delay(3000);
+    robot->Forward(255);
+    delay(6000);
+    robot->Backward(255);
+    delay(6000);
+    robot->Left(150);
+    delay(100);
+    robot->Right(150);
+    delay(100);
     robot->Stop();
     delay(3000);
 }
