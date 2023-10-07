@@ -12,10 +12,10 @@ BluetoothSerial SerialBT;
 
 //debug
 #define TICK_DEBUG_ALL 1000
-#define DEBUG_BUTTON 1
-#define DEBUG_STATUS 1
-#define DEBUG_SENSORS 1
-#define DEBUG_PID 1
+#define DEBUG_BUTTON 0
+#define DEBUG_STATUS 0
+#define DEBUG_SENSORS 0
+#define DEBUG_PID 0
 unsigned long currentTimePID = 0;
 unsigned long currentTimeDebugAll = 0;
 
@@ -37,25 +37,24 @@ float rightDistance;
 float leftDistance;
 float frontDistance;
 #define MAX_FRONT_DISTANCE 15
-#define MAX_SIDE_DISTANCE 27
-#define MAX_DISTANCE_ANT_TURN 29
+#define MAX_SIDE_DISTANCE 22
+#define MAX_SIDE_DISTANCE_T 28
+#define MAX_DISTANCE_ANT_TURN 26
 
 //veocidades motores pwm
-#define VELOCIDAD_GIROS_90 220
-#define GIROS_90_DELAY 110
-#define GIROS_180_DELAY 210
-#define ENTRAR_EN_PASILLO 90
-#define STOPS_PARA_PENSAR 50
-#define TICK_ANT_TURN 10
-int speedRight = 180;
-int speedLeft = 180;
-int speedRightPID;
-int speedLeftPID;
-int averageSpeedRight = 255;
-int averageSpeedLeft = 245;
+#define VELOCIDAD_GIROS_90 247
+#define GIROS_90_DELAY 180
+#define GIROS_180_DELAY 400
+#define ENTRAR_EN_PASILLO 200
+#define STOPS_PARA_PENSAR 500
+#define TICK_ANT_TURN 120
+int speedRightPID = 210;
+int speedLeftPID = 190;
+int averageSpeedRight = 210;
+int averageSpeedLeft = 190;
 
 //variables pid
-double kp = 0.6;
+double kp = 0.3;
 double kd = 0.14;
 double setPoint;
 float gananciaPID;
@@ -130,7 +129,7 @@ void turnLeft(){
 }
 
 void postTurn(){
-  Bover->Forward(VELOCIDAD_GIROS_90, VELOCIDAD_GIROS_90);
+  Bover->Forward(210, 190);
   delay(ENTRAR_EN_PASILLO);
 }
 void antTurn(){
@@ -187,19 +186,25 @@ void movementLogic()
     float input = rightDistance - leftDistance;
     gananciaPID = PID->ComputePid(input);
     if(DEBUG_PID) printPID();
-    speedRightPID = (averageSpeedRight - (gananciaPID));
-    speedLeftPID = (averageSpeedLeft + (gananciaPID));
+    speedRightPID = (averageSpeedRight + (gananciaPID));
+    speedLeftPID = (averageSpeedLeft - (gananciaPID));
     Bover->Forward(speedRightPID, speedLeftPID);
     
     if (frontDistance < MAX_FRONT_DISTANCE) movement = STOP;
-    if(wall == true){
-      if (rightDistance > MAX_SIDE_DISTANCE && frontDistance > MAX_DISTANCE_ANT_TURN && leftDistance < MAX_SIDE_DISTANCE ) movement = ANT_TURN;
-      if (leftDistance > MAX_SIDE_DISTANCE && frontDistance > MAX_DISTANCE_ANT_TURN && rightDistance < MAX_SIDE_DISTANCE) movement = IGNORE_TURN;
-    }
+    if (rightDistance > MAX_SIDE_DISTANCE )
+      { 
+        Bover->Forward(averageSpeedRight, averageSpeedLeft);
+        delay(TICK_ANT_TURN);
+        movement = RIGHT_TURN;
+      }
+    /*if (rightDistance > MAX_SIDE_DISTANCE && frontDistance > MAX_DISTANCE_ANT_TURN && leftDistance < MAX_SIDE_DISTANCE ) movement = RIGHT_TURN;
+    if (leftDistance > MAX_SIDE_DISTANCE && frontDistance > MAX_DISTANCE_ANT_TURN && rightDistance < MAX_SIDE_DISTANCE) movement = IGNORE_TURN;
+    
     else if(wall == false){
       if (rightDistance > MAX_SIDE_DISTANCE && frontDistance > MAX_DISTANCE_ANT_TURN && leftDistance < MAX_SIDE_DISTANCE ) movement = IGNORE_TURN;
       if (leftDistance > MAX_SIDE_DISTANCE && frontDistance > MAX_DISTANCE_ANT_TURN && rightDistance < MAX_SIDE_DISTANCE) movement = ANT_TURN;
     }
+    */ 
     break;
   }
 
@@ -210,12 +215,20 @@ void movementLogic()
     if (frontDistance < MAX_FRONT_DISTANCE){
       if (rightDistance > MAX_SIDE_DISTANCE && leftDistance <= MAX_SIDE_DISTANCE) movement = RIGHT_TURN;
       if (rightDistance <= MAX_SIDE_DISTANCE && leftDistance > MAX_SIDE_DISTANCE) movement = LEFT_TURN;
-      if (rightDistance > MAX_SIDE_DISTANCE && leftDistance > MAX_SIDE_DISTANCE)
-      {
+      
+      if (rightDistance > MAX_SIDE_DISTANCE_T && leftDistance > MAX_SIDE_DISTANCE_T) movement = RIGHT_TURN;
+      else  {
+              Bover->Right(VELOCIDAD_GIROS_90, VELOCIDAD_GIROS_90);
+              delay(60);
+              movement = CONTINUE;
+            }
+      /*{
+         
         if(wall == true) movement = LEFT_TURN;
         else if (wall == false) movement = RIGHT_TURN;
       }
       if (rightDistance <= MAX_SIDE_DISTANCE && leftDistance <= MAX_SIDE_DISTANCE) movement = FULL_TURN;
+      */
     }
     else movement = CONTINUE;
     break;
@@ -318,7 +331,7 @@ void printAll(){
 }
 void setup() 
 {
-  SerialBT.begin("Bover");
+  //SerialBT.begin("Bover");
   //pinMode(PIN_BUTTON_START, INPUT_PULLUP);
 }
 
@@ -326,5 +339,5 @@ void loop()
 {    
   SensorsRead();
   movementLogic();
-  printAll();
+  //printAll();
 }
