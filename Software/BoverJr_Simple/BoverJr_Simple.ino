@@ -46,6 +46,7 @@ float frontDistance;
 #define GIROS_180_DELAY 210
 #define ENTRAR_EN_PASILLO 90
 #define STOPS_PARA_PENSAR 50
+#define TICK_ANT_TURN 10
 int speedRight = 180;
 int speedLeft = 180;
 int speedRightPID;
@@ -87,21 +88,21 @@ bool stateStartButton;
 void printButton(){
   SerialBT.print("Button Start: ");
   SerialBT.println(stateStartButton);
-  SerialBT.println("______");
+  SerialBT.println("__");
 }
 void printPID()
 {
   if (millis() > currentTimePID + TICK_DEBUG_ALL)
   {
     currentTimePID = millis();
-    SerialBT.println("______");
+    SerialBT.println("__");
     SerialBT.print("Ganancia PID: ");
     SerialBT.println(gananciaPID);
     SerialBT.print("speedRight: ");
     SerialBT.print(speedRightPID);
     SerialBT.print(" || speedLeft: ");
     SerialBT.println(speedLeftPID);
-    SerialBT.println("______");
+    SerialBT.println("__");
   }
 }
 
@@ -134,7 +135,7 @@ void postTurn(){
 }
 void antTurn(){
   Bover->Forward(VELOCIDAD_GIROS_90, VELOCIDAD_GIROS_90);
-  delay(5);
+  delay(TICK_ANT_TURN);
 }
 
 void fullTurn(){
@@ -208,8 +209,12 @@ void movementLogic()
     delay(STOPS_PARA_PENSAR);
     if (frontDistance < MAX_FRONT_DISTANCE){
       if (rightDistance > MAX_SIDE_DISTANCE && leftDistance <= MAX_SIDE_DISTANCE) movement = RIGHT_TURN;
-      if (rightDistance > MAX_SIDE_DISTANCE && leftDistance > MAX_SIDE_DISTANCE) movement = RIGHT_TURN;
       if (rightDistance <= MAX_SIDE_DISTANCE && leftDistance > MAX_SIDE_DISTANCE) movement = LEFT_TURN;
+      if (rightDistance > MAX_SIDE_DISTANCE && leftDistance > MAX_SIDE_DISTANCE)
+      {
+        if(wall == true) movement = LEFT_TURN;
+        else if (wall == false) movement = RIGHT_TURN;
+      }
       if (rightDistance <= MAX_SIDE_DISTANCE && leftDistance <= MAX_SIDE_DISTANCE) movement = FULL_TURN;
     }
     else movement = CONTINUE;
@@ -306,9 +311,9 @@ void printAll(){
     currentTimeDebugAll = millis();
     if(DEBUG_BUTTON) printButton();
     if (DEBUG_SENSORS) printSensors();
-    SerialBT.println("______");
+    SerialBT.println("__");
     if (DEBUG_STATUS) printStatus();
-    SerialBT.println("_____________________");
+    SerialBT.println("_______");
   }
 }
 void setup() 
