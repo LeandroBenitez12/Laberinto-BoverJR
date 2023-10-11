@@ -30,8 +30,8 @@ void setup() {
   Wire.begin();           //Iniciando I2C  
   mpu.initialize();    //Iniciando el mpu
 
-  if (mpu.testConnection()) Serial.println("mpu iniciada correctamente");
-  else Serial.println("Error al iniciar la mpu");
+  if (mpu.testConnection()) SerialBT.println("mpu iniciada correctamente");
+  else SerialBT.println("Error al iniciar la mpu");
   tiempo_prev=millis();
 }
 
