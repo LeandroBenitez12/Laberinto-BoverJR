@@ -48,14 +48,16 @@ float frontDistance;
 #define ENTRAR_EN_PASILLO 200
 #define STOPS_PARA_PENSAR 500
 #define TICK_ANT_TURN 120
+
 int speedRightPID = 210;
 int speedLeftPID = 190;
 int averageSpeedRight = 210;
 int averageSpeedLeft = 190;
 
 //variables pid
-double kp = 0.3;
+double kp = 1;
 double kd = 0.14;
+double ki = 0.14;
 double setPoint;
 float gananciaPID;
 double TICK_PID = 20;
@@ -71,7 +73,7 @@ EngineController *Bover = new EngineController(rightEngine, leftEngine);
 Isensor *SharpRigh = new Sharp_GP2Y0A21(PIN_SHARP_RIGHT);
 Isensor *SharpLeft = new Sharp_GP2Y0A21(PIN_SHARP_LEFT);
 Isensor *SharpFront = new Sharp_GP2Y0A21(PIN_SHARP_FRONT);
-Pid *PID = new Pid(kp, kd, setPoint, TICK_PID);
+Pid *PID = new Pid(kp, kd, ki, setPoint, TICK_PID);
 
 Button *buttonStart1 = new Button(PIN_BUTTON_START);
 void SensorsRead()
@@ -109,8 +111,6 @@ void printSensors()
 {
   SerialBT.print("frontDistance: ");
   SerialBT.print(frontDistance);
-  SerialBT.print(" == cruda: ");
-  SerialBT.println(analogRead(33));
   SerialBT.print(" || rightDistance: ");
   SerialBT.print(rightDistance);
   SerialBT.print(" || leftDistance: ");
@@ -318,6 +318,39 @@ void printStatus(){
   SerialBT.println(state);
 }
 
+enum mensaje
+{
+  Menu_Opciones,
+};
+int mensaje = Menu_Opciones;
+
+void printStatus(){
+  String msj = "";
+  switch (mensaje)
+  {
+    case STANDBY: msj = "STANDBY";
+    break;
+    case CONTINUE: msj = "CONTINUE";
+    break;
+    case STOP: msj = msj = "STOP"; 
+    break;
+    case RIGHT_TURN: msj = "RIGHT TURN"; 
+    break;
+    case LEFT_TURN: msj = "LEFT TURN"; 
+    break;
+    case FULL_TURN: msj = "FULL TURN"; 
+    break;
+    case POST_TURN: msj = "POST TURN";
+    break;
+    case ANT_TURN: msj = "ANT TURN";
+    break;
+    case IGNORE_TURN: msj = "IGNORE_TURN";
+    break;
+  }
+  SerialBT.print("State: ");
+  SerialBT.println(state);
+}
+
 void printAll(){
   if (millis() > currentTimeDebugAll + TICK_DEBUG_ALL)
   {
@@ -337,6 +370,11 @@ void setup()
 
 void loop() 
 {    
+  if(SerialBT.available()){
+    char msg = SerialBT.read();
+    
+
+  }
   SensorsRead();
   movementLogic();
   //printAll();
