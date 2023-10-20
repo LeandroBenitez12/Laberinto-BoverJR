@@ -320,21 +320,22 @@ void printStatus(){
 
 enum mensaje
 {
-  Menu_Opciones,
+  MENU_OPCIONES,
+
 };
-int mensaje = Menu_Opciones;
+int mensaje = MENU_OPCIONES;
 
 void printStatus(){
   String msj = "";
   switch (mensaje)
   {
-    case STANDBY: msj = "STANDBY";
+    case MENU_OPCIONES: msj = "M";
     break;
     case CONTINUE: msj = "CONTINUE";
     break;
     case STOP: msj = msj = "STOP"; 
     break;
-    case RIGHT_TURN: msj = "RIGHT TURN"; 
+    case RIGHT_TURN: msj = "RIGHT TURN";
     break;
     case LEFT_TURN: msj = "LEFT TURN"; 
     break;
