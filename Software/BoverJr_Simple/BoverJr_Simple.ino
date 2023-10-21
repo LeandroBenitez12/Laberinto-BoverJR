@@ -318,34 +318,68 @@ void printStatus(){
   SerialBT.println(state);
 }
 
-enum mensaje
+enum OpcionSeleccionada
 {
   MENU_OPCIONES,
-
+  KP,
+  KI,
+  KD,
+  VEL_DERECHA,
+  VEL_IZQUIERDA,
+  DEBUGEAR_TODO,
+  NADA
 };
 int mensaje = MENU_OPCIONES;
 
-void printStatus(){
-  String msj = "";
-  switch (mensaje)
+void menuConfig(){
+  char OpcionSeleccionada = SerialBT.read();
+  switch (OpcionSeleccionada)
   {
-    case MENU_OPCIONES: msj = "M";
+    case MENU_OPCIONES:
+      SerialBT.println("A. Cambiar Kp ");
+      SerialBT.println("B. Cambiar Ki ");
+      SerialBT.println("C. Cambiar Kd ");
+      SerialBT.println("D. Cambiar Vel Derecha ");
+      SerialBT.println("E. Cambiar Vel Izquierda ");
+      SerialBT.println("F. Debugear todo ");
+      SerialBT.println("G. NADA ");
+
     break;
-    case CONTINUE: msj = "CONTINUE";
+    case KP: if (OpcionSeleccionada == "A") {
+      int dato  = SerialBT.read();
+      kp = dato;
+      }
     break;
-    case STOP: msj = msj = "STOP"; 
+    case KI: if (OpcionSeleccionada == "B") {
+      int dato  = SerialBT.read();
+      ki  = dato;
+      }
     break;
-    case RIGHT_TURN: msj = "RIGHT TURN";
+    case KD: if (OpcionSeleccionada == "C") {
+      int dato  = SerialBT.read();
+      kd = dato;
+      }
     break;
-    case LEFT_TURN: msj = "LEFT TURN"; 
+    case VEL_DERECHA: if (OpcionSeleccionada == "D") {
+      int dato  = SerialBT.read(); 
+      speedRightPID = dato;
+      }
     break;
-    case FULL_TURN: msj = "FULL TURN"; 
+    case VEL_IZQUIERDA: if (OpcionSeleccionada == "E") {
+      int dato  = SerialBT.read();
+      speedLeftPID = dato;
+      }
     break;
-    case POST_TURN: msj = "POST TURN";
+    case DEBUGEAR_TODO: if (OpcionSeleccionada == "F") {
+      bool dato  = SerialBT.read();
+      DEBUG_BUTTON = dato;
+      DEBUG_PID = dato;
+      DEBUG_SENSORS = dato;
+      DEBUG_STATUS = dato;
+      }
     break;
-    case ANT_TURN: msj = "ANT TURN";
-    break;
-    case IGNORE_TURN: msj = "IGNORE_TURN";
+    case NADA : 
+      SerialBT.println("nada");
     break;
   }
   SerialBT.print("State: ");
@@ -372,11 +406,11 @@ void setup()
 void loop() 
 {    
   if(SerialBT.available()){
-    char msg = SerialBT.read();
-    
+    menuConfig();
+    SensorsRead();
+    movementLogic();
 
   }
-  SensorsRead();
-  movementLogic();
+  
   //printAll();
 }
