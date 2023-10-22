@@ -12,11 +12,18 @@ BluetoothSerial SerialBT;
 
 // debug
 #define TICK_DEBUG_ALL 1000
+<<<<<<< HEAD
 #define DEBUG_BUTTON 0
 #define DEBUG_STATUS 0
 #define DEBUG_SENSORS 0
 #define DEBUG_PID 0
 #define TICK_MENU 5000
+=======
+#define DEBUG_BUTTON 1
+#define DEBUG_STATUS 1
+#define DEBUG_SENSORS 1
+#define DEBUG_PID 1
+>>>>>>> d0b76f3ee8112b5f2127c17d0ac5584b443cd0dd
 unsigned long currentTimePID = 0;
 unsigned long currentTimeDebugAll = 0;
 unsigned long currentTimeMenu = 0;
@@ -38,8 +45,8 @@ unsigned long currentTimeMenu = 0;
 float rightDistance;
 float leftDistance;
 float frontDistance;
-#define MAX_FRONT_DISTANCE 15
-#define MAX_SIDE_DISTANCE 22
+#define MAX_FRONT_DISTANCE 10
+#define MAX_SIDE_DISTANCE 20
 #define MAX_SIDE_DISTANCE_T 28
 #define MAX_DISTANCE_ANT_TURN 26
 
@@ -354,12 +361,11 @@ enum menu
   DEBUGEAR_TODO,
   SALIR
 };
-int menu = ELECCION;
-
-void menuConfig()
-{
-  String opcionSeleccionada = "";
-  switch (menu)
+int mensaje = MENU_OPCIONES;
+/*
+void menuConfig(){
+  char OpcionSeleccionada = SerialBT.read();
+  switch (OpcionSeleccionada)
   {
   case ELECCION:
   {
@@ -472,8 +478,74 @@ void loop()
       SerialBT.println("D. Cambiar Vel Derecha ");
       SerialBT.println("E. Cambiar Vel Izquierda ");
       SerialBT.println("F. Debugear todo ");
+<<<<<<< HEAD
       SerialBT.println("G. SALIR ");
     }
   }
   // printAll();
+=======
+      SerialBT.println("G. NADA ");
+
+    break;
+    case KP: if (OpcionSeleccionada == "A") {
+      int dato  = SerialBT.read();
+      kp = dato;
+      }
+    break;
+    case KI: if (OpcionSeleccionada == "B") {
+      int dato  = SerialBT.read();
+      ki  = dato;
+      }
+    break;
+    case KD: if (OpcionSeleccionada == "C") {
+      int dato  = SerialBT.read();
+      kd = dato;
+      }
+    break;
+    case VEL_DERECHA: if (OpcionSeleccionada == "D") {
+      int dato  = SerialBT.read(); 
+      speedRightPID = dato;
+      }
+    break;
+    case VEL_IZQUIERDA: if (OpcionSeleccionada == "E") {
+      int dato  = SerialBT.read();
+      speedLeftPID = dato;
+      }
+    break;
+    case DEBUGEAR_TODO: if (OpcionSeleccionada == "F") {
+      //bool dato  = SerialBT.read();
+      //DEBUG_BUTTON = dato;
+      //DEBUG_PID = dato;
+      //DEBUG_SENSORS = dato;
+      //DEBUG_STATUS = dato;
+      }
+    break;
+    case NADA : 
+      SerialBT.println("nada");
+    break;
+  }
+}
+*/
+void printAll(){
+  if (millis() > currentTimeDebugAll + TICK_DEBUG_ALL)
+  {
+    currentTimeDebugAll = millis();
+    if(DEBUG_BUTTON) printButton();
+    if (DEBUG_SENSORS) printSensors();
+    SerialBT.println("__");
+    if (DEBUG_STATUS) printStatus();
+    SerialBT.println("_______");
+  }
+}
+void setup() 
+{
+  SerialBT.begin("Bover");
+}
+
+void loop() 
+{ 
+  SensorsRead();
+  movementLogic(); 
+  printAll();
+>>>>>>> d0b76f3ee8112b5f2127c17d0ac5584b443cd0dd
 }
