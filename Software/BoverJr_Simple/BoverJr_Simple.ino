@@ -93,32 +93,31 @@ void printButton()
 {
   SerialBT.print("Button Start: ");
   SerialBT.println(stateStartButton);
-  SerialBT.println("__");
 }
 void printPID()
 {
   if (millis() > currentTimePID + TICK_DEBUG_ALL)
   {
     currentTimePID = millis();
-    SerialBT.println("__");
+    SerialBT.println("");
     SerialBT.print("Ganancia PID: ");
     SerialBT.println(gananciaPID);
     SerialBT.print("speedRight: ");
     SerialBT.print(speedRightPID);
     SerialBT.print(" || speedLeft: ");
     SerialBT.println(speedLeftPID);
-    SerialBT.println("__");
+    SerialBT.println("");
   }
 }
 
 void printSensors()
 {
-  SerialBT.print("frontDistance: ");
-  SerialBT.print(frontDistance);
-  SerialBT.print(" || rightDistance: ");
-  SerialBT.print(rightDistance);
-  SerialBT.print(" || leftDistance: ");
+  SerialBT.print("LeftDistance: ");
   SerialBT.println(leftDistance);
+  SerialBT.print("frontDistance: ");
+  SerialBT.println(frontDistance);
+  SerialBT.print(" || rightDistance: ");
+  SerialBT.println(rightDistance);
 }
 
 void turnRight()
@@ -284,12 +283,13 @@ void printAll()
     currentTimeDebugAll = millis();
     if (DEBUG_BUTTON)
       printButton();
+      SerialBT.println("");
     if (DEBUG_SENSORS)
       printSensors();
-    SerialBT.println("__");
+      SerialBT.println("");
     if (DEBUG_STATUS)
       printStatus();
-    SerialBT.println("_______");
+      SerialBT.println("");
   }
 }
 void setup()
