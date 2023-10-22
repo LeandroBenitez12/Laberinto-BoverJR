@@ -12,10 +12,10 @@ BluetoothSerial SerialBT;
 
 //debug
 #define TICK_DEBUG_ALL 1000
-#define DEBUG_BUTTON 0
-#define DEBUG_STATUS 0
-#define DEBUG_SENSORS 0
-#define DEBUG_PID 0
+#define DEBUG_BUTTON 1
+#define DEBUG_STATUS 1
+#define DEBUG_SENSORS 1
+#define DEBUG_PID 1
 unsigned long currentTimePID = 0;
 unsigned long currentTimeDebugAll = 0;
 
@@ -36,8 +36,8 @@ unsigned long currentTimeDebugAll = 0;
 float rightDistance;
 float leftDistance;
 float frontDistance;
-#define MAX_FRONT_DISTANCE 15
-#define MAX_SIDE_DISTANCE 22
+#define MAX_FRONT_DISTANCE 10
+#define MAX_SIDE_DISTANCE 20
 #define MAX_SIDE_DISTANCE_T 28
 #define MAX_DISTANCE_ANT_TURN 26
 
@@ -330,7 +330,7 @@ enum OpcionSeleccionada
   NADA
 };
 int mensaje = MENU_OPCIONES;
-
+/*
 void menuConfig(){
   char OpcionSeleccionada = SerialBT.read();
   switch (OpcionSeleccionada)
@@ -371,21 +371,19 @@ void menuConfig(){
       }
     break;
     case DEBUGEAR_TODO: if (OpcionSeleccionada == "F") {
-      bool dato  = SerialBT.read();
-      DEBUG_BUTTON = dato;
-      DEBUG_PID = dato;
-      DEBUG_SENSORS = dato;
-      DEBUG_STATUS = dato;
+      //bool dato  = SerialBT.read();
+      //DEBUG_BUTTON = dato;
+      //DEBUG_PID = dato;
+      //DEBUG_SENSORS = dato;
+      //DEBUG_STATUS = dato;
       }
     break;
     case NADA : 
       SerialBT.println("nada");
     break;
   }
-  SerialBT.print("State: ");
-  SerialBT.println(state);
 }
-
+*/
 void printAll(){
   if (millis() > currentTimeDebugAll + TICK_DEBUG_ALL)
   {
@@ -399,18 +397,12 @@ void printAll(){
 }
 void setup() 
 {
-  //SerialBT.begin("Bover");
-  //pinMode(PIN_BUTTON_START, INPUT_PULLUP);
+  SerialBT.begin("Bover");
 }
 
 void loop() 
-{    
-  if(SerialBT.available()){
-    menuConfig();
-    SensorsRead();
-    movementLogic();
-
-  }
-  
-  //printAll();
+{ 
+  SensorsRead();
+  movementLogic(); 
+  printAll();
 }
