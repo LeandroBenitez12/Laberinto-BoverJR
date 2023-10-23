@@ -10,6 +10,8 @@
 
 BluetoothSerial SerialBT;
 
+#meniu 
+bool menusalir = false;
 // debug
 #define TICK_DEBUG_ALL 1000
 #define DEBUG_BUTTON 1
@@ -141,6 +143,41 @@ void postTurn()
   delay(ENTRAR_EN_PASILLO);
 }
 
+void Menu(){
+  if (SerialBT.available()) {
+  String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+  if (command.startsWith("Vx")) {
+    // Procesa el comando para cambiar la velocidad de la rueda derecha
+    averageSpeedRight = command.substring(2).toInt();
+    // Aplica la nueva velocidad
+  } else if (command.startsWith("Vy")) {
+    // Procesa el comando para cambiar la velocidad de la rueda izquierda
+    averageSpeedLeft = command.substring(2).toInt();
+    // Aplica la nueva velocidad
+  } else if (command.startsWith("Kp")) {
+    // Procesa el comando para cambiar la constante proporcional kp
+    Kp = command.substring(2).toDouble();
+    // Aplica la nueva constante kp en el controlador PID
+  }
+  else if (command.startsWith("ki")) {
+    // Procesa el comando para cambiar la constante proporcional ki
+    ki = command.substring(2).toDouble();
+    // Aplica la nueva constante ki en el controlador PID
+  }
+  else if (command.startsWith("kd")) {
+    // Procesa el comando para cambiar la constante proporcional kd
+    kd = command.substring(2).toDouble();
+    // Aplica la nueva constante kd en el controlador PID
+  }
+  else if (command.startsWith("S")) {
+    // Procesa el comando para cambiar la constante proporcional kd
+    menusalir = true
+    break;
+  }
+  // Agrega más casos para otros comandos
+}
+
+}
 enum movement
 {
   STANDBY,
@@ -159,12 +196,15 @@ void movementLogic()
   {
   case STANDBY:
   {
-    bool stateStartButton = buttonStart1->GetIsPress();
-    Bover->Stop();
-    if (stateStartButton)
-    {
-      delay(2000);
-      movement = CONTINUE;
+    Menu();
+    if(menusalir == true){
+      bool stateStartButton = buttonStart1->GetIsPress();
+      Bover->Stop();
+      if (stateStartButton)
+      {
+        delay(2000);
+        movement = CONTINUE;
+      }
     }
     break;
   }
@@ -187,7 +227,7 @@ void movementLogic()
       movement = STOP;
     break;
   }
-  case STOP:
+  case STÇOP:
   {
     Bover->Stop();
     delay(DELAY_TOMAR_DECISION);
