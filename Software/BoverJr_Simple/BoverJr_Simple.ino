@@ -56,11 +56,11 @@ int averageSpeedRight = 210;
 int averageSpeedLeft = 190;
 
 // variables pid
-double kp = 1;
+double kp = 0.39;
 double kd = 0.14;
 double ki = 0.14;
 double setPoint;
-float gananciaPID;
+double gananciaPID;
 double TICK_PID = 20;
 
 // Boton
