@@ -3,24 +3,27 @@
 Pid::Pid(double p, double d, double i, double sp, double tick)
 {
     kp = p;
-    kd = d;
     ki = i;
+    kd = d;
     setPoint = sp;
-    TICK_PID = tick;
+    tick_pid = tick;
 }
 
 double Pid::ComputePid(double inp)
 {
-    if (millis() > currentTimePID + TICK_PID)
+    if (millis() > currentTime + tick_pid)
     {
         double out;
-        currentTimePID = millis();
-        Input = inp;
-        error = Input - setPoint;
-        deltaError = error - lastError;
-        lastError = error;
-        integral += error;
+        currentTime = millis();
+        elapsedTime = currentTime - previousTime;
+        input = inp;
+        error = input - setPoint;
+        integral += error* elapsedTime;
+        deltaError = (error - lastError)/elapsedTime;
 
-        return out = kp * error + kd * deltaError + ki * integral;
+        lastError = error;
+        previousTime = currentTime;
+        
+        return out = kp * error + ki * integral + kd * deltaError;
     }
 }

@@ -38,10 +38,8 @@ float rightDistance;
 float leftDistance;
 float frontDistance;
 #define PARED_ENFRENTE 10
-
-#define PARED_COSTADO_PASILLO 20
-#define PARED_COSTADO_PASILLO_T 28
-#define NO_HAY_PARED 23
+#define PARED_COSTADO_PASILLO 22
+#define NO_HAY_PARED 25
 
 // veocidades motores pwm
 #define VELOCIDAD_GIROS_90 247
