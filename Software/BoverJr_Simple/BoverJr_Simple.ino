@@ -12,6 +12,7 @@ BluetoothSerial SerialBT;
 
 //meniu 
 bool menusalir = false;
+bool wall = false;
 // debug
 #define TICK_DEBUG_ALL 1000
 #define DEBUG_BUTTON 1
@@ -21,6 +22,7 @@ bool menusalir = false;
 unsigned long currentTimePID = 0;
 unsigned long currentTimeDebugAll = 0;
 unsigned long currentTimeMenu = 0;
+#define TICK_MENU 5000
 
 // Motores
 #define PIN_RIGHT_ENGINE_IN1 26
@@ -45,8 +47,8 @@ float frontDistance;
 
 // veocidades motores pwm
 #define VELOCIDAD_GIROS_90 255
-#define GIROS_90_DELAY 300
-#define GIROS_180_DELAY 600
+int tick_giro_90 = 300;
+int tick_giro_180 = 600;
 #define ENTRAR_EN_PASILLO 500
 #define DELAY_TOMAR_DECISION 100
 #define DELAY_ANTI_INERCIA 50
@@ -122,19 +124,19 @@ void printSensors()
 void turnRight()
 {
   Bover->Right(VELOCIDAD_GIROS_90, VELOCIDAD_GIROS_90);
-  delay(GIROS_90_DELAY);
+  delay(tick_giro_90);
 }
 
 void turnLeft()
 {
   Bover->Left(VELOCIDAD_GIROS_90, VELOCIDAD_GIROS_90);
-  delay(GIROS_90_DELAY);
+  delay(tick_giro_90);
 }
 
 void fullTurn()
 {
   Bover->Right(VELOCIDAD_GIROS_90, VELOCIDAD_GIROS_90);
-  delay(GIROS_180_DELAY);
+  delay(tick_giro_180);
 }
 
 void postTurn()
@@ -143,41 +145,92 @@ void postTurn()
   delay(ENTRAR_EN_PASILLO);
 }
 
+enum menu{
+  READ_MSG,
+  WALL_TO_FOLLOW,
+  SPEED_RIGHT,
+  SPEED_LEFT,
+  KP,
+  KI,
+  KD,
+  TICK_90,
+  TICK_180,
+  GO_OUT
+};
+int menu = READ_MSG;
 void Menu(){
   if (SerialBT.available()) {
-  String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
-  if (command.startsWith("Vx")) {
-    // Procesa el comando para cambiar la velocidad de la rueda derecha
-    averageSpeedRight = command.substring(2).toInt();
-    // Aplica la nueva velocidad
-  } else if (command.startsWith("Vy")) {
-    // Procesa el comando para cambiar la velocidad de la rueda izquierda
-    averageSpeedLeft = command.substring(2).toInt();
-    // Aplica la nueva velocidad
-  } else if (command.startsWith("Kp")) {
-    // Procesa el comando para cambiar la constante proporcional kp
-    kp = command.substring(2).toDouble();
-    // Aplica la nueva constante kp en el controlador PID
+    String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+    switch(menu){
+      case READ_MSG:{
+        if( millis() > currentTimeMenu + TICK_MENU){
+          currentTimeMenu = millis();
+          SerialBT.println("Ingrese comando");
+          SerialBT.println("WTF");
+          SerialBT.println("SR");
+          SerialBT.println("SL");
+          SerialBT.println("KP");
+          SerialBT.println("KI");
+          SerialBT.println("KD");
+          SerialBT.println("90");
+          SerialBT.println("180");
+          SerialBT.println("D");
+        }
+        if (command.startsWith("wtf")) menu = WALL_TO_FOLLOW;
+        if (command.startsWith("sr")) menu = SPEED_RIGHT;
+        if (command.startsWith("sl")) menu = SPEED_LEFT;
+        if (command.startsWith("KP")) menu = KP;
+        if (command.startsWith("KI")) menu = KI;
+        if (command.startsWith("KD")) menu = KD;
+        if (command.startsWith("90")) menu = TICK_90;
+        if (command.startsWith("180")) menu = TICK_180;
+        if (command.startsWith("D")) menu = GO_OUT;
+      }
+      case WALL_TO_FOLLOW:{
+        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if (command == "1") {
+          wall = true; // Cambia el valor a true
+        } else if (command == "0") {
+          wall = false; // Cambia el valor a false
+        }
+        break;
+      }
+      case SPEED_RIGHT:{
+        averageSpeedRight = command.substring(2).toInt();
+        break;
+      }
+      case SPEED_LEFT:{
+        averageSpeedLeft = command.substring(2).toInt();
+        break;
+      }
+      case KP:{
+        kp = command.substring(2).toDouble();
+        break;
+      }
+      case KI:{
+        ki = command.substring(2).toDouble();
+        break;
+      }
+      case KD:{
+        kd = command.substring(2).toDouble();
+        break;
+      }
+      case TICK_90:{
+        tick_giro_90 = command.substring(2).toInt();
+        break;
+      }
+      case TICK_180:{
+        tick_giro_180 = command.substring(2).toInt();
+        break;
+      }
+      case GO_OUT:{
+        menusalir = true;
+        break;
+      }
+    }
   }
-  else if (command.startsWith("ki")) {
-    // Procesa el comando para cambiar la constante proporcional ki
-    ki = command.substring(2).toDouble();
-    // Aplica la nueva constante ki en el controlador PID
-  }
-  else if (command.startsWith("kd")) {
-    // Procesa el comando para cambiar la constante proporcional kd
-    kd = command.substring(2).toDouble();
-    // Aplica la nueva constante kd en el controlador PID
-  }
-  else if (command.startsWith("S")) {
-    // Procesa el comando para cambiar la constante proporcional kd
-    menusalir = true;
-    //break;
-  }
-  // Agrega más casos para otros comandos
 }
 
-}
 enum movement
 {
   STANDBY,
