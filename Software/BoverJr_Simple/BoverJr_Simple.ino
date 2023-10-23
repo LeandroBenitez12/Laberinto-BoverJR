@@ -10,7 +10,7 @@
 
 BluetoothSerial SerialBT;
 
-#meniu 
+//meniu 
 bool menusalir = false;
 // debug
 #define TICK_DEBUG_ALL 1000
@@ -156,7 +156,7 @@ void Menu(){
     // Aplica la nueva velocidad
   } else if (command.startsWith("Kp")) {
     // Procesa el comando para cambiar la constante proporcional kp
-    Kp = command.substring(2).toDouble();
+    kp = command.substring(2).toDouble();
     // Aplica la nueva constante kp en el controlador PID
   }
   else if (command.startsWith("ki")) {
@@ -171,8 +171,8 @@ void Menu(){
   }
   else if (command.startsWith("S")) {
     // Procesa el comando para cambiar la constante proporcional kd
-    menusalir = true
-    break;
+    menusalir = true;
+    //break;
   }
   // Agrega más casos para otros comandos
 }
@@ -227,7 +227,7 @@ void movementLogic()
       movement = STOP;
     break;
   }
-  case STÇOP:
+  case STOP:
   {
     Bover->Stop();
     delay(DELAY_TOMAR_DECISION);
