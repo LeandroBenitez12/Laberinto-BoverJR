@@ -65,7 +65,7 @@ double kd = 0.59;
 double ki = 0.000000000000;
 double setPoint;
 double gananciaPID;
-double TICK_PID = 20;
+double TICK_PID = 1;
 
 // Boton
 #define PIN_BUTTON_START 32

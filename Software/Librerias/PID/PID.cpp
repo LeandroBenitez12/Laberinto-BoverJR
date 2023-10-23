@@ -21,6 +21,8 @@ double Pid::ComputePid(double inp)
         integral += error* elapsedTime;
         deltaError = (error - lastError)/elapsedTime;
 
+        if(integral >= 100) integral = 100;
+        
         lastError = error;
         previousTime = currentTime;
         
