@@ -39,16 +39,15 @@ float leftDistance;
 float frontDistance;
 #define PARED_ENFRENTE 10
 #define PARED_COSTADO_PASILLO 22
-#define NO_HAY_PARED 25
+#define NO_HAY_PARED 26
 
 // veocidades motores pwm
-#define VELOCIDAD_GIROS_90 247
-#define GIROS_90_DELAY 180
-#define GIROS_180_DELAY 400
-#define ENTRAR_EN_PASILLO 200
+#define VELOCIDAD_GIROS_90 255
+#define GIROS_90_DELAY 300
+#define GIROS_180_DELAY 600
+#define ENTRAR_EN_PASILLO 500
 #define DELAY_TOMAR_DECISION 100
-#define DELAY_ANTI_INERCIA 100
-#define TICK_ANT_TURN 120
+#define DELAY_ANTI_INERCIA 50
 
 int speedRightPID = 210;
 int speedLeftPID = 190;
@@ -56,9 +55,9 @@ int averageSpeedRight = 210;
 int averageSpeedLeft = 190;
 
 // variables pid
-double kp = 0.39;
-double kd = 0.14;
-double ki = 0.14;
+double kp = 1.25;
+double kd = 0.11;
+double ki = 0.000;
 double setPoint;
 double gananciaPID;
 double TICK_PID = 20;
@@ -66,7 +65,6 @@ double TICK_PID = 20;
 // Boton
 #define PIN_BUTTON_START 32
 bool start = 0;
-bool wall;
 
 IEngine *rightEngine = new Driver_DRV8825(PIN_RIGHT_ENGINE_IN1, PIN_RIGHT_ENGINE_IN2, PWM_CHANNEL_RIGHT_IN1, PWM_CHANNEL_RIGHT_IN2);
 IEngine *leftEngine = new Driver_DRV8825(PIN_LEFT_ENGINE_IN1, PIN_LEFT_ENGINE_IN2, PWM_CHANNEL_LEFT_IN1, PWM_CHANNEL_LEFT_IN2);
@@ -164,7 +162,7 @@ void movementLogic()
     Bover->Stop();
     if (stateStartButton)
     {
-      delay(1000);
+      delay(2000);
       movement = CONTINUE;
     }
     break;
@@ -177,8 +175,8 @@ void movementLogic()
     if (DEBUG_PID)
       printPID();
 
-    speedRightPID = (averageSpeedRight + (gananciaPID));
-    speedLeftPID = (averageSpeedLeft - (gananciaPID));
+    speedRightPID = (averageSpeedRight - (gananciaPID));
+    speedLeftPID = (averageSpeedLeft + (gananciaPID));
 
     Bover->Forward(speedRightPID, speedLeftPID);
 
