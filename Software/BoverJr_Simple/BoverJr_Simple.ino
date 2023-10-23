@@ -158,7 +158,7 @@ enum menu{
   GO_OUT
 };
 int menu = READ_MSG;
-void Menu(){
+void funcionMenu(){
   if (SerialBT.available()) {
     String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
     switch(menu){
@@ -166,25 +166,25 @@ void Menu(){
         if( millis() > currentTimeMenu + TICK_MENU){
           currentTimeMenu = millis();
           SerialBT.println("Ingrese comando");
-          SerialBT.println("WTF");
-          SerialBT.println("SR");
-          SerialBT.println("SL");
-          SerialBT.println("KP");
-          SerialBT.println("KI");
-          SerialBT.println("KD");
+          SerialBT.println("wtf");
+          SerialBT.println("sr");
+          SerialBT.println("sl");
+          SerialBT.println("kp");
+          SerialBT.println("ki");
+          SerialBT.println("kd");
           SerialBT.println("90");
           SerialBT.println("180");
-          SerialBT.println("D");
+          SerialBT.println("d");
         }
         if (command.startsWith("wtf")) menu = WALL_TO_FOLLOW;
         if (command.startsWith("sr")) menu = SPEED_RIGHT;
         if (command.startsWith("sl")) menu = SPEED_LEFT;
-        if (command.startsWith("KP")) menu = KP;
-        if (command.startsWith("KI")) menu = KI;
-        if (command.startsWith("KD")) menu = KD;
+        if (command.startsWith("kp")) menu = KP;
+        if (command.startsWith("ki")) menu = KI;
+        if (command.startsWith("kd")) menu = KD;
         if (command.startsWith("90")) menu = TICK_90;
         if (command.startsWith("180")) menu = TICK_180;
-        if (command.startsWith("D")) menu = GO_OUT;
+        if (command.startsWith("d")) menu = GO_OUT;
       }
       case WALL_TO_FOLLOW:{
         String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
@@ -193,34 +193,49 @@ void Menu(){
         } else if (command == "0") {
           wall = false; // Cambia el valor a false
         }
+        if(command == "s") menu = READ_MSG;
         break;
       }
       case SPEED_RIGHT:{
         averageSpeedRight = command.substring(2).toInt();
+        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if(command == "s") menu = READ_MSG;
         break;
       }
       case SPEED_LEFT:{
         averageSpeedLeft = command.substring(2).toInt();
+        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if(command == "s") menu = READ_MSG;
         break;
       }
       case KP:{
         kp = command.substring(2).toDouble();
+        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if(command == "s") menu = READ_MSG;
         break;
       }
       case KI:{
         ki = command.substring(2).toDouble();
+        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if(command == "s") menu = READ_MSG;
         break;
       }
       case KD:{
         kd = command.substring(2).toDouble();
+        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if(command == "s") menu = READ_MSG;
         break;
       }
       case TICK_90:{
         tick_giro_90 = command.substring(2).toInt();
+        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if(command == "s") menu = READ_MSG;
         break;
       }
       case TICK_180:{
         tick_giro_180 = command.substring(2).toInt();
+        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if(command == "s") menu = READ_MSG;
         break;
       }
       case GO_OUT:{
@@ -249,8 +264,6 @@ void movementLogic()
   {
   case STANDBY:
   {
-    Menu();
-    if(menusalir == true){
       bool stateStartButton = buttonStart1->GetIsPress();
       Bover->Stop();
       if (stateStartButton)
@@ -260,8 +273,6 @@ void movementLogic()
       }
     }
     break;
-  }
-
   case CONTINUE:
   {
     float input = rightDistance - leftDistance;
@@ -337,6 +348,29 @@ void movementLogic()
 }
 }
 
+enum robot{
+  MENU,
+  MOVIMIENTOS
+};
+int robot = MENU;
+
+void robotito(){
+  switch(robot){
+    case MENU:{
+      if(menusalir == false){
+        funcionMenu();
+      }
+      else if(menusalir == true){
+        robot = MOVIMIENTOS;
+      }
+      break;
+    }
+    case MOVIMIENTOS:{
+      if(menusalir == true) movementLogic();
+      break;
+    }
+  }
+}
 void printStatus()
 {
   String state = "";
@@ -392,6 +426,6 @@ void setup()
 void loop()
 {
   SensorsRead();
-  movementLogic();
-  printAll();
+  robotito();
+  if(menusalir == true) printAll();
 }
