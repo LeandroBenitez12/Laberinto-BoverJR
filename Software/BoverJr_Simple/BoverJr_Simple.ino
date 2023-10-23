@@ -37,7 +37,7 @@ unsigned long currentTimeMenu = 0;
 float rightDistance;
 float leftDistance;
 float frontDistance;
-#define PARED_ENFRENTE 10
+#define PARED_ENFRENTE 9
 #define PARED_COSTADO_PASILLO 22
 #define NO_HAY_PARED 26
 
@@ -49,14 +49,14 @@ float frontDistance;
 #define DELAY_TOMAR_DECISION 100
 #define DELAY_ANTI_INERCIA 50
 
-int speedRightPID = 210;
-int speedLeftPID = 190;
-int averageSpeedRight = 210;
-int averageSpeedLeft = 190;
+int speedRightPID;
+int speedLeftPID;
+int averageSpeedRight = 215;
+int averageSpeedLeft = 205;
 
 // variables pid
-double kp = 1.25;
-double kd = 0.11;
+double kp = 1.9;
+double kd = 0.55;
 double ki = 0.000;
 double setPoint;
 double gananciaPID;
@@ -177,6 +177,8 @@ void movementLogic()
 
     speedRightPID = (averageSpeedRight - (gananciaPID));
     speedLeftPID = (averageSpeedLeft + (gananciaPID));
+    if(speedLeftPID >= 255)  speedLeftPID = 255;
+    if(speedRightPID >= 255) speedRightPID = 255;
 
     Bover->Forward(speedRightPID, speedLeftPID);
 
