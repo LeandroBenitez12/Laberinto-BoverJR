@@ -96,7 +96,7 @@ void setup() {
   accelgyro.setYGyroOffset(0);
   accelgyro.setZGyroOffset(0);
 }
- 
+ //anda
 ///////////////////////////////////   LOOP   ////////////////////////////////////
 void loop() {
   if (state==0){

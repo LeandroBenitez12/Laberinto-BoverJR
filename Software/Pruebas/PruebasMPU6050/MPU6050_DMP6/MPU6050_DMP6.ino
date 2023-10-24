@@ -69,10 +69,10 @@ void setup() {
     devStatus = mpu.dmpInitialize();
 
     // Valores de calibracion
-    mpu.setXGyroOffset(220);
-    mpu.setYGyroOffset(70);
-    mpu.setZGyroOffset(0);
-    mpu.setZAccelOffset(1000);
+    mpu.setXGyroOffset(53);
+    mpu.setYGyroOffset(47);
+    mpu.setZGyroOffset(-65);
+    mpu.setZAccelOffset(1071);
 
     // Activar DMP
     if (devStatus == 0) {
