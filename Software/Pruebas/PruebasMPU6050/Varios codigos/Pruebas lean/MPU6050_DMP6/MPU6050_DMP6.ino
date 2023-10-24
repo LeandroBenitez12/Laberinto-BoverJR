@@ -19,7 +19,7 @@
 MPU6050 mpu;
 //MPU6050 mpu(0x69); // <-- use for AD0 high
 
-#define INTERRUPT_PIN 16
+#define INTERRUPT_PIN 4
 #define LED_PIN 2
 
 bool blinkState = false;
@@ -70,9 +70,9 @@ void setup() {
 
     // Valores de calibracion
     mpu.setXGyroOffset(220);
-    mpu.setYGyroOffset(76);
-    mpu.setZGyroOffset(-85);
-    mpu.setZAccelOffset(1688);
+    mpu.setYGyroOffset(70);
+    mpu.setZGyroOffset(0);
+    mpu.setZAccelOffset(1000);
 
     // Activar DMP
     if (devStatus == 0) {
