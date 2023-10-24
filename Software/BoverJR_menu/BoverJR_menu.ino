@@ -43,8 +43,9 @@ float rightDistance;
 float leftDistance;
 float frontDistance;
 #define PARED_ENFRENTE 7
-#define PARED_COSTADO_PASILLO 22
-#define NO_HAY_PARED 26
+#define PARED_COSTADO_PASILLO 20
+#define NO_HAY_PARED 22
+#define NO_HAY_PARED_ENFRENTE 15
 
 // veocidades motores pwm
 #define VELOCIDAD_GIROS_90 255
@@ -223,15 +224,34 @@ void movementLogic()
 
     Bover->Forward(speedRightPID, speedLeftPID);
 
-    if (frontDistance <= PARED_ENFRENTE)
-      movement = STOP;
+    if (frontDistance <= PARED_ENFRENTE) movement = STOP;
+    if (wall == true){
+      if(leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE &&  rightDistance > NO_HAY_PARED){
+        movement = RIGHT_TURN;
+      }
+      if(leftDistance < PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE &&  rightDistance > NO_HAY_PARED){
+        movement = RIGHT_TURN;
+      }
+      if(leftDistance > PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE &&  rightDistance < NO_HAY_PARED){
+        movement = POST_TURN;
+      }
+    }else{
+      if(leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE &&  rightDistance > NO_HAY_PARED){
+        movement = LEFT_TURN;
+      }
+      if(leftDistance > PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE &&  rightDistance < NO_HAY_PARED){
+        movement = LEFT_TURN;
+      }
+      if(leftDistance < PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE &&  rightDistance > NO_HAY_PARED){
+        movement = POST_TURN;
+      }
+    }
     break;
   }
   case STOP:
   {
     Bover->Stop();
     delay(DELAY_TOMAR_DECISION);
-
     if (frontDistance <= PARED_ENFRENTE && rightDistance > NO_HAY_PARED && leftDistance <= PARED_COSTADO_PASILLO)
       movement = RIGHT_TURN;
     if (frontDistance <= PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO && leftDistance > NO_HAY_PARED)
