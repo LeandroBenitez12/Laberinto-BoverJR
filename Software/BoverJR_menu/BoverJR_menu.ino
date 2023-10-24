@@ -152,29 +152,45 @@ void processCommand(char c)
     SerialBT.println("Configurando averageSpeedRight, ingresa un valor(0-255): ");
     while (SerialBT.available() == 0);
     averageSpeedRight = SerialBT.parseInt();
+    Serial.print("Velocidad Derecha =  ");
+    Serial.println(averageSpeedRight);
+    delay(500);
     break;
   case '2':
     SerialBT.println("Configurando averageSpeedLeft, ingresa un valor(0-255): ");
     while (SerialBT.available() == 0);
     averageSpeedLeft = SerialBT.parseInt();
+    Serial.print("Velocidad Izquierda =  ");
+    Serial.println(averageSpeedLeft);
+    delay(500);
     break;
   case '3':
     SerialBT.println("Configurando kp 0.0: ");
     while (SerialBT.available() == 0);
     kp = SerialBT.parseFloat();
+    Serial.print("KP =  ");
+    Serial.println(kp);
+    delay(500);
     break;
   case '4':
     SerialBT.println("Configurando kd 0.0: ");
     while (SerialBT.available() == 0);
     kd = SerialBT.parseFloat();
+    Serial.print("KD =  ");
+    Serial.println(kd);
+    delay(500);
     break;
   case '5':
+    while (SerialBT.available() == 0);
     wall = true;
     SerialBT.println("Modo pared Derecha activado.");
+    delay(500);
     break;
   case '6':
+    while (SerialBT.available() == 0);
     menusalir = true;
     SerialBT.println("Saliendo.");
+    delay(500);
     break;
   default:
     SerialBT.println("Comando no válido.");
@@ -256,8 +272,13 @@ void movementLogic()
       movement = RIGHT_TURN;
     if (frontDistance <= PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO && leftDistance > NO_HAY_PARED)
       movement = LEFT_TURN;
-    if (frontDistance <= PARED_ENFRENTE && rightDistance > NO_HAY_PARED && leftDistance > NO_HAY_PARED)
-      movement = RIGHT_TURN;
+    if (frontDistance <= PARED_ENFRENTE && rightDistance > NO_HAY_PARED && leftDistance > NO_HAY_PARED){
+      if(wall = true){
+        movement = RIGHT_TURN;
+      }else{
+        movement LEFT_TURN;
+      }
+    }
     if (frontDistance <= PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO && leftDistance <= PARED_COSTADO_PASILLO)
       movement = FULL_TURN;
 
