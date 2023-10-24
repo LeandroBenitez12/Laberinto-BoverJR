@@ -27,8 +27,8 @@ unsigned long currentTimeMenu = 0;
 // Motores
 #define PIN_RIGHT_ENGINE_IN1 26
 #define PIN_RIGHT_ENGINE_IN2 27
-#define PIN_LEFT_ENGINE_IN1 18
-#define PIN_LEFT_ENGINE_IN2 19
+#define PIN_LEFT_ENGINE_IN1 19
+#define PIN_LEFT_ENGINE_IN2 18
 #define PWM_CHANNEL_RIGHT_IN1 1
 #define PWM_CHANNEL_RIGHT_IN2 2
 #define PWM_CHANNEL_LEFT_IN1 3
@@ -56,12 +56,12 @@ int tick_giro_180 = 600;
 #define MAX_VEL 255
 int speedRightPID;
 int speedLeftPID;
-int averageSpeedRight = 220;
-int averageSpeedLeft = 205;
+int averageSpeedRight = 255;
+int averageSpeedLeft = 255;
 
 // variables pid
-double kp = 1.9;
-double kd = 0.59;
+double kp = 0;
+double kd = 0.0;
 double ki = 0.000000000000;
 double setPoint;
 double gananciaPID;
@@ -71,8 +71,8 @@ double TICK_PID = 1;
 #define PIN_BUTTON_START 32
 bool start = 0;
 
-IEngine *rightEngine = new Driver_DRV8825(PIN_RIGHT_ENGINE_IN1, PIN_RIGHT_ENGINE_IN2, PWM_CHANNEL_RIGHT_IN1, PWM_CHANNEL_RIGHT_IN2);
-IEngine *leftEngine = new Driver_DRV8825(PIN_LEFT_ENGINE_IN1, PIN_LEFT_ENGINE_IN2, PWM_CHANNEL_LEFT_IN1, PWM_CHANNEL_LEFT_IN2);
+IEngine *leftEngine = new Driver_DRV8825(PIN_RIGHT_ENGINE_IN1, PIN_RIGHT_ENGINE_IN2, PWM_CHANNEL_RIGHT_IN1, PWM_CHANNEL_RIGHT_IN2);
+IEngine *rightEngine = new Driver_DRV8825(PIN_LEFT_ENGINE_IN1, PIN_LEFT_ENGINE_IN2, PWM_CHANNEL_LEFT_IN1, PWM_CHANNEL_LEFT_IN2);
 EngineController *Bover = new EngineController(rightEngine, leftEngine);
 Isensor *SharpRigh = new Sharp_GP2Y0A21(PIN_SHARP_RIGHT);
 Isensor *SharpLeft = new Sharp_GP2Y0A21(PIN_SHARP_LEFT);
@@ -143,107 +143,6 @@ void postTurn()
 {
   Bover->Forward(averageSpeedRight, averageSpeedLeft);
   delay(ENTRAR_EN_PASILLO);
-}
-
-enum menu{
-  READ_MSG,
-  WALL_TO_FOLLOW,
-  SPEED_RIGHT,
-  SPEED_LEFT,
-  KP,
-  KI,
-  KD,
-  TICK_90,
-  TICK_180,
-  GO_OUT
-};
-int menu = READ_MSG;
-void funcionMenu(){
-  if (SerialBT.available()) {
-    String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
-    switch(menu){
-      case READ_MSG:{
-        if( millis() > currentTimeMenu + TICK_MENU){
-          currentTimeMenu = millis();
-          SerialBT.println("Ingrese comando");
-          SerialBT.println("wtf");
-          SerialBT.println("sr");
-          SerialBT.println("sl");
-          SerialBT.println("kp");
-          SerialBT.println("ki");
-          SerialBT.println("kd");
-          SerialBT.println("90");
-          SerialBT.println("180");
-          SerialBT.println("d");
-        }
-        if (command.startsWith("wtf")) menu = WALL_TO_FOLLOW;
-        if (command.startsWith("sr")) menu = SPEED_RIGHT;
-        if (command.startsWith("sl")) menu = SPEED_LEFT;
-        if (command.startsWith("kp")) menu = KP;
-        if (command.startsWith("ki")) menu = KI;
-        if (command.startsWith("kd")) menu = KD;
-        if (command.startsWith("90")) menu = TICK_90;
-        if (command.startsWith("180")) menu = TICK_180;
-        if (command.startsWith("d")) menu = GO_OUT;
-      }
-      case WALL_TO_FOLLOW:{
-        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
-        if (command == "1") {
-          wall = true; // Cambia el valor a true
-        } else if (command == "0") {
-          wall = false; // Cambia el valor a false
-        }
-        if(command == "s") menu = READ_MSG;
-        break;
-      }
-      case SPEED_RIGHT:{
-        averageSpeedRight = command.substring(2).toInt();
-        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
-        if(command == "s") menu = READ_MSG;
-        break;
-      }
-      case SPEED_LEFT:{
-        averageSpeedLeft = command.substring(2).toInt();
-        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
-        if(command == "s") menu = READ_MSG;
-        break;
-      }
-      case KP:{
-        kp = command.substring(2).toDouble();
-        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
-        if(command == "s") menu = READ_MSG;
-        break;
-      }
-      case KI:{
-        ki = command.substring(2).toDouble();
-        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
-        if(command == "s") menu = READ_MSG;
-        break;
-      }
-      case KD:{
-        kd = command.substring(2).toDouble();
-        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
-        if(command == "s") menu = READ_MSG;
-        break;
-      }
-      case TICK_90:{
-        tick_giro_90 = command.substring(2).toInt();
-        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
-        if(command == "s") menu = READ_MSG;
-        break;
-      }
-      case TICK_180:{
-        tick_giro_180 = command.substring(2).toInt();
-        String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
-        if(command == "s") menu = READ_MSG;
-        break;
-      }
-      case GO_OUT:{
-        menusalir = true;
-        break;
-      }
-    }
-  }
 }
 
 enum movement
@@ -357,12 +256,10 @@ int robot = MENU;
 void robotito(){
   switch(robot){
     case MENU:{
-      if(menusalir == false){
         funcionMenu();
-      }
-      else if(menusalir == true){
-        robot = MOVIMIENTOS;
-      }
+        if(menusalir == true){
+          robot = MOVIMIENTOS;
+        }
       break;
     }
     case MOVIMIENTOS:{
@@ -371,6 +268,114 @@ void robotito(){
     }
   }
 }
+
+enum menu{
+  READ_MSG,
+  WALL_TO_FOLLOW,
+  SPEED_RIGHT,
+  SPEED_LEFT,
+  KP,
+  KI,
+  KD,
+  TICK_90,
+  TICK_180,
+  GO_OUT
+};
+int menu = READ_MSG;
+void funcionMenu(){
+  if (SerialBT.available()) {
+    String command = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+    switch(menu){
+      case READ_MSG:{
+        if( millis() > currentTimeMenu + TICK_MENU){
+          currentTimeMenu = millis();
+          SerialBT.println("Ingrese comando");
+          SerialBT.println("wtf");
+          SerialBT.println("sr");
+          SerialBT.println("sl");
+          SerialBT.println("kp");
+          SerialBT.println("ki");
+          SerialBT.println("kd");
+          SerialBT.println("90");
+          SerialBT.println("180");
+          SerialBT.println("d");
+        }
+        if (command.startsWith("wtf")) menu = WALL_TO_FOLLOW;
+        if (command.startsWith("sr")) menu = SPEED_RIGHT;
+        if (command.startsWith("sl")) menu = SPEED_LEFT;
+        if (command.startsWith("kp")) menu = KP;
+        if (command.startsWith("ki")) menu = KI;
+        if (command.startsWith("kd")) menu = KD;
+        if (command.startsWith("90")) menu = TICK_90;
+        if (command.startsWith("180")) menu = TICK_180;
+        if (command.startsWith("d")) menu = GO_OUT;
+      }
+      case WALL_TO_FOLLOW:{
+        String command_wtf = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if (command_wtf == "1") {
+          wall = true; // Cambia el valor a true
+        } else if (command_wtf == "0") {
+          wall = false; // Cambia el valor a false
+        }
+        if(command_wtf == "s") menu = GO_OUT;
+        break;
+      }
+      case SPEED_RIGHT:{
+        averageSpeedRight = command.substring(2).toInt();
+        Serial.println("---------");
+        Serial.println(averageSpeedRight);
+        String command_sr = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if(command_sr == "s") {
+          Serial.println("salimoo");
+          menu = GO_OUT;
+        }
+        break;
+      }
+      case SPEED_LEFT:{
+        averageSpeedLeft = command.substring(2).toInt();
+        String command_si = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if(command_si == "s") menu = GO_OUT;
+        break;
+      }
+      case KP:{
+        kp = command.substring(2).toDouble();
+        String command_kp = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if(command_kp == "s") menu = GO_OUT;
+        break;
+      }
+      case KI:{
+        ki = command.substring(2).toDouble();
+        String command_ki = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if(command_ki == "s") menu = GO_OUT;
+        break;
+      }
+      case KD:{
+        kd = command.substring(2).toDouble();
+        String command_kd = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if(command_kd == "s") menu = GO_OUT;
+        break;
+      }
+      case TICK_90:{
+        tick_giro_90 = command.substring(2).toInt();
+        String command_90 = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if(command_90 == "s") menu = GO_OUT;
+        break;
+      }
+      case TICK_180:{
+        tick_giro_180 = command.substring(2).toInt();
+        String command_180 = SerialBT.readStringUntil('\n'); // Lee el comando recibido
+        if(command_180 == "s") menu = GO_OUT;
+        break;
+      }
+      case GO_OUT:{
+        menusalir = true;
+        robot = MOVIMIENTOS;
+        break;
+      }
+    }
+  }
+}
+
 void printStatus()
 {
   String state = "";
