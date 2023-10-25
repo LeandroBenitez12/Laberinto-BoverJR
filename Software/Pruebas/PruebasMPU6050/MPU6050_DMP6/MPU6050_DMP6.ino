@@ -22,8 +22,6 @@ MPU6050 mpu;
 #define INTERRUPT_PIN 4
 #define LED_PIN 2
 
-bool blinkState = false;
-
 // MPU control/status vars
 bool dmpReady = false;  // set true if DMP init was successful
 uint8_t mpuIntStatus;   // holds actual interrupt status byte from MPU

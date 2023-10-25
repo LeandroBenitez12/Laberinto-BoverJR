@@ -374,9 +374,6 @@ void printAll()
 void setup()
 {
   SerialBT.begin("Bover");
-  if (SerialBT.available()) {
-    SerialBT.println("Menu");
-  }
 }
 
 void loop()
