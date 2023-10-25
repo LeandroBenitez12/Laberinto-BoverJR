@@ -42,27 +42,27 @@ unsigned long currentTimeMenu = 0;
 float rightDistance;
 float leftDistance;
 float frontDistance;
-#define PARED_ENFRENTE 12
-#define PARED_COSTADO_PASILLO 22
-#define NO_HAY_PARED 25
-#define NO_HAY_PARED_ENFRENTE 18
+#define PARED_ENFRENTE 11
+#define PARED_COSTADO_PASILLO 26
+#define NO_HAY_PARED 28
+#define NO_HAY_PARED_ENFRENTE 16
 
 // veocidades motores pwm
-#define VELOCIDAD_GIROS_90 150
-int tick_giro_90 = 145;
+#define VELOCIDAD_GIROS_90 200
+int tick_giro_90 = 160;
 int tick_giro_180 = 300;
-#define ENTRAR_EN_PASILLO 100
+#define ENTRAR_EN_PASILLO 200
 #define DELAY_TOMAR_DECISION 100
 #define DELAY_ANTI_INERCIA 20
 
 #define MAX_VEL 255
 int speedRightPID;
 int speedLeftPID;
-int averageSpeedRight = 150;
-int averageSpeedLeft = 150;
+int averageSpeedRight = 100;
+int averageSpeedLeft = 110;
 
 // variables pid
-double kp = 2;
+double kp = 1.0;
 double kd = 0.77;
 double ki = 0.0;
 double setPoint;
