@@ -26,10 +26,10 @@ unsigned long currentTimeMenu = 0;
 #define TICK_MENU 5000
 
 // Motores
-#define PIN_RIGHT_ENGINE_IN1 26
-#define PIN_RIGHT_ENGINE_IN2 27
-#define PIN_LEFT_ENGINE_IN1 19
-#define PIN_LEFT_ENGINE_IN2 18
+#define PIN_RIGHT_ENGINE_IN1 27
+#define PIN_RIGHT_ENGINE_IN2 26
+#define PIN_LEFT_ENGINE_IN1 18
+#define PIN_LEFT_ENGINE_IN2 19
 #define PWM_CHANNEL_RIGHT_IN1 1
 #define PWM_CHANNEL_RIGHT_IN2 2
 #define PWM_CHANNEL_LEFT_IN1 3
@@ -49,8 +49,8 @@ float frontDistance;
 
 // veocidades motores pwm
 #define VELOCIDAD_GIROS_90 255
-int tick_giro_90 = 300;
-int tick_giro_180 = 600;
+int tick_giro_90 = 140;
+int tick_giro_180 = 280;
 #define ENTRAR_EN_PASILLO 500
 #define DELAY_TOMAR_DECISION 100
 #define DELAY_ANTI_INERCIA 50
@@ -58,20 +58,22 @@ int tick_giro_180 = 600;
 #define MAX_VEL 255
 int speedRightPID;
 int speedLeftPID;
-int averageSpeedRight = 255;
-int averageSpeedLeft = 255;
+int averageSpeedRight = 200;
+int averageSpeedLeft = 200;
 
 // variables pid
-double kp = 0;
-double kd = 0.0;
-double ki = 0.000000000000;
+double kp = 5;
+double kd = 0.99;
+double ki = 0.0;
 double setPoint;
 double gananciaPID;
 double TICK_PID = 1;
 
 // Boton
 #define PIN_BUTTON_START 32
-bool stateStartButton;
+bool  == true;{
+
+}
 
 IEngine *leftEngine = new Driver_DRV8825(PIN_RIGHT_ENGINE_IN1, PIN_RIGHT_ENGINE_IN2, PWM_CHANNEL_RIGHT_IN1, PWM_CHANNEL_RIGHT_IN2);
 IEngine *rightEngine = new Driver_DRV8825(PIN_LEFT_ENGINE_IN1, PIN_LEFT_ENGINE_IN2, PWM_CHANNEL_LEFT_IN1, PWM_CHANNEL_LEFT_IN2);
@@ -92,7 +94,9 @@ void SensorsRead()
 void printButton()
 {
   SerialBT.print("Button Start: ");
-  SerialBT.println(stateStartButton);
+  SerialBT.println( == true);{
+
+  }
 }
 void printPID()
 {
@@ -215,9 +219,13 @@ void movementLogic()
   {
   case STANDBY:
   {
-    bool stateStartButton = buttonStart1->GetIsPress();
+    bool  == true ={
+
+    } buttonStart1->GetIsPress();
     Bover->Stop();
-    if (stateStartButton)
+    if ( == true){
+
+    }
     {
       delay(2000);
       movement = CONTINUE;
@@ -387,9 +395,10 @@ void loop()
     char command = SerialBT.read();
     processCommand(command);
   }
-  
+  if(stateStartButton == true) menusalir = true;
   if (menusalir == true){
     movementLogic();
     printAll();
   }
+  
 }
