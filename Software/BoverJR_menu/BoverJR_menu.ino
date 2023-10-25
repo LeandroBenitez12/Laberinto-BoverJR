@@ -42,28 +42,28 @@ unsigned long currentTimeMenu = 0;
 float rightDistance;
 float leftDistance;
 float frontDistance;
-#define PARED_ENFRENTE 7
-#define PARED_COSTADO_PASILLO 20
-#define NO_HAY_PARED 22
-#define NO_HAY_PARED_ENFRENTE 15
+#define PARED_ENFRENTE 12
+#define PARED_COSTADO_PASILLO 22
+#define NO_HAY_PARED 25
+#define NO_HAY_PARED_ENFRENTE 18
 
 // veocidades motores pwm
-#define VELOCIDAD_GIROS_90 255
-int tick_giro_90 = 140;
-int tick_giro_180 = 280;
-#define ENTRAR_EN_PASILLO 500
+#define VELOCIDAD_GIROS_90 150
+int tick_giro_90 = 145;
+int tick_giro_180 = 300;
+#define ENTRAR_EN_PASILLO 100
 #define DELAY_TOMAR_DECISION 100
-#define DELAY_ANTI_INERCIA 50
+#define DELAY_ANTI_INERCIA 20
 
 #define MAX_VEL 255
 int speedRightPID;
 int speedLeftPID;
-int averageSpeedRight = 200;
-int averageSpeedLeft = 200;
+int averageSpeedRight = 150;
+int averageSpeedLeft = 150;
 
 // variables pid
-double kp = 5;
-double kd = 0.99;
+double kp = 2;
+double kd = 0.77;
 double ki = 0.0;
 double setPoint;
 double gananciaPID;
@@ -71,7 +71,7 @@ double TICK_PID = 1;
 
 // Boton
 #define PIN_BUTTON_START 32
-bool stateStartButton;
+bool stateStartButton = 0;
 
 IEngine *leftEngine = new Driver_DRV8825(PIN_RIGHT_ENGINE_IN1, PIN_RIGHT_ENGINE_IN2, PWM_CHANNEL_RIGHT_IN1, PWM_CHANNEL_RIGHT_IN2);
 IEngine *rightEngine = new Driver_DRV8825(PIN_LEFT_ENGINE_IN1, PIN_LEFT_ENGINE_IN2, PWM_CHANNEL_LEFT_IN1, PWM_CHANNEL_LEFT_IN2);
@@ -215,7 +215,6 @@ void movementLogic()
   {
   case STANDBY:
   {
-    bool stateStartButton = buttonStart1->GetIsPress();
     Bover->Stop();
     if (stateStartButton)
     {
@@ -276,7 +275,7 @@ void movementLogic()
       if(wall = true){
         movement = RIGHT_TURN;
       }else{
-        movement LEFT_TURN;
+        movement = LEFT_TURN;
       }
     }
     if (frontDistance <= PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO && leftDistance <= PARED_COSTADO_PASILLO)
@@ -382,6 +381,7 @@ void setup()
 
 void loop()
 {
+  stateStartButton = buttonStart1->GetIsPress();
   SensorsRead();
   if (SerialBT.available()) {
     char command = SerialBT.read();
