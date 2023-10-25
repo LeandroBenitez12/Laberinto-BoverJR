@@ -71,9 +71,7 @@ double TICK_PID = 1;
 
 // Boton
 #define PIN_BUTTON_START 32
-bool  == true;{
-
-}
+bool stateStartButton;
 
 IEngine *leftEngine = new Driver_DRV8825(PIN_RIGHT_ENGINE_IN1, PIN_RIGHT_ENGINE_IN2, PWM_CHANNEL_RIGHT_IN1, PWM_CHANNEL_RIGHT_IN2);
 IEngine *rightEngine = new Driver_DRV8825(PIN_LEFT_ENGINE_IN1, PIN_LEFT_ENGINE_IN2, PWM_CHANNEL_LEFT_IN1, PWM_CHANNEL_LEFT_IN2);
@@ -94,9 +92,7 @@ void SensorsRead()
 void printButton()
 {
   SerialBT.print("Button Start: ");
-  SerialBT.println( == true);{
-
-  }
+  SerialBT.println(stateStartButton);
 }
 void printPID()
 {
@@ -219,13 +215,9 @@ void movementLogic()
   {
   case STANDBY:
   {
-    bool  == true ={
-
-    } buttonStart1->GetIsPress();
+    bool stateStartButton = buttonStart1->GetIsPress();
     Bover->Stop();
-    if ( == true){
-
-    }
+    if (stateStartButton)
     {
       delay(2000);
       movement = CONTINUE;
@@ -400,5 +392,4 @@ void loop()
     movementLogic();
     printAll();
   }
-  
 }
