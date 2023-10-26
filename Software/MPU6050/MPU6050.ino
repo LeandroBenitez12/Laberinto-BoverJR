@@ -83,9 +83,9 @@ void setup() {
 
     // Valores de calibracion
     mpu.setXGyroOffset(53);
-    mpu.setYGyroOffset(47);
-    mpu.setZGyroOffset(-65);
-    mpu.setZAccelOffset(1071);
+    mpu.setYGyroOffset(57);
+    mpu.setZGyroOffset(-61);
+    mpu.setZAccelOffset(1063);
 
     // Activar DMP
     if (devStatus == 0) {
@@ -128,7 +128,7 @@ void loop() {
     fifoCount = mpu.getFIFOCount();
 
     // Controlar overflow
-    if ((mpuIntStatus & 0x10) || fifoCount == 1024) {
+    if ((mpuIntStatus & 0x10) || fifoCount == 4096) {
         mpu.resetFIFO();
         SerialBT.println(F("FIFO overflow!"));
     } 
@@ -151,13 +151,22 @@ void loop() {
   SerialBT.print("giroz: /t");
   SerialBT.println(gyroZ);
   delay(1);
-  }
-  while(gyroZ > -10 && gyroZ < 10){
-    SerialBT.println("entro");
-    robot->Right(100, 100);
-    if(gyroZ > 80 && gyroZ < 100 ){
-      SerialBT.println("salgo");
-      break;
-    }
+
+  // Controlar el giro del robot hacia 90 grados
+  if (gyroZ > 105) {
+      // Girar a la izquierda
+      SerialBT.println("HACIA LA IZQUIERDA  ");
+      robot->Left(220, 220);
+  } else if (gyroZ < 75) {
+      // Girar a la derecha
+      SerialBT.println("HACIA LA DERECHA  ");
+      robot->Right(220, 220);
+  } else {
+      // Detener el robot cuando alcanza aproximadamente 90 grados
+      robot->Stop();
+      SerialBT.println("DETENIDO");
+
   }
 }
+}
+
