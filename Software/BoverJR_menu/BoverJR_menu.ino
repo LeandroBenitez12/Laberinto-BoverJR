@@ -226,392 +226,393 @@ void mpuLoop()
     delay(1);
   }
 }
-  void SensorsRead()
-  {
-    frontDistance = SharpFront->SensorRead();
-    rightDistance = SharpRigh->SensorRead();
-    leftDistance = SharpLeft->SensorRead();
-  }
+void SensorsRead()
+{
+  frontDistance = SharpFront->SensorRead();
+  rightDistance = SharpRigh->SensorRead();
+  leftDistance = SharpLeft->SensorRead();
+}
 
-  void printButton()
+void printButton()
+{
+  SerialBT.print("Button Start: ");
+  SerialBT.println(stateStartButton);
+}
+void printPID()
+{
+  if (millis() > currentTimePID + TICK_DEBUG_ALL)
   {
-    SerialBT.print("Button Start: ");
-    SerialBT.println(stateStartButton);
+    currentTimePID = millis();
+    SerialBT.println("");
+    SerialBT.print("Ganancia PID: ");
+    SerialBT.println(gananciaPID);
+    SerialBT.print("speedRight: ");
+    SerialBT.print(speedRightPID);
+    SerialBT.print(" || speedLeft: ");
+    SerialBT.println(speedLeftPID);
+    SerialBT.println("");
   }
-  void printPID()
+}
+
+void printSensors()
+{
+  SerialBT.print("LeftDistance: ");
+  SerialBT.println(leftDistance);
+  SerialBT.print("frontDistance: ");
+  SerialBT.println(frontDistance);
+  SerialBT.print(" || rightDistance: ");
+  SerialBT.println(rightDistance);
+}
+enum movement
+{
+  STANDBY,
+  CONTINUE,
+  STOP,
+  RIGHT_TURN,
+  LEFT_TURN,
+  FULL_TURN,
+  POST_TURN,
+};
+int movement = STANDBY;
+
+turnRight()
+{
+  posicionActual = gyroZ;
+  if (gyroZ >= -5 && gyroZ <= 5)
   {
-    if (millis() > currentTimePID + TICK_DEBUG_ALL)
+    do
     {
-      currentTimePID = millis();
-      SerialBT.println("");
-      SerialBT.print("Ganancia PID: ");
-      SerialBT.println(gananciaPID);
-      SerialBT.print("speedRight: ");
-      SerialBT.print(speedRightPID);
-      SerialBT.print(" || speedLeft: ");
-      SerialBT.println(speedLeftPID);
-      SerialBT.println("");
+      Bover->Right(VELOCIDAD_GIROS_90, VELOCIDAD_GIROS_90);
+      if (millis() > currentTimeDer + TICK_DEBUG_Z)
+      {
+        currentTimeDer = millis();
+        SerialBT.println("HACIA LA DERECHA  ");
+      }
+    } while (gyroZ >= 85 && gyroZ <= 95);
+  }
+  else
+  {
+    SerialBT.println("detenido  ");
+    movement = POST_TURN;
+    /*if (millis() > currentTimeStop + TICK_DEBUG_Z)
+    {
+      currentTimeStop = millis();
+      SerialBT.println("detenido  ");
+    }*/
+  }
+}
+
+void turnLeft()
+{
+  if (gyroZ >= -5 && gyroZ <= 5)
+  {
+    do
+    {
+      Bover->Right(VELOCIDAD_GIROS_90, VELOCIDAD_GIROS_90);
+      if (millis() > currentTimeDer + TICK_DEBUG_Z)
+      {
+        currentTimeDer = millis();
+        SerialBT.println("HACIA LA DERECHA  ");
+      }
+    } while (gyroZ <= -85 && gyroZ >= -95);
+  }
+  else
+  {
+    SerialBT.println("detenido  ");
+    movement = POST_TURN;
+    /*if (millis() > currentTimeStop + TICK_DEBUG_Z)
+    {
+      currentTimeStop = millis();
+      SerialBT.println("detenido  ");
+    }*/
+  }
+}
+
+void fullTurn()
+{
+  if (gyroZ >= -5 && gyroZ <= 5)
+  {
+    do
+    {
+      Bover->Right(VELOCIDAD_GIROS_90, VELOCIDAD_GIROS_90);
+      if (millis() > currentTimeDer + TICK_DEBUG_Z)
+      {
+        currentTimeDer = millis();
+        SerialBT.println("HACIA LA DERECHA  ");
+      }
+    } while (gyroZ >= 172 && gyroZ <= 180 || gyroZ <= -172 && gyroZ >= -180);
+  }
+  else
+  {
+    SerialBT.println("detenido  ");
+    movement = POST_TURN;
+    /*if (millis() > currentTimeStop + TICK_DEBUG_Z)
+    {
+      currentTimeStop = millis();
+      SerialBT.println("detenido  ");
+    }*/
+  }
+}
+
+void postTurn()
+{
+  Bover->Forward(averageSpeedRight, averageSpeedLeft);
+  delay(ENTRAR_EN_PASILLO);
+}
+
+void processCommand(char c)
+{
+  switch (c)
+  {
+  case '1':
+    SerialBT.println("Configurando averageSpeedRight, ingresa un valor(0-255): ");
+    while (SerialBT.available() == 0)
+      ;
+    averageSpeedRight = SerialBT.parseInt();
+    Serial.print("Velocidad Derecha =  ");
+    Serial.println(averageSpeedRight);
+    delay(500);
+    break;
+  case '2':
+    SerialBT.println("Configurando averageSpeedLeft, ingresa un valor(0-255): ");
+    while (SerialBT.available() == 0)
+      ;
+    averageSpeedLeft = SerialBT.parseInt();
+    Serial.print("Velocidad Izquierda =  ");
+    Serial.println(averageSpeedLeft);
+    delay(500);
+    break;
+  case '3':
+    SerialBT.println("Configurando kp 0.0: ");
+    while (SerialBT.available() == 0)
+      ;
+    kp = SerialBT.parseFloat();
+    Serial.print("KP =  ");
+    Serial.println(kp);
+    delay(500);
+    break;
+  case '4':
+    SerialBT.println("Configurando kd 0.0: ");
+    while (SerialBT.available() == 0)
+      ;
+    kd = SerialBT.parseFloat();
+    Serial.print("KD =  ");
+    Serial.println(kd);
+    delay(500);
+    break;
+  case '5':
+    while (SerialBT.available() == 0)
+      ;
+    wall = true;
+    SerialBT.println("Modo pared Derecha activado.");
+    delay(500);
+    break;
+  case '6':
+    while (SerialBT.available() == 0)
+      ;
+    menusalir = true;
+    SerialBT.println("Saliendo.");
+    delay(500);
+    break;
+  default:
+    SerialBT.println("Comando no válido.");
+    break;
+  }
+}
+
+void movementLogic()
+{
+  switch (movement)
+  {
+  case STANDBY:
+  {
+    Bover->Stop();
+    if (stateStartButton)
+    {
+      delay(2000);
+      movement = CONTINUE;
     }
   }
+  break;
+  case CONTINUE:
+  {
+    float input = rightDistance - leftDistance;
+    gananciaPID = PID->ComputePid(input);
+    if (DEBUG_PID)
+      printPID();
 
-  void printSensors()
-  {
-    SerialBT.print("LeftDistance: ");
-    SerialBT.println(leftDistance);
-    SerialBT.print("frontDistance: ");
-    SerialBT.println(frontDistance);
-    SerialBT.print(" || rightDistance: ");
-    SerialBT.println(rightDistance);
-  }
-  enum movement
-  {
-    STANDBY,
-    CONTINUE,
-    STOP,
-    RIGHT_TURN,
-    LEFT_TURN,
-    FULL_TURN,
-    POST_TURN,
-  };
-  int movement = STANDBY;
+    speedRightPID = (averageSpeedRight - (gananciaPID));
+    speedLeftPID = (averageSpeedLeft + (gananciaPID));
+    if (speedLeftPID >= MAX_VEL)
+      speedLeftPID = MAX_VEL;
+    if (speedRightPID >= MAX_VEL)
+      speedRightPID = MAX_VEL;
 
-  void turnRight()
-  {
-    if (gyroZ >= -5 && gyroZ <= 5)
+    Bover->Forward(speedRightPID, speedLeftPID);
+
+    if (frontDistance <= PARED_ENFRENTE)
+      movement = STOP;
+    if (wall == true)
     {
-      do
+      if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
       {
-        Bover->Right(VELOCIDAD_GIROS_90, VELOCIDAD_GIROS_90);
-        if (millis() > currentTimeDer + TICK_DEBUG_Z)
-        {
-          currentTimeDer = millis();
-          SerialBT.println("HACIA LA DERECHA  ");
-        }
-      } while (gyroZ >= 85 && gyroZ <= 95);
+        movement = RIGHT_TURN;
+      }
+      if (leftDistance < PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
+      {
+        movement = RIGHT_TURN;
+      }
+      if (leftDistance > PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance < NO_HAY_PARED)
+      {
+        movement = POST_TURN;
+      }
     }
     else
     {
-      SerialBT.println("detenido  ");
-      movement = POST_TURN;
-      /*if (millis() > currentTimeStop + TICK_DEBUG_Z)
+      if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
       {
-        currentTimeStop = millis();
-        SerialBT.println("detenido  ");
-      }*/
-    }  
-  }
-
-  void turnLeft()
-  {
-    if (gyroZ >= -5 && gyroZ <= 5)
-    {
-      do
+        movement = LEFT_TURN;
+      }
+      if (leftDistance > PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance < NO_HAY_PARED)
       {
-        Bover->Right(VELOCIDAD_GIROS_90, VELOCIDAD_GIROS_90);
-        if (millis() > currentTimeDer + TICK_DEBUG_Z)
-        {
-          currentTimeDer = millis();
-          SerialBT.println("HACIA LA DERECHA  ");
-        }
-      } while (gyroZ <= -85 && gyroZ >= -95);
-    }
-    else
-    {
-      SerialBT.println("detenido  ");
-      movement = POST_TURN;
-      /*if (millis() > currentTimeStop + TICK_DEBUG_Z)
+        movement = LEFT_TURN;
+      }
+      if (leftDistance < PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
       {
-        currentTimeStop = millis();
-        SerialBT.println("detenido  ");
-      }*/
-    }  
-  }
-
-  void fullTurn()
-  {
-    if (gyroZ >= -5 && gyroZ <= 5)
-    {
-      do
-      {
-        Bover->Right(VELOCIDAD_GIROS_90, VELOCIDAD_GIROS_90);
-        if (millis() > currentTimeDer + TICK_DEBUG_Z)
-        {
-          currentTimeDer = millis();
-          SerialBT.println("HACIA LA DERECHA  ");
-        }
-      } while (gyroZ >= 172 && gyroZ <= 180 || gyroZ <= -172 && gyroZ >= -180);
-    }
-    else
-    {
-      SerialBT.println("detenido  ");
-      movement = POST_TURN;
-      /*if (millis() > currentTimeStop + TICK_DEBUG_Z)
-      {
-        currentTimeStop = millis();
-        SerialBT.println("detenido  ");
-      }*/
-    }  
-  }
-
-  void postTurn()
-  {
-    Bover->Forward(averageSpeedRight, averageSpeedLeft);
-    delay(ENTRAR_EN_PASILLO);
-  }
-
-  void processCommand(char c)
-  {
-    switch (c)
-    {
-    case '1':
-      SerialBT.println("Configurando averageSpeedRight, ingresa un valor(0-255): ");
-      while (SerialBT.available() == 0)
-        ;
-      averageSpeedRight = SerialBT.parseInt();
-      Serial.print("Velocidad Derecha =  ");
-      Serial.println(averageSpeedRight);
-      delay(500);
-      break;
-    case '2':
-      SerialBT.println("Configurando averageSpeedLeft, ingresa un valor(0-255): ");
-      while (SerialBT.available() == 0)
-        ;
-      averageSpeedLeft = SerialBT.parseInt();
-      Serial.print("Velocidad Izquierda =  ");
-      Serial.println(averageSpeedLeft);
-      delay(500);
-      break;
-    case '3':
-      SerialBT.println("Configurando kp 0.0: ");
-      while (SerialBT.available() == 0)
-        ;
-      kp = SerialBT.parseFloat();
-      Serial.print("KP =  ");
-      Serial.println(kp);
-      delay(500);
-      break;
-    case '4':
-      SerialBT.println("Configurando kd 0.0: ");
-      while (SerialBT.available() == 0)
-        ;
-      kd = SerialBT.parseFloat();
-      Serial.print("KD =  ");
-      Serial.println(kd);
-      delay(500);
-      break;
-    case '5':
-      while (SerialBT.available() == 0)
-        ;
-      wall = true;
-      SerialBT.println("Modo pared Derecha activado.");
-      delay(500);
-      break;
-    case '6':
-      while (SerialBT.available() == 0)
-        ;
-      menusalir = true;
-      SerialBT.println("Saliendo.");
-      delay(500);
-      break;
-    default:
-      SerialBT.println("Comando no válido.");
-      break;
-    }
-  }
-
-  void movementLogic()
-  {
-    switch (movement)
-    {
-    case STANDBY:
-    {
-      Bover->Stop();
-      if (stateStartButton)
-      {
-        delay(2000);
-        movement = CONTINUE;
+        movement = POST_TURN;
       }
     }
     break;
-    case CONTINUE:
+  }
+  case STOP:
+  {
+    Bover->Stop();
+    delay(DELAY_TOMAR_DECISION);
+    if (frontDistance <= PARED_ENFRENTE && rightDistance > NO_HAY_PARED && leftDistance <= PARED_COSTADO_PASILLO)
+      movement = RIGHT_TURN;
+    if (frontDistance <= PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO && leftDistance > NO_HAY_PARED)
+      movement = LEFT_TURN;
+    if (frontDistance <= PARED_ENFRENTE && rightDistance > NO_HAY_PARED && leftDistance > NO_HAY_PARED)
     {
-      float input = rightDistance - leftDistance;
-      gananciaPID = PID->ComputePid(input);
-      if (DEBUG_PID)
-        printPID();
-
-      speedRightPID = (averageSpeedRight - (gananciaPID));
-      speedLeftPID = (averageSpeedLeft + (gananciaPID));
-      if (speedLeftPID >= MAX_VEL)
-        speedLeftPID = MAX_VEL;
-      if (speedRightPID >= MAX_VEL)
-        speedRightPID = MAX_VEL;
-
-      Bover->Forward(speedRightPID, speedLeftPID);
-
-      if (frontDistance <= PARED_ENFRENTE)
-        movement = STOP;
-      if (wall == true)
+      if (wall = true)
       {
-        if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
-        {
-          movement = RIGHT_TURN;
-        }
-        if (leftDistance < PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
-        {
-          movement = RIGHT_TURN;
-        }
-        if (leftDistance > PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance < NO_HAY_PARED)
-        {
-          movement = POST_TURN;
-        }
+        movement = RIGHT_TURN;
       }
       else
       {
-        if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
-        {
-          movement = LEFT_TURN;
-        }
-        if (leftDistance > PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance < NO_HAY_PARED)
-        {
-          movement = LEFT_TURN;
-        }
-        if (leftDistance < PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
-        {
-          movement = POST_TURN;
-        }
-      }
-      break;
-    }
-    case STOP:
-    {
-      Bover->Stop();
-      delay(DELAY_TOMAR_DECISION);
-      if (frontDistance <= PARED_ENFRENTE && rightDistance > NO_HAY_PARED && leftDistance <= PARED_COSTADO_PASILLO)
-        movement = RIGHT_TURN;
-      if (frontDistance <= PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO && leftDistance > NO_HAY_PARED)
         movement = LEFT_TURN;
-      if (frontDistance <= PARED_ENFRENTE && rightDistance > NO_HAY_PARED && leftDistance > NO_HAY_PARED)
-      {
-        if (wall = true)
-        {
-          movement = RIGHT_TURN;
-        }
-        else
-        {
-          movement = LEFT_TURN;
-        }
       }
-      if (frontDistance <= PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO && leftDistance <= PARED_COSTADO_PASILLO)
-        movement = FULL_TURN;
-
-      else if (frontDistance > PARED_ENFRENTE)
-        movement = CONTINUE;
-      break;
     }
+    if (frontDistance <= PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO && leftDistance <= PARED_COSTADO_PASILLO)
+      movement = FULL_TURN;
 
-    case RIGHT_TURN:
-    {
-      turnRight();
-      break;
-    }
-
-    case LEFT_TURN:
-    {
-      turnLeft();
-      Bover->Stop();
-      delay(DELAY_ANTI_INERCIA);
-      movement = POST_TURN;
-      break;
-    }
-
-    case FULL_TURN:
-    {
-      fullTurn();
-      Bover->Stop();
-      delay(DELAY_ANTI_INERCIA);
-      movement = POST_TURN;
-      break;
-    }
-
-    case POST_TURN:
-    {
-      postTurn();
+    else if (frontDistance > PARED_ENFRENTE)
       movement = CONTINUE;
-      break;
-    }
-    }
+    break;
   }
 
-  void printStatus()
+  case RIGHT_TURN:
   {
-    String state = "";
-    switch (movement)
-    {
-    case STANDBY:
-      state = "STANDBY";
-      break;
-    case CONTINUE:
-      state = "CONTINUE";
-      break;
-    case STOP:
-      state = state = "STOP";
-      break;
-    case RIGHT_TURN:
-      state = "RIGHT TURN";
-      break;
-    case LEFT_TURN:
-      state = "LEFT TURN";
-      break;
-    case FULL_TURN:
-      state = "FULL TURN";
-      break;
-    case POST_TURN:
-      state = "POST TURN";
-      break;
-    }
-    SerialBT.print("State: ");
-    SerialBT.println(state);
+    turnRight();
+    break;
   }
 
-  void printAll()
+  case LEFT_TURN:
   {
-    if (millis() > currentTimeDebugAll + TICK_DEBUG_ALL)
-    {
-      currentTimeDebugAll = millis();
-      if (DEBUG_BUTTON)
-        printButton();
-      SerialBT.println("");
-      if (DEBUG_SENSORS)
-        printSensors();
-      SerialBT.println("");
-      if (DEBUG_STATUS)
-        printStatus();
-      SerialBT.println("");
-    }
-  }
-  void setup()
-  {
-    Serial.begin(9600);
-    SerialBT.begin("Bover");
-    mpuSetup();
+    turnLeft();
+    Bover->Stop();
+    delay(DELAY_ANTI_INERCIA);
+    movement = POST_TURN;
+    break;
   }
 
-  void loop()
+  case FULL_TURN:
   {
-    mpuLoop();
-    stateStartButton = buttonStart1->GetIsPress();
-    SensorsRead();
-    if (SerialBT.available())
-    {
-      char command = SerialBT.read();
-      processCommand(command);
-    }
-    if (stateStartButton == true)
-      menusalir = true;
-    if (menusalir == true)
-    {
-      movementLogic();
-      printAll();
-    }
+    fullTurn();
+    Bover->Stop();
+    delay(DELAY_ANTI_INERCIA);
+    movement = POST_TURN;
+    break;
   }
+
+  case POST_TURN:
+  {
+    postTurn();
+    movement = CONTINUE;
+    break;
+  }
+  }
+}
+
+void printStatus()
+{
+  String state = "";
+  switch (movement)
+  {
+  case STANDBY:
+    state = "STANDBY";
+    break;
+  case CONTINUE:
+    state = "CONTINUE";
+    break;
+  case STOP:
+    state = state = "STOP";
+    break;
+  case RIGHT_TURN:
+    state = "RIGHT TURN";
+    break;
+  case LEFT_TURN:
+    state = "LEFT TURN";
+    break;
+  case FULL_TURN:
+    state = "FULL TURN";
+    break;
+  case POST_TURN:
+    state = "POST TURN";
+    break;
+  }
+  SerialBT.print("State: ");
+  SerialBT.println(state);
+}
+
+void printAll()
+{
+  if (millis() > currentTimeDebugAll + TICK_DEBUG_ALL)
+  {
+    currentTimeDebugAll = millis();
+    if (DEBUG_BUTTON)
+      printButton();
+    SerialBT.println("");
+    if (DEBUG_SENSORS)
+      printSensors();
+    SerialBT.println("");
+    if (DEBUG_STATUS)
+      printStatus();
+    SerialBT.println("");
+  }
+}
+void setup()
+{
+  Serial.begin(9600);
+  SerialBT.begin("Bover");
+  mpuSetup();
+}
+
+void loop()
+{
+  mpuLoop();
+  stateStartButton = buttonStart1->GetIsPress();
+  SensorsRead();
+  if (SerialBT.available())
+  {
+    char command = SerialBT.read();
+    processCommand(command);
+  }
+  if (stateStartButton == true)
+    menusalir = true;
+  if (menusalir == true)
+  {
+    movementLogic();
+    printAll();
+  }
+}

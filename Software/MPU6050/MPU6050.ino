@@ -74,17 +74,17 @@ void mpuSetup()
   Serial.begin(9600);
   SerialBT.begin("Bover");
   // Iniciar MPU6050
-  SerialBT.println(F("Initializing I2C devices..."));
+  //SerialBT.println(F("Initializing I2C devices..."));
   mpu.initialize();
   pinMode(INTERRUPT_PIN, INPUT);
 
   // Comprobar  conexion
-  SerialBT.println(F("Testing device connections..."));
-  SerialBT.println(mpu.testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
+  //SerialBT.println(F("Testing device connections..."));
+  //SerialBT.println(mpu.testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
 
   // Iniciar DMP
-  SerialBT.println(F("Initializing DMP..."));
-  devStatus = mpu.dmpInitialize();
+  //SerialBT.println(F("Initializing DMP..."));
+  //devStatus = mpu.dmpInitialize();
 
   // Valores de calibracion
   mpu.setXGyroOffset(53);
@@ -95,14 +95,14 @@ void mpuSetup()
   // Activar DMP
   if (devStatus == 0)
   {
-    SerialBT.println(F("Enabling DMP..."));
+    //SerialBT.println(F("Enabling DMP..."));
     mpu.setDMPEnabled(true);
 
     // Activar interrupcion
     attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), dmpDataReady, RISING);
     mpuIntStatus = mpu.getIntStatus();
 
-    SerialBT.println(F("DMP ready! Waiting for first interrupt..."));
+    //SerialBT.println(F("DMP ready! Waiting for first interrupt..."));
     dmpReady = true;
 
     // get expected DMP packet size for later comparison
@@ -114,9 +114,9 @@ void mpuSetup()
     // 1 = initial memory load failed
     // 2 = DMP configuration updates failed
     // (if it's going to break, usually the code will be 1)
-    SerialBT.print(F("DMP Initialization failed (code "));
-    SerialBT.print(devStatus);
-    SerialBT.println(F(")"));
+    //SerialBT.print(F("DMP Initialization failed (code "));
+    //SerialBT.print(devStatus);
+    //SerialBT.println(F(")"));
   }
 }
 void mpuLoop()
@@ -141,7 +141,7 @@ void mpuLoop()
   if ((mpuIntStatus & 0x10) || fifoCount == 4096)
   {
     mpu.resetFIFO();
-    SerialBT.println(F("FIFO overflow!"));
+    //SerialBT.println(F("FIFO overflow!"));
   }
   else if (mpuIntStatus & 0x02)
   {
@@ -164,11 +164,12 @@ void mpuLoop()
     if (millis() > currentTimeZ + TICK_DEBUG_Z)
     {
       currentTimeZ = millis();
-      SerialBT.print("Eje Z");
-      SerialBT.print(gyroZ);
+      SerialBT.print("Eje Z:  ");
+      SerialBT.println(gyroZ);
     }
     delay(1);
   }
+}
   void setup()
   {
     mpuSetup();
@@ -176,7 +177,6 @@ void mpuLoop()
 
   void loop()
   {
-
     mpuLoop();
     // Controlar el giro del robot hacia 90 grados
     /*if (gyroZ > 105) {
@@ -193,26 +193,28 @@ void mpuLoop()
         SerialBT.println("DETENIDO");
     }
     */
-    if (gyroZ >= 0 && gyroZ <= 180)
+    float anguloDeseado = gyroZ + 90.0; // Ángulo deseado
+    float margen = 10.0;                 // Margen de error permitido
+
+    do
     {
-      do
+       // Actualizar el valor del giroscopio en cada iteración
+      if (gyroZ > anguloDeseado + margen)
       {
-        robot->Right(160, 160);
-        if (millis() > currentTimeDer + TICK_DEBUG_Z)
-        {
-          currentTimeDer = millis();
-          SerialBT.println("HACIA LA DERECHA  ");
-        }
-      } while (gyroZ > -180 && gyroZ < 0);
-    }
-    else
-    {
-      robot->Stop();
-      if (millis() > currentTimeStop + TICK_DEBUG_Z)
-      {
-        currentTimeStop = millis();
-        SerialBT.println("detenido  ");
+        // Girar a la izquierda
+        robot->Left(160, 160);
       }
-    }
+      else if (gyroZ < anguloDeseado - margen)
+      {
+        // Girar a la derecha
+        robot->Right(160, 160);
+      }
+      else
+      {
+        // Detener el robot cuando está dentro del margen
+        robot->Stop();
+      }
+    } while (gyroZ > anguloDeseado + margen || gyroZ < anguloDeseado - margen);
+    robot->Stop();
+    delay(3000);
   }
-}
