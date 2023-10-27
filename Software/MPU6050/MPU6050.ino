@@ -19,8 +19,11 @@
 #define PWM_CHANNEL_LEFT_IN2 4
 #define INTERRUPT_PIN 4
 #define LED_PIN 2
+#define TICK_DEBUG_Z 500
 float gyroZ;
-
+unsigned long currentTimeDer;
+unsigned long currentTimeStop;
+unsigned long currentTimeZ;
 // class default I2C address is 0x68
 // specific I2C addresses may be passed as a parameter here
 // AD0 low = 0x68
@@ -148,12 +151,15 @@ void loop() {
   mpu.dmpGetGravity(&gravity, &q);
   mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
   gyroZ = ypr[0] * 180/M_PI;
-  SerialBT.print("giroz: /t");
-  SerialBT.println(gyroZ);
+  if( millis() > currentTimeZ + TICK_DEBUG_Z){
+    currentTimeZ = millis();
+    SerialBT.print("Eje Z");
+    SerialBT.print(gyroZ);
+  }
   delay(1);
 
   // Controlar el giro del robot hacia 90 grados
-  if (gyroZ > 105) {
+  /*if (gyroZ > 105) {
       // Girar a la izquierda
       SerialBT.println("HACIA LA IZQUIERDA  ");
       robot->Left(220, 220);
@@ -165,8 +171,23 @@ void loop() {
       // Detener el robot cuando alcanza aproximadamente 90 grados
       robot->Stop();
       SerialBT.println("DETENIDO");
-
   }
-}
+  */
+  if(gyroZ >= 0 && gyroZ <= 180){
+    do{
+      robot->Right(160, 160);
+      if( millis() > currentTimeDer + TICK_DEBUG_Z){
+        currentTimeDer = millis();
+        SerialBT.println("HACIA LA DERECHA  ");
+      }
+    }while(gyroZ > -180 && gyroZ < 0);
+  }else{
+    robot->Stop();
+    if( millis() > currentTimeStop + TICK_DEBUG_Z){
+      currentTimeStop = millis();
+      SerialBT.println("detenido  ");
+    }
+  }
+  }
 }
 
