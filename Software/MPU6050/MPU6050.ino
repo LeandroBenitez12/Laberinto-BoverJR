@@ -161,12 +161,7 @@ void mpuLoop()
     mpu.dmpGetGravity(&gravity, &q);
     mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
     gyroZ = ypr[0] * 180 / M_PI;
-    if (millis() > currentTimeZ + TICK_DEBUG_Z)
-    {
-      currentTimeZ = millis();
-      SerialBT.print("Eje Z:  ");
-      SerialBT.println(gyroZ);
-    }
+    
     delay(1);
   }
 }
@@ -176,8 +171,7 @@ void mpuLoop()
   }
 
   void loop()
-  {
-    mpuLoop();
+  {    
     // Controlar el giro del robot hacia 90 grados
     /*if (gyroZ > 105) {
         // Girar a la izquierda
@@ -192,29 +186,58 @@ void mpuLoop()
         robot->Stop();
         SerialBT.println("DETENIDO");
     }
+    /*
+    if(gyroZ >= 0 && gyroZ <= 180){
+    do{
+      
+      SerialBT.println(" GyroZ ");
+      SerialBT.println(gyroZ);
+      robot->Right(160, 160);
+      if( millis() > currentTimeDer + TICK_DEBUG_Z){
+        currentTimeDer = millis();
+        SerialBT.println("HACIA LA DERECHA  ");
+      }
+    }while(gyroZ > -180 && gyroZ < 0);
+  }else{
+    robot->Stop();
+    if( millis() > currentTimeStop + TICK_DEBUG_Z){
+      currentTimeStop = millis();
+      SerialBT.println("detenido  ");
+    }
     */
     float anguloDeseado = gyroZ + 90.0; // Ángulo deseado
+    /*if(anguloDeseado > 180){
+      anguloDeseado = - 90.0;
+    }*/
     float margen = 10.0;                 // Margen de error permitido
-
     do
     {
+      mpuLoop();
+
+      if (millis() > currentTimeZ + TICK_DEBUG_Z)
+    {
+      currentTimeZ = millis();
+      SerialBT.print("Eje Z:  ");
+      SerialBT.println(gyroZ);
+    }
        // Actualizar el valor del giroscopio en cada iteración
       if (gyroZ > anguloDeseado + margen)
       {
         // Girar a la izquierda
         robot->Left(160, 160);
       }
-      else if (gyroZ < anguloDeseado - margen)
+      /*else if (gyroZ < anguloDeseado - margen)
       {
         // Girar a la derecha
         robot->Right(160, 160);
-      }
+      }*/
       else
       {
         // Detener el robot cuando está dentro del margen
         robot->Stop();
       }
-    } while (gyroZ > anguloDeseado + margen || gyroZ < anguloDeseado - margen);
+    } while (gyroZ > anguloDeseado + margen /*&& gyroZ < anguloDeseado - margen*/);
+
     robot->Stop();
     delay(3000);
-  }
+}
