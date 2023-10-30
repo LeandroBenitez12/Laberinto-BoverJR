@@ -220,8 +220,10 @@ void mpuLoop() {
     gyroZ = ypr[0] * 180 / M_PI;
     if (millis() > currentTimeZ + TICK_DEBUG_Z) {
       currentTimeZ = millis();
+      SerialBT.println("");
       SerialBT.print("Eje Z:  ");
       SerialBT.print(gyroZ);
+      SerialBT.println("");
     }
     delay(1);
   }
@@ -319,21 +321,23 @@ void processCommand(char c) {
     case '3':
       SerialBT.println("Configurando kp 0.0: ");
       while (SerialBT.available() == 0);
+      SerialBT.print("KP Origin=  ");
+      SerialBT.println(kp);
       kp = SerialBT.parseFloat();
-      SerialBT.print("KP =  ");
+      SerialBT.print("KP Changed =  ");
       SerialBT.println(kp);
       break;
     case '4':
       SerialBT.println("Configurando kd 0.0: ");
-      while (SerialBT.available() == 0)
-        ;
+      while (SerialBT.available() == 0);
+      SerialBT.print("kd Origin=  ");
+      SerialBT.println(kd);
       kd = SerialBT.parseFloat();
-      SerialBT.print("KD =  ");
+      SerialBT.print("kd Changed =  ");
       SerialBT.println(kd);
       break;
     case '5':
-      while (SerialBT.available() == 0)
-        ;
+      while (SerialBT.available() == 0);
       wall = true;
       SerialBT.println("Modo pared Derecha activado.");
       break;
