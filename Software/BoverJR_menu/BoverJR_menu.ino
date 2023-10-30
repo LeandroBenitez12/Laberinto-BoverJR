@@ -24,17 +24,18 @@ bool wall = false;
 // mpu
 #define INTERRUPT_PIN 4
 #define TICK_DEBUG_Z 500
+#define DEBUG_EJE_Z 0
 float gyroZ;
 unsigned long currentTimeDer;
 unsigned long currentTimeStop;
 unsigned long currentTimeZ;
 
 // debug
-#define TICK_DEBUG_ALL 1000
+#define TICK_DEBUG_ALL 1500
 #define DEBUG_BUTTON 0
 #define DEBUG_STATUS 1
 #define DEBUG_SENSORS 1
-#define DEBUG_PID 1
+#define DEBUG_PID 0
 unsigned long currentTimePID = 0;
 unsigned long currentTimeDebugAll = 0;
 unsigned long currentTimeMenu = 0;
@@ -228,13 +229,16 @@ void mpuLoop()
     mpu.dmpGetGravity(&gravity, &q);
     mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
     gyroZ = ypr[0] * 180 / M_PI;
-    if (millis() > currentTimeZ + TICK_DEBUG_Z)
+    if (DEBUG_EJE_Z)
     {
-      currentTimeZ = millis();
-      SerialBT.println("");
-      SerialBT.print("Eje Z:  ");
-      SerialBT.print(gyroZ);
-      SerialBT.println("");
+      if (millis() > currentTimeZ + TICK_DEBUG_Z)
+      {
+        currentTimeZ = millis();
+        SerialBT.println("");
+        SerialBT.print("Eje Z:  ");
+        SerialBT.print(gyroZ);
+        SerialBT.println("");
+      }
     }
     delay(1);
   }
@@ -324,62 +328,67 @@ void postTurn()
   delay(ENTRAR_EN_PASILLO);
 }
 
-void processCommand(char c) {
-  switch (c) {
-    case '1':
-      while (SerialBT.available() == 0);
-      SerialBT.print("Ingrese nueva Velocidad derecha =  ");
-      char newSpeedRight[2]; // Declara un arreglo de caracteres de longitud 2.
-      newSpeedRight[0] = SerialBT.read(); // Lee el carácter.
-      newSpeedRight[1] = '\0'; // Agrega el carácter nulo para indicar el final de la cadena.
-      averageSpeedRight = atoi(newSpeedRight);
-      SerialBT.print("Velocidad derecha =  ");
-      SerialBT.println(averageSpeedRight);
-      break;
-    case '2':
-      SerialBT.print("Ingrese nueva Velocidad izquierda =  ");
-      char newSpeedLeft[2]; // Declara un arreglo de caracteres de longitud 2.
-      newSpeedLeft[0] = SerialBT.read(); // Lee el carácter.
-      newSpeedLeft[1] = '\0'; // Agrega el carácter nulo para indicar el final de la cadena.
-      averageSpeedLeft = atoi(newSpeedLeft);
-      SerialBT.print("Velocidad Izquierda =  ");
-      SerialBT.println(averageSpeedLeft);
-      break;
-    case '3':
-      SerialBT.println("Configurando kp 0.0: ");
-      while (SerialBT.available() == 0);
-      SerialBT.print("KP Origin=  ");
-      SerialBT.println(kp);
-      kp = SerialBT.parseFloat();
-      SerialBT.print("KP Changed =  ");
-      SerialBT.println(kp);
-      break;
-    case '4':
-      SerialBT.println("Configurando kd 0.0: ");
-      while (SerialBT.available() == 0);
-      SerialBT.print("kd Origin=  ");
-      SerialBT.println(kd);
-      kd = SerialBT.parseFloat();
-      SerialBT.print("kd Changed =  ");
-      SerialBT.println(kd);
-      break;
-    case '5':
-      while (SerialBT.available() == 0);
-      wall = true;
-      SerialBT.println("Modo pared Derecha activado.");
-      break;
-    case '6':
-      while (SerialBT.available() == 0)
-        ;
-      menusalir = true;
-      SerialBT.println("Saliendo.");
-      break;
-    default:
-      SerialBT.println("Comando no válido.");
-      break;
+void processCommand(char c)
+{
+  switch (c)
+  {
+  case '1':
+    while (SerialBT.available() == 0)
+      ;
+    SerialBT.print("Ingrese nueva Velocidad derecha =  ");
+    char newSpeedRight[2];              // Declara un arreglo de caracteres de longitud 2.
+    newSpeedRight[0] = SerialBT.read(); // Lee el carácter.
+    newSpeedRight[1] = '\0';            // Agrega el carácter nulo para indicar el final de la cadena.
+    averageSpeedRight = atoi(newSpeedRight);
+    SerialBT.print("Velocidad derecha =  ");
+    SerialBT.println(averageSpeedRight);
+    break;
+  case '2':
+    SerialBT.print("Ingrese nueva Velocidad izquierda =  ");
+    char newSpeedLeft[2];              // Declara un arreglo de caracteres de longitud 2.
+    newSpeedLeft[0] = SerialBT.read(); // Lee el carácter.
+    newSpeedLeft[1] = '\0';            // Agrega el carácter nulo para indicar el final de la cadena.
+    averageSpeedLeft = atoi(newSpeedLeft);
+    SerialBT.print("Velocidad Izquierda =  ");
+    SerialBT.println(averageSpeedLeft);
+    break;
+  case '3':
+    SerialBT.println("Configurando kp 0.0: ");
+    while (SerialBT.available() == 0)
+      ;
+    SerialBT.print("KP Origin=  ");
+    SerialBT.println(kp);
+    kp = SerialBT.parseFloat();
+    SerialBT.print("KP Changed =  ");
+    SerialBT.println(kp);
+    break;
+  case '4':
+    SerialBT.println("Configurando kd 0.0: ");
+    while (SerialBT.available() == 0)
+      ;
+    SerialBT.print("kd Origin=  ");
+    SerialBT.println(kd);
+    kd = SerialBT.parseFloat();
+    SerialBT.print("kd Changed =  ");
+    SerialBT.println(kd);
+    break;
+  case '5':
+    while (SerialBT.available() == 0)
+      ;
+    wall = true;
+    SerialBT.println("Modo pared Derecha activado.");
+    break;
+  case '6':
+    while (SerialBT.available() == 0)
+      ;
+    menusalir = true;
+    SerialBT.println("Saliendo.");
+    break;
+  default:
+    SerialBT.println("Comando no válido.");
+    break;
   }
 }
-
 
 enum movement
 {
