@@ -75,8 +75,8 @@ int speedRightPID;
 int speedLeftPID;
 int speedRightPID2;
 int speedLeftPID2;
-int averageSpeedRight = 85;
-int averageSpeedLeft = 95;
+int averageSpeedRight = 100;
+int averageSpeedLeft = 110;
 int sumaSpeedLeft = 5;
 int sumaSpeedRight = 5;
 
@@ -109,31 +109,33 @@ Pid *PID2 = new Pid(kp2, kd2, ki2, setPoint2, TICK_PID2);
 Button *buttonStart1 = new Button(PIN_BUTTON_START);
 MPU6050 mpu;
 // MPU control/status vars
-bool dmpReady = false;   // set true if DMP init was successful
-uint8_t mpuIntStatus;    // holds actual interrupt status byte from MPU
-uint8_t devStatus;       // return status after each device operation (0 = success, !0 = error)
-uint16_t packetSize;     // expected DMP packet size (default is 42 bytes)
-uint16_t fifoCount;      // count of all bytes currently in FIFO
-uint8_t fifoBuffer[64];  // FIFO storage buffer
+bool dmpReady = false;  // set true if DMP init was successful
+uint8_t mpuIntStatus;   // holds actual interrupt status byte from MPU
+uint8_t devStatus;      // return status after each device operation (0 = success, !0 = error)
+uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
+uint16_t fifoCount;     // count of all bytes currently in FIFO
+uint8_t fifoBuffer[64]; // FIFO storage buffer
 
-Quaternion q;         // [w, x, y, z]
-VectorInt16 aa;       // [x, y, z]
-VectorInt16 aaReal;   // [x, y, z]
-VectorInt16 aaWorld;  // [x, y, z]
-VectorFloat gravity;  // [x, y, z]
-float ypr[3];         // [yaw, pitch, roll]
+Quaternion q;        // [w, x, y, z]
+VectorInt16 aa;      // [x, y, z]
+VectorInt16 aaReal;  // [x, y, z]
+VectorInt16 aaWorld; // [x, y, z]
+VectorFloat gravity; // [x, y, z]
+float ypr[3];        // [yaw, pitch, roll]
 
 volatile bool mpuInterrupt = false;
-void dmpDataReady() {
+void dmpDataReady()
+{
   mpuInterrupt = true;
 }
 
-void mpuSetup() {
+void mpuSetup()
+{
 
 // join I2C bus (I2Cdev library doesn't do this automatically)
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
   Wire.begin();
-  Wire.setClock(400000);  // 400kHz I2C clock. Comment this line if having compilation difficulties
+  Wire.setClock(400000); // 400kHz I2C clock. Comment this line if having compilation difficulties
 #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
   Fastwire::setup(400, true);
 #endif
@@ -158,7 +160,8 @@ void mpuSetup() {
   mpu.setZAccelOffset(1063);
 
   // Activar DMP
-  if (devStatus == 0) {
+  if (devStatus == 0)
+  {
     SerialBT.println(F("Enabling DMP..."));
     mpu.setDMPEnabled(true);
 
@@ -171,7 +174,9 @@ void mpuSetup() {
 
     // get expected DMP packet size for later comparison
     packetSize = mpu.dmpGetFIFOPacketSize();
-  } else {
+  }
+  else
+  {
     // ERROR!
     // 1 = initial memory load failed
     // 2 = DMP configuration updates failed
@@ -181,13 +186,15 @@ void mpuSetup() {
     SerialBT.println(F(")"));
   }
 }
-void mpuLoop() {
+void mpuLoop()
+{
   // Si fallo al iniciar, parar programa
   if (!dmpReady)
     return;
 
   // Ejecutar mientras no hay interrupcion
-  while (!mpuInterrupt && fifoCount < packetSize) {
+  while (!mpuInterrupt && fifoCount < packetSize)
+  {
     // AQUI EL RESTO DEL CODIGO DE TU PROGRRAMA
   }
 
@@ -198,10 +205,13 @@ void mpuLoop() {
   fifoCount = mpu.getFIFOCount();
 
   // Controlar overflow
-  if ((mpuIntStatus & 0x10) || fifoCount == 4096) {
+  if ((mpuIntStatus & 0x10) || fifoCount == 4096)
+  {
     mpu.resetFIFO();
-    //SerialBT.println(F("FIFO overflow!"));
-  } else if (mpuIntStatus & 0x02) {
+    // SerialBT.println(F("FIFO overflow!"));
+  }
+  else if (mpuIntStatus & 0x02)
+  {
     // wait for correct available data length, should be a VERY short wait
     while (fifoCount < packetSize)
       fifoCount = mpu.getFIFOCount();
@@ -218,7 +228,8 @@ void mpuLoop() {
     mpu.dmpGetGravity(&gravity, &q);
     mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
     gyroZ = ypr[0] * 180 / M_PI;
-    if (millis() > currentTimeZ + TICK_DEBUG_Z) {
+    if (millis() > currentTimeZ + TICK_DEBUG_Z)
+    {
       currentTimeZ = millis();
       SerialBT.println("");
       SerialBT.print("Eje Z:  ");
@@ -228,18 +239,22 @@ void mpuLoop() {
     delay(1);
   }
 }
-void SensorsRead() {
+void SensorsRead()
+{
   frontDistance = SharpFront->SensorRead();
   rightDistance = SharpRigh->SensorRead();
   leftDistance = SharpLeft->SensorRead();
 }
 
-void printButton() {
+void printButton()
+{
   SerialBT.print("Button Start: ");
   SerialBT.println(stateStartButton);
 }
-void printPID() {
-  if (millis() > currentTimePID + TICK_DEBUG_ALL) {
+void printPID()
+{
+  if (millis() > currentTimePID + TICK_DEBUG_ALL)
+  {
     currentTimePID = millis();
     SerialBT.println("");
     SerialBT.print("Ganancia PID 1: ");
@@ -254,7 +269,8 @@ void printPID() {
   }
 }
 
-void printSensors() {
+void printSensors()
+{
   SerialBT.print("LeftDistance: ");
   SerialBT.println(leftDistance);
   SerialBT.print("frontDistance: ");
@@ -263,7 +279,8 @@ void printSensors() {
   SerialBT.println(rightDistance);
 }
 
-void turnRight() {
+void turnRight()
+{
   /*if (gyroZ >= -5 && gyroZ <= 5)
   {
     do
@@ -289,17 +306,20 @@ void turnRight() {
   delay(tick_giro_90);
 }
 
-void turnLeft() {
+void turnLeft()
+{
   Bover->Left(195, 200);
   delay(tick_giro_90);
 }
 
-void fullTurn() {
+void fullTurn()
+{
   Bover->Right(190, 200);
   delay(tick_giro_180);
 }
 
-void postTurn() {
+void postTurn()
+{
   Bover->Forward(averageSpeedRight, averageSpeedLeft);
   delay(ENTRAR_EN_PASILLO);
 }
@@ -308,13 +328,20 @@ void processCommand(char c) {
   switch (c) {
     case '1':
       while (SerialBT.available() == 0);
-      averageSpeedRight = SerialBT.parseInt(); /*averageSpeedRight + sumaSpeedRight*/;
-      //SerialBT.println("Modo SUMA +5 VEL_DER");
+      SerialBT.print("Ingrese nueva Velocidad derecha =  ");
+      char newSpeedRight[2]; // Declara un arreglo de caracteres de longitud 2.
+      newSpeedRight[0] = SerialBT.read(); // Lee el carácter.
+      newSpeedRight[1] = '\0'; // Agrega el carácter nulo para indicar el final de la cadena.
+      averageSpeedRight = atoi(newSpeedRight);
       SerialBT.print("Velocidad derecha =  ");
       SerialBT.println(averageSpeedRight);
       break;
     case '2':
-      averageSpeedLeft = +sumaSpeedLeft;
+      SerialBT.print("Ingrese nueva Velocidad izquierda =  ");
+      char newSpeedLeft[2]; // Declara un arreglo de caracteres de longitud 2.
+      newSpeedLeft[0] = SerialBT.read(); // Lee el carácter.
+      newSpeedLeft[1] = '\0'; // Agrega el carácter nulo para indicar el final de la cadena.
+      averageSpeedLeft = atoi(newSpeedLeft);
       SerialBT.print("Velocidad Izquierda =  ");
       SerialBT.println(averageSpeedLeft);
       break;
@@ -353,7 +380,9 @@ void processCommand(char c) {
   }
 }
 
-enum movement {
+
+enum movement
+{
   STANDBY,
   CONTINUE,
   STOP,
@@ -364,160 +393,181 @@ enum movement {
 };
 int movement = STANDBY;
 
-void movementLogic() {
-  switch (movement) {
-    case STANDBY:
+void movementLogic()
+{
+  switch (movement)
+  {
+  case STANDBY:
+  {
+    Bover->Stop();
+    if (stateStartButton)
+    {
+      delay(2000);
+      movement = CONTINUE;
+    }
+  }
+  break;
+  case CONTINUE:
+  {
+    float input2 = leftDistance;
+    if (wall == true)
+    {
+      input2 = rightDistance;
+    }
+    float input = rightDistance - leftDistance;
+    gananciaPID = PID->ComputePid(input);
+    gananciaPID2 = PID2->ComputePid(input2);
+
+    if (DEBUG_PID)
+      printPID();
+
+    speedRightPID = (averageSpeedRight - (gananciaPID));
+    speedLeftPID = (averageSpeedLeft + (gananciaPID));
+
+    speedRightPID2 = (speedRightPID - (gananciaPID2));
+    speedLeftPID2 = (speedLeftPID + (gananciaPID2));
+
+    if (speedRightPID2 >= MAX_VEL)
+      speedRightPID2 = MAX_VEL;
+    if (speedRightPID2 >= MAX_VEL)
+      speedRightPID2 = MAX_VEL;
+
+    Bover->Forward(speedRightPID2, speedLeftPID2);
+
+    if (frontDistance <= PARED_ENFRENTE)
+      movement = STOP;
+    if (wall == true)
+    {
+      if (leftDistance >= NO_HAY_PARED && frontDistance >= NO_HAY_PARED_ENFRENTE && rightDistance >= NO_HAY_PARED)
       {
-        Bover->Stop();
-        if (stateStartButton) {
-          delay(2000);
-          movement = CONTINUE;
-        }
+        movement = RIGHT_TURN;
       }
-      break;
-    case CONTINUE:
+      if (leftDistance <= PARED_COSTADO_PASILLO && frontDistance >= NO_HAY_PARED_ENFRENTE && rightDistance >= NO_HAY_PARED)
       {
-        float input2 = leftDistance;
-        if (wall == true) {
-          input2 = rightDistance;
-        }
-        float input = rightDistance - leftDistance;
-        gananciaPID = PID->ComputePid(input);
-        gananciaPID2 = PID2->ComputePid(input2);
-
-        if (DEBUG_PID)
-          printPID();
-
-        speedRightPID = (averageSpeedRight - (gananciaPID));
-        speedLeftPID = (averageSpeedLeft + (gananciaPID));
-
-        speedRightPID2 = (speedRightPID - (gananciaPID2));
-        speedLeftPID2 = (speedLeftPID + (gananciaPID2));
-
-        if (speedRightPID2 >= MAX_VEL)
-          speedRightPID2 = MAX_VEL;
-        if (speedRightPID2 >= MAX_VEL)
-          speedRightPID2 = MAX_VEL;
-
-        Bover->Forward(speedRightPID2, speedLeftPID2);
-
-        if (frontDistance <= PARED_ENFRENTE)
-          movement = STOP;
-        if (wall == true) {
-          if (leftDistance >= NO_HAY_PARED && frontDistance >= NO_HAY_PARED_ENFRENTE && rightDistance >= NO_HAY_PARED) {
-            movement = RIGHT_TURN;
-          }
-          if (leftDistance <= PARED_COSTADO_PASILLO && frontDistance >= NO_HAY_PARED_ENFRENTE && rightDistance >= NO_HAY_PARED) {
-            movement = RIGHT_TURN;
-          }
-          if (leftDistance > PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance < NO_HAY_PARED) {
-            movement = POST_TURN;
-          }
-        } else {
-          if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED) {
-            movement = LEFT_TURN;
-          }
-          if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance < NO_HAY_PARED) {
-            movement = LEFT_TURN;
-          }
-          if (leftDistance < PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED) {
-            movement = POST_TURN;
-          }
-        }
-        break;
+        movement = RIGHT_TURN;
       }
-    case STOP:
+      if (leftDistance > PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance < NO_HAY_PARED)
       {
-        Bover->Stop();
-        delay(DELAY_TOMAR_DECISION);
-        if (frontDistance <= PARED_ENFRENTE && rightDistance > NO_HAY_PARED && leftDistance <= PARED_COSTADO_PASILLO)
-          movement = RIGHT_TURN;
-        if (frontDistance <= PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO && leftDistance > NO_HAY_PARED)
-          movement = LEFT_TURN;
-        if (frontDistance <= PARED_ENFRENTE && rightDistance > NO_HAY_PARED && leftDistance > NO_HAY_PARED) {
-          if (wall = true) {
-            movement = RIGHT_TURN;
-          } else {
-            movement = LEFT_TURN;
-          }
-        }
-        if (frontDistance <= PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO && leftDistance <= PARED_COSTADO_PASILLO)
-          movement = FULL_TURN;
-
-        else if (frontDistance > PARED_ENFRENTE)
-          movement = CONTINUE;
-        break;
-      }
-
-    case RIGHT_TURN:
-      {
-        turnRight();
-        Bover->Stop();
-        delay(DELAY_ANTI_INERCIA);
         movement = POST_TURN;
-        break;
       }
-
-    case LEFT_TURN:
+    }
+    else
+    {
+      if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
       {
-        turnLeft();
-        Bover->Stop();
-        delay(DELAY_ANTI_INERCIA);
+        movement = LEFT_TURN;
+      }
+      if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance < NO_HAY_PARED)
+      {
+        movement = LEFT_TURN;
+      }
+      if (leftDistance < PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
+      {
         movement = POST_TURN;
-        break;
       }
-
-    case FULL_TURN:
+    }
+    break;
+  }
+  case STOP:
+  {
+    Bover->Stop();
+    delay(DELAY_TOMAR_DECISION);
+    if (frontDistance <= PARED_ENFRENTE && rightDistance > NO_HAY_PARED && leftDistance <= PARED_COSTADO_PASILLO)
+      movement = RIGHT_TURN;
+    if (frontDistance <= PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO && leftDistance > NO_HAY_PARED)
+      movement = LEFT_TURN;
+    if (frontDistance <= PARED_ENFRENTE && rightDistance > NO_HAY_PARED && leftDistance > NO_HAY_PARED)
+    {
+      if (wall = true)
       {
-        fullTurn();
-        Bover->Stop();
-        delay(DELAY_ANTI_INERCIA);
-        movement = POST_TURN;
-        break;
+        movement = RIGHT_TURN;
       }
-
-    case POST_TURN:
+      else
       {
-        postTurn();
-        Bover->Stop();
-        delay(DELAY_ANTI_INERCIA);
-        movement = CONTINUE;
-        break;
+        movement = LEFT_TURN;
       }
+    }
+    if (frontDistance <= PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO && leftDistance <= PARED_COSTADO_PASILLO)
+      movement = FULL_TURN;
+
+    else if (frontDistance > PARED_ENFRENTE)
+      movement = CONTINUE;
+    break;
+  }
+
+  case RIGHT_TURN:
+  {
+    turnRight();
+    Bover->Stop();
+    delay(DELAY_ANTI_INERCIA);
+    movement = POST_TURN;
+    break;
+  }
+
+  case LEFT_TURN:
+  {
+    turnLeft();
+    Bover->Stop();
+    delay(DELAY_ANTI_INERCIA);
+    movement = POST_TURN;
+    break;
+  }
+
+  case FULL_TURN:
+  {
+    fullTurn();
+    Bover->Stop();
+    delay(DELAY_ANTI_INERCIA);
+    movement = POST_TURN;
+    break;
+  }
+
+  case POST_TURN:
+  {
+    postTurn();
+    Bover->Stop();
+    delay(DELAY_ANTI_INERCIA);
+    movement = CONTINUE;
+    break;
+  }
   }
 }
 
-void printStatus() {
+void printStatus()
+{
   String state = "";
-  switch (movement) {
-    case STANDBY:
-      state = "STANDBY";
-      break;
-    case CONTINUE:
-      state = "CONTINUE";
-      break;
-    case STOP:
-      state = state = "STOP";
-      break;
-    case RIGHT_TURN:
-      state = "RIGHT TURN";
-      break;
-    case LEFT_TURN:
-      state = "LEFT TURN";
-      break;
-    case FULL_TURN:
-      state = "FULL TURN";
-      break;
-    case POST_TURN:
-      state = "POST TURN";
-      break;
+  switch (movement)
+  {
+  case STANDBY:
+    state = "STANDBY";
+    break;
+  case CONTINUE:
+    state = "CONTINUE";
+    break;
+  case STOP:
+    state = state = "STOP";
+    break;
+  case RIGHT_TURN:
+    state = "RIGHT TURN";
+    break;
+  case LEFT_TURN:
+    state = "LEFT TURN";
+    break;
+  case FULL_TURN:
+    state = "FULL TURN";
+    break;
+  case POST_TURN:
+    state = "POST TURN";
+    break;
   }
   SerialBT.print("State: ");
   SerialBT.println(state);
 }
 
-void printAll() {
-  if (millis() > currentTimeDebugAll + TICK_DEBUG_ALL) {
+void printAll()
+{
+  if (millis() > currentTimeDebugAll + TICK_DEBUG_ALL)
+  {
     currentTimeDebugAll = millis();
     if (DEBUG_BUTTON)
       printButton();
@@ -530,23 +580,27 @@ void printAll() {
     SerialBT.println("");
   }
 }
-void setup() {
+void setup()
+{
   Serial.begin(9600);
   SerialBT.begin("Bover");
   mpuSetup();
 }
 
-void loop() {
+void loop()
+{
   mpuLoop();
   stateStartButton = buttonStart1->GetIsPress();
   SensorsRead();
-  if (SerialBT.available()) {
+  if (SerialBT.available())
+  {
     char command = SerialBT.read();
     processCommand(command);
   }
   if (stateStartButton == true)
     menusalir = true;
-  if (menusalir == true) {
+  if (menusalir == true)
+  {
     movementLogic();
     printAll();
   }
