@@ -24,6 +24,7 @@ class Sharp_GP2Y0A21 : public Isensor
 {
 private:
     int sensorPin;
+    #define PROM 10
 
 public:
     Sharp_GP2Y0A21(int pin);

@@ -102,13 +102,14 @@ bool stateStartButton = 0;
 IEngine *leftEngine = new Driver_DRV8825(PIN_RIGHT_ENGINE_IN1, PIN_RIGHT_ENGINE_IN2, PWM_CHANNEL_RIGHT_IN1, PWM_CHANNEL_RIGHT_IN2);
 IEngine *rightEngine = new Driver_DRV8825(PIN_LEFT_ENGINE_IN1, PIN_LEFT_ENGINE_IN2, PWM_CHANNEL_LEFT_IN1, PWM_CHANNEL_LEFT_IN2);
 EngineController *Bover = new EngineController(rightEngine, leftEngine);
-Isensor *SharpRigh = new Sharp_GP2Y0A21(PIN_SHARP_RIGHT);
+Isensor *SharpRight = new Sharp_GP2Y0A21(PIN_SHARP_RIGHT);
 Isensor *SharpLeft = new Sharp_GP2Y0A21(PIN_SHARP_LEFT);
 Isensor *SharpFront = new Sharp_GP2Y0A21(PIN_SHARP_FRONT);
 Pid *PID = new Pid(kp, kd, ki, setPoint, TICK_PID);
 Pid *PID2 = new Pid(kp2, kd2, ki2, setPoint2, TICK_PID2);
 Button *buttonStart1 = new Button(PIN_BUTTON_START);
 MPU6050 mpu;
+
 // MPU control/status vars
 bool dmpReady = false;  // set true if DMP init was successful
 uint8_t mpuIntStatus;   // holds actual interrupt status byte from MPU
@@ -246,7 +247,7 @@ void mpuLoop()
 void SensorsRead()
 {
   frontDistance = SharpFront->SensorRead();
-  rightDistance = SharpRigh->SensorRead();
+  rightDistance = SharpRight->SensorRead();
   leftDistance = SharpLeft->SensorRead();
 }
 
