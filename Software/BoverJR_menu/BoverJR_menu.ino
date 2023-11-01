@@ -7,14 +7,15 @@
 #include "I2Cdev.h"
 #include "MPU6050_6Axis_MotionApps20.h"
 
+//I2C
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
 #include "Wire.h"
 #endif
 
+//BLUETOOH
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
 #endif
-
 BluetoothSerial SerialBT;
 
 // menu
@@ -22,9 +23,9 @@ bool menusalir = false;
 bool walltofollow = false;
 
 // mpu
+//COSTANTS
 #define INTERRUPT_PIN 4
-#define TICK_DEBUG_Z 500
-#define DEBUG_EJE_Z 0
+#define DEBUG_EJE_Z 1
 float gyroZ;
 unsigned long currentTimeDer;
 unsigned long currentTimeStop;
@@ -35,7 +36,7 @@ unsigned long currentTimeZ;
 #define DEBUG_BUTTON 0
 #define DEBUG_STATUS 1
 #define DEBUG_SENSORS 1
-#define DEBUG_PID 0
+#define DEBUG_PID 1
 unsigned long currentTimePID = 0;
 unsigned long currentTimeDebugAll = 0;
 unsigned long currentTimeMenu = 0;
@@ -44,8 +45,8 @@ unsigned long currentTimeMenu = 0;
 // Motores
 #define PIN_RIGHT_ENGINE_IN1 27
 #define PIN_RIGHT_ENGINE_IN2 26
-#define PIN_LEFT_ENGINE_IN1 18
-#define PIN_LEFT_ENGINE_IN2 19
+#define PIN_LEFT_ENGINE_IN1 19
+#define PIN_LEFT_ENGINE_IN2 18
 #define PWM_CHANNEL_RIGHT_IN1 1
 #define PWM_CHANNEL_RIGHT_IN2 2
 #define PWM_CHANNEL_LEFT_IN1 3
@@ -58,13 +59,13 @@ unsigned long currentTimeMenu = 0;
 float rightDistance;
 float leftDistance;
 float frontDistance;
-#define PARED_ENFRENTE 10
-#define PARED_COSTADO_PASILLO 30
-#define NO_HAY_PARED 30
-#define NO_HAY_PARED_ENFRENTE 20
+#define PARED_ENFRENTE 7
+#define PARED_COSTADO_PASILLO 27
+#define NO_HAY_PARED 28
+#define NO_HAY_PARED_ENFRENTE 10
 
 // veocidades motores pwm
-#define VELOCIDAD_GIROS_90 200
+#define VELOCIDAD_GIROS 255
 int tick_giro_90 = 200;
 int tick_giro_180 = 400;
 #define ENTRAR_EN_PASILLO 400
@@ -76,8 +77,8 @@ int speedRightPID;
 int speedLeftPID;
 int speedRightPID2;
 int speedLeftPID2;
-int averageSpeedRight = 100;
-int averageSpeedLeft = 110;
+int averageSpeedRight = 220;
+int averageSpeedLeft = 230;
 #define VALUE_5 5
 
 // variables pid
@@ -230,17 +231,6 @@ void mpuLoop()
     mpu.dmpGetGravity(&gravity, &q);
     mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
     gyroZ = ypr[0] * 180 / M_PI;
-    if (DEBUG_EJE_Z)
-    {
-      if (millis() > currentTimeZ + TICK_DEBUG_ALL)
-      {
-        currentTimeZ = millis();
-        SerialBT.println("");
-        SerialBT.print("Eje Z:  ");
-        SerialBT.print(gyroZ);
-        SerialBT.println("");
-      }
-    }
     delay(1);
   }
 }
@@ -274,6 +264,11 @@ void printPID()
   }
 }
 
+void printEjeZ(){
+        currentTimeZ = millis();
+        SerialBT.print("Eje Z:  ");
+        SerialBT.print(gyroZ);
+}
 void printSensors()
 {
   SerialBT.print("LeftDistance: ");
@@ -290,7 +285,7 @@ void turnRight()
   {
     do
     {
-      Bover->Right(VELOCIDAD_GIROS_90, VELOCIDAD_GIROS_90);
+      Bover->Right(VELOCIDAD_GIROS, VELOCIDAD_GIROS);
       if (millis() > currentTimeDer + TICK_DEBUG_Z)
       {
         currentTimeDer = millis();
@@ -341,11 +336,11 @@ void printOptions()
   SerialBT.print("A+/B- KP = ");
   SerialBT.println(kp);
 
-  SerialBT.print("C+/D- KD = ");
-  SerialBT.println(kd);
-
-  SerialBT.print("E+/F- KP2 = ");
+  SerialBT.print("C+/D- KP2 = ");
   SerialBT.println(kp2);
+
+  SerialBT.print("E+/F- KD = ");
+  SerialBT.println(kd);
 
   SerialBT.print("G+/H- KD2 = ");
   SerialBT.println(kd2);
@@ -358,19 +353,18 @@ void printOptions()
 
   SerialBT.print("N - Wall to follow = ");
   String state = "";
-  switch (walltofollow)
-  {
-  case 0:
-    state = "Left";
-  case 1:
-    state = "Right";
-    break;
-  }
+  if(walltofollow == true) state = "Right";
+  else state = "Left";
   SerialBT.println(state);
 
-  SerialBT.print("Y - DEBUGEAR ROBOT ");
+  SerialBT.println("Y - DEBUGEAR ROBOT ");
 
-  SerialBT.print("Z - INICIAR ROBOT ");
+  SerialBT.println("Z - INICIAR ROBOT ");
+
+  for (int i = 0; i < 5; i++)
+  {
+    SerialBT.println("");
+  }
 }
 
 void menuBT()
@@ -388,91 +382,149 @@ void menuBT()
     case 'A':
     {
       kp += VALUE_0_1;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     case 'B':
     {
       kp -= VALUE_0_1;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     case 'C':
     {
       kp2 += VALUE_0_1;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     case 'D':
     {
       kp2 -= VALUE_0_1;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     case 'E':
     {
       kd += VALUE_0_1;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     case 'F':
     {
       kd -= VALUE_0_1;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     case 'G':
     {
       kd2 += VALUE_0_1;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     case 'H':
     {
       kd2 -= VALUE_0_1;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     case 'I':
     {
-      averageSpeedLeft += VALUE_5;
+      averageSpeedLeft = averageSpeedLeft + VALUE_5;
+
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     case 'J':
     {
-      averageSpeedLeft -= VALUE_5;
+      averageSpeedLeft = averageSpeedLeft - VALUE_5;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     case 'K':
     {
-      averageSpeedRight += VALUE_5;
+      averageSpeedRight = averageSpeedRight + VALUE_5;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
+    
     case 'L':
     {
       averageSpeedRight -= VALUE_5;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     case 'N':
     {
       walltofollow = true;
+
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
+    /*
     case 'O':
     {
-      DEBUG_BUTTON = true;
+      DEBUG_BUTTON = 1;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     case 'P':
     {
-      DEBUG_EJE_Z = true;
+      DEBUG_EJE_Z = 1;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     case 'W':
     {
-      DEBUG_STATUS = true;
+      DEBUG_STATUS = 1;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     case 'Y':
     {
-      DEBUG_SENSORS = true;
+      DEBUG_SENSORS = 1;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
-    }
+    }*/
     case 'Z':
     {
       stateStartButton = true;
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
       break;
     }
     default:
@@ -678,6 +730,9 @@ void printAll()
     SerialBT.println("");
     if (DEBUG_STATUS)
       printStatus();
+    SerialBT.println("");
+    if (DEBUG_EJE_Z) 
+      printEjeZ();
     SerialBT.println("");
   }
 }

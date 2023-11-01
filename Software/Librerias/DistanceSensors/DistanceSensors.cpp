@@ -38,7 +38,7 @@ double Sharp_GP2Y0A21::SensorRead()
     {
         suma = suma + analogRead(sensorPin);
     }
-    float adc = suma / n;
+    float adc = suma / PROM;
     if(adc<400) adc=400;
     if(adc>4056) adc=4056;
     float distancia_cm = 11945.0 / (adc - 11.0); // hay que ajustar esta formula para que me devuelva bien la distancia
