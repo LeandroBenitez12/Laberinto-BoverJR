@@ -7,41 +7,24 @@
 #include "I2Cdev.h"
 #include "MPU6050_6Axis_MotionApps20.h"
 
-//I2C
+// I2C
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
 #include "Wire.h"
 #endif
 
-//BLUETOOH
+// BLUETOOH
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
 #endif
 BluetoothSerial SerialBT;
 
-// menu
-bool menusalir = false;
-bool walltofollow = false;
-
-// mpu
-//COSTANTS
-#define INTERRUPT_PIN 4
-#define DEBUG_EJE_Z 1
-float gyroZ;
-unsigned long currentTimeDer;
-unsigned long currentTimeStop;
-unsigned long currentTimeZ;
-
-// debug
-#define TICK_DEBUG_ALL 1500
+// DEBUG
 #define DEBUG_BUTTON 0
 #define DEBUG_STATUS 1
 #define DEBUG_SENSORS 1
 #define DEBUG_PID 1
-unsigned long currentTimePID = 0;
-unsigned long currentTimeDebugAll = 0;
-unsigned long currentTimeMenu = 0;
-#define TICK_MENU 5000
-
+#define DEBUG_EJE_Z 1
+// PINOUT
 // Motores
 #define PIN_RIGHT_ENGINE_IN1 27
 #define PIN_RIGHT_ENGINE_IN2 26
@@ -51,11 +34,35 @@ unsigned long currentTimeMenu = 0;
 #define PWM_CHANNEL_RIGHT_IN2 2
 #define PWM_CHANNEL_LEFT_IN1 3
 #define PWM_CHANNEL_LEFT_IN2 4
-
 // Sharps
 #define PIN_SHARP_RIGHT 25
 #define PIN_SHARP_LEFT 35
 #define PIN_SHARP_FRONT 33
+// MPU
+#define INTERRUPT_PIN 4
+// Boton
+#define PIN_BUTTON_START 32
+
+// TICKS DEBUG
+#define TICK_DEBUG_ALL 1500
+
+// menu
+bool menusalir = false;
+bool walltofollow = false;
+
+// MPU
+// COSTANTS
+
+// VARIABLES
+float gyroZ;
+unsigned long currentTimeDer;
+unsigned long currentTimeStop;
+unsigned long currentTimeZ;
+
+unsigned long currentTimePID = 0;
+unsigned long currentTimeDebugAll = 0;
+unsigned long currentTimeMenu = 0;
+
 float rightDistance;
 float leftDistance;
 float frontDistance;
@@ -96,10 +103,11 @@ double ki2 = 0.0;
 double setPoint2 = 7.5;
 double gananciaPID2;
 double TICK_PID2 = 1.0;
-// Boton
-#define PIN_BUTTON_START 32
+
 bool stateStartButton = 0;
 #define MENU 1
+
+// INSTANCIANDO OBJETOS
 IEngine *leftEngine = new Driver_DRV8825(PIN_RIGHT_ENGINE_IN1, PIN_RIGHT_ENGINE_IN2, PWM_CHANNEL_RIGHT_IN1, PWM_CHANNEL_RIGHT_IN2);
 IEngine *rightEngine = new Driver_DRV8825(PIN_LEFT_ENGINE_IN1, PIN_LEFT_ENGINE_IN2, PWM_CHANNEL_LEFT_IN1, PWM_CHANNEL_LEFT_IN2);
 EngineController *Bover = new EngineController(rightEngine, leftEngine);
@@ -118,14 +126,12 @@ uint8_t devStatus;      // return status after each device operation (0 = succes
 uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
 uint16_t fifoCount;     // count of all bytes currently in FIFO
 uint8_t fifoBuffer[64]; // FIFO storage buffer
-
-Quaternion q;        // [w, x, y, z]
-VectorInt16 aa;      // [x, y, z]
-VectorInt16 aaReal;  // [x, y, z]
-VectorInt16 aaWorld; // [x, y, z]
-VectorFloat gravity; // [x, y, z]
-float ypr[3];        // [yaw, pitch, roll]
-
+Quaternion q;           // [w, x, y, z]
+VectorInt16 aa;         // [x, y, z]
+VectorInt16 aaReal;     // [x, y, z]
+VectorInt16 aaWorld;    // [x, y, z]
+VectorFloat gravity;    // [x, y, z]
+float ypr[3];           // [yaw, pitch, roll]
 volatile bool mpuInterrupt = false;
 void dmpDataReady()
 {
@@ -134,7 +140,6 @@ void dmpDataReady()
 
 void mpuSetup()
 {
-
 // join I2C bus (I2Cdev library doesn't do this automatically)
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
   Wire.begin();
@@ -189,6 +194,7 @@ void mpuSetup()
     SerialBT.println(F(")"));
   }
 }
+// MPU LOOP
 void mpuLoop()
 {
   // Si fallo al iniciar, parar programa
@@ -234,6 +240,8 @@ void mpuLoop()
     delay(1);
   }
 }
+
+// LECTURA SENSORS
 void SensorsRead()
 {
   frontDistance = SharpFront->SensorRead();
@@ -241,11 +249,13 @@ void SensorsRead()
   leftDistance = SharpLeft->SensorRead();
 }
 
+// IMPRIMIR EN BLUETOOH
 void printButton()
 {
   SerialBT.print("Button Start: ");
   SerialBT.println(stateStartButton);
 }
+
 void printPID()
 {
   if (millis() > currentTimePID + TICK_DEBUG_ALL)
@@ -264,11 +274,13 @@ void printPID()
   }
 }
 
-void printEjeZ(){
-        currentTimeZ = millis();
-        SerialBT.print("Eje Z:  ");
-        SerialBT.print(gyroZ);
+void printEjeZ()
+{
+  currentTimeZ = millis();
+  SerialBT.print("Eje Z:  ");
+  SerialBT.print(gyroZ);
 }
+
 void printSensors()
 {
   SerialBT.print("LeftDistance: ");
@@ -279,6 +291,53 @@ void printSensors()
   SerialBT.println(rightDistance);
 }
 
+void printOptions()
+{
+  // clean the serial
+  for (int i = 0; i < 5; i++)
+  {
+    SerialBT.println("");
+  }
+
+  SerialBT.println("Configuracion Actual:");
+
+  SerialBT.print("A+/B- KP = ");
+  SerialBT.println(kp);
+
+  SerialBT.print("C+/D- KP2 = ");
+  SerialBT.println(kp2);
+
+  SerialBT.print("E+/F- KD = ");
+  SerialBT.println(kd);
+
+  SerialBT.print("G+/H- KD2 = ");
+  SerialBT.println(kd2);
+
+  SerialBT.print("I+/J- - leftSpeed = ");
+  SerialBT.println(averageSpeedLeft);
+
+  SerialBT.print("K+/L- - rightLeft = ");
+  SerialBT.println(averageSpeedRight);
+
+  SerialBT.print("N - Wall to follow = ");
+  String state = "";
+  if (walltofollow == true)
+    state = "Right";
+  else
+    state = "Left";
+  SerialBT.println(state);
+
+  SerialBT.println("Y - DEBUGEAR ROBOT ");
+
+  SerialBT.println("Z - INICIAR ROBOT ");
+
+  for (int i = 0; i < 5; i++)
+  {
+    SerialBT.println("");
+  }
+}
+
+// GIROS 90º Y 180º
 void turnRight()
 {
   /*if (gyroZ >= -5 && gyroZ <= 5)
@@ -322,49 +381,6 @@ void postTurn()
 {
   Bover->Forward(averageSpeedRight, averageSpeedLeft);
   delay(ENTRAR_EN_PASILLO);
-}
-void printOptions()
-{
-  // clean the serial
-  for (int i = 0; i < 5; i++)
-  {
-    SerialBT.println("");
-  }
-
-  SerialBT.println("Configuracion Actual:");
-
-  SerialBT.print("A+/B- KP = ");
-  SerialBT.println(kp);
-
-  SerialBT.print("C+/D- KP2 = ");
-  SerialBT.println(kp2);
-
-  SerialBT.print("E+/F- KD = ");
-  SerialBT.println(kd);
-
-  SerialBT.print("G+/H- KD2 = ");
-  SerialBT.println(kd2);
-
-  SerialBT.print("I+/J- - leftSpeed = ");
-  SerialBT.println(averageSpeedLeft);
-
-  SerialBT.print("K+/L- - rightLeft = ");
-  SerialBT.println(averageSpeedRight);
-
-  SerialBT.print("N - Wall to follow = ");
-  String state = "";
-  if(walltofollow == true) state = "Right";
-  else state = "Left";
-  SerialBT.println(state);
-
-  SerialBT.println("Y - DEBUGEAR ROBOT ");
-
-  SerialBT.println("Z - INICIAR ROBOT ");
-
-  for (int i = 0; i < 5; i++)
-  {
-    SerialBT.println("");
-  }
 }
 
 void menuBT()
@@ -468,7 +484,7 @@ void menuBT()
       SerialBT.println("");
       break;
     }
-    
+
     case 'L':
     {
       averageSpeedRight -= VALUE_5;
@@ -562,24 +578,27 @@ void movementLogic()
   break;
   case CONTINUE:
   {
-    float input2 = leftDistance;
-    if (walltofollow == true)
-    {
-      input2 = rightDistance;
-    }
     float input = rightDistance - leftDistance;
     gananciaPID = PID->ComputePid(input);
+
+    // INPUT2 = WALLTOFOLLOW PARA MANTENER LA DISTANCIA A ESA PARED
+    float input2 = leftDistance;
+    if (walltofollow == true)
+      input2 = rightDistance;
     gananciaPID2 = PID2->ComputePid(input2);
 
     if (DEBUG_PID)
       printPID();
 
+    // APLICAMOS GANANCIA 1 DEL PID A MOTORES
     speedRightPID = (averageSpeedRight - (gananciaPID));
     speedLeftPID = (averageSpeedLeft + (gananciaPID));
 
+    // APLICAMOS GANANCIA 2 DEL PID A MOTORES
     speedRightPID2 = (speedRightPID - (gananciaPID2));
     speedLeftPID2 = (speedLeftPID + (gananciaPID2));
 
+    // ESTABLECEMOS LOS LIMITES
     if (speedRightPID2 >= MAX_VEL)
       speedRightPID2 = MAX_VEL;
     if (speedRightPID2 >= MAX_VEL)
@@ -589,11 +608,12 @@ void movementLogic()
 
     if (frontDistance <= PARED_ENFRENTE)
       movement = STOP;
+
     if (walltofollow == true)
     {
       if (leftDistance >= NO_HAY_PARED && frontDistance >= NO_HAY_PARED_ENFRENTE && rightDistance >= NO_HAY_PARED)
       {
-        movement = RIGHT_TURN;
+        movement = POST_TURN;
       }
       if (leftDistance <= PARED_COSTADO_PASILLO && frontDistance >= NO_HAY_PARED_ENFRENTE && rightDistance >= NO_HAY_PARED)
       {
@@ -608,7 +628,7 @@ void movementLogic()
     {
       if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
       {
-        movement = LEFT_TURN;
+        movement = POST_TURN;
       }
       if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance < NO_HAY_PARED)
       {
@@ -731,7 +751,7 @@ void printAll()
     if (DEBUG_STATUS)
       printStatus();
     SerialBT.println("");
-    if (DEBUG_EJE_Z) 
+    if (DEBUG_EJE_Z)
       printEjeZ();
     SerialBT.println("");
   }
@@ -749,10 +769,7 @@ void loop()
   stateStartButton = buttonStart1->GetIsPress();
   SensorsRead();
   if (menusalir == false)
-  {
     menuBT();
-  }
-
   if (stateStartButton == true)
     menusalir = true;
   if (menusalir == true)
