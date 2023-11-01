@@ -19,7 +19,7 @@ BluetoothSerial SerialBT;
 
 // menu
 bool menusalir = false;
-bool wall = false;
+bool walltofollow = false;
 
 // mpu
 #define INTERRUPT_PIN 4
@@ -78,10 +78,10 @@ int speedRightPID2;
 int speedLeftPID2;
 int averageSpeedRight = 100;
 int averageSpeedLeft = 110;
-int sumaSpeedLeft = 5;
-int sumaSpeedRight = 5;
+#define VALUE_5 5
 
 // variables pid
+#define VALUE_0_1 0.1
 double kp = 1;
 double kd = 0.3;
 double ki = 0.0;
@@ -98,7 +98,7 @@ double TICK_PID2 = 1.0;
 // Boton
 #define PIN_BUTTON_START 32
 bool stateStartButton = 0;
-
+#define MENU 1
 IEngine *leftEngine = new Driver_DRV8825(PIN_RIGHT_ENGINE_IN1, PIN_RIGHT_ENGINE_IN2, PWM_CHANNEL_RIGHT_IN1, PWM_CHANNEL_RIGHT_IN2);
 IEngine *rightEngine = new Driver_DRV8825(PIN_LEFT_ENGINE_IN1, PIN_LEFT_ENGINE_IN2, PWM_CHANNEL_LEFT_IN1, PWM_CHANNEL_LEFT_IN2);
 EngineController *Bover = new EngineController(rightEngine, leftEngine);
@@ -232,7 +232,7 @@ void mpuLoop()
     gyroZ = ypr[0] * 180 / M_PI;
     if (DEBUG_EJE_Z)
     {
-      if (millis() > currentTimeZ + TICK_DEBUG_Z)
+      if (millis() > currentTimeZ + TICK_DEBUG_ALL)
       {
         currentTimeZ = millis();
         SerialBT.println("");
@@ -328,66 +328,157 @@ void postTurn()
   Bover->Forward(averageSpeedRight, averageSpeedLeft);
   delay(ENTRAR_EN_PASILLO);
 }
-
-void processCommand(char c)
+void printOptions()
 {
-  switch (c)
+  // clean the serial
+  for (int i = 0; i < 5; i++)
   {
-  case '1':
-    while (SerialBT.available() == 0)
-      ;
-    SerialBT.print("Ingrese nueva Velocidad derecha =  ");
-    char newSpeedRight[2];              // Declara un arreglo de caracteres de longitud 2.
-    newSpeedRight[0] = SerialBT.read(); // Lee el carácter.
-    newSpeedRight[1] = '\0';            // Agrega el carácter nulo para indicar el final de la cadena.
-    averageSpeedRight = atoi(newSpeedRight);
-    SerialBT.print("Velocidad derecha =  ");
-    SerialBT.println(averageSpeedRight);
+    SerialBT.println("");
+  }
+
+  SerialBT.println("Configuracion Actual:");
+
+  SerialBT.print("A+/B- KP = ");
+  SerialBT.println(kp);
+
+  SerialBT.print("C+/D- KD = ");
+  SerialBT.println(kd);
+
+  SerialBT.print("E+/F- KP2 = ");
+  SerialBT.println(kp2);
+
+  SerialBT.print("G+/H- KD2 = ");
+  SerialBT.println(kd2);
+
+  SerialBT.print("I+/J- - leftSpeed = ");
+  SerialBT.println(averageSpeedLeft);
+
+  SerialBT.print("K+/L- - rightLeft = ");
+  SerialBT.println(averageSpeedRight);
+
+  SerialBT.print("N - Wall to follow = ");
+  String state = "";
+  switch (walltofollow)
+  {
+  case 0:
+    state = "Left";
+  case 1:
+    state = "Right";
     break;
-  case '2':
-    SerialBT.print("Ingrese nueva Velocidad izquierda =  ");
-    char newSpeedLeft[2];              // Declara un arreglo de caracteres de longitud 2.
-    newSpeedLeft[0] = SerialBT.read(); // Lee el carácter.
-    newSpeedLeft[1] = '\0';            // Agrega el carácter nulo para indicar el final de la cadena.
-    averageSpeedLeft = atoi(newSpeedLeft);
-    SerialBT.print("Velocidad Izquierda =  ");
-    SerialBT.println(averageSpeedLeft);
-    break;
-  case '3':
-    SerialBT.println("Configurando kp 0.0: ");
-    while (SerialBT.available() == 0)
-      ;
-    SerialBT.print("KP Origin=  ");
-    SerialBT.println(kp);
-    kp = SerialBT.parseFloat();
-    SerialBT.print("KP Changed =  ");
-    SerialBT.println(kp);
-    break;
-  case '4':
-    SerialBT.println("Configurando kd 0.0: ");
-    while (SerialBT.available() == 0)
-      ;
-    SerialBT.print("kd Origin=  ");
-    SerialBT.println(kd);
-    kd = SerialBT.parseFloat();
-    SerialBT.print("kd Changed =  ");
-    SerialBT.println(kd);
-    break;
-  case '5':
-    while (SerialBT.available() == 0)
-      ;
-    wall = true;
-    SerialBT.println("Modo pared Derecha activado.");
-    break;
-  case '6':
-    while (SerialBT.available() == 0)
-      ;
-    menusalir = true;
-    SerialBT.println("Saliendo.");
-    break;
-  default:
-    SerialBT.println("Comando no válido.");
-    break;
+  }
+  SerialBT.println(state);
+
+  SerialBT.print("Y - DEBUGEAR ROBOT ");
+
+  SerialBT.print("Z - INICIAR ROBOT ");
+}
+
+void menuBT()
+{
+  if (SerialBT.available())
+  {
+    char option = SerialBT.read();
+    switch (option)
+    {
+    case 'M':
+    {
+      printOptions();
+      break;
+    }
+    case 'A':
+    {
+      kp += VALUE_0_1;
+      break;
+    }
+    case 'B':
+    {
+      kp -= VALUE_0_1;
+      break;
+    }
+    case 'C':
+    {
+      kp2 += VALUE_0_1;
+      break;
+    }
+    case 'D':
+    {
+      kp2 -= VALUE_0_1;
+      break;
+    }
+    case 'E':
+    {
+      kd += VALUE_0_1;
+      break;
+    }
+    case 'F':
+    {
+      kd -= VALUE_0_1;
+      break;
+    }
+    case 'G':
+    {
+      kd2 += VALUE_0_1;
+      break;
+    }
+    case 'H':
+    {
+      kd2 -= VALUE_0_1;
+      break;
+    }
+    case 'I':
+    {
+      averageSpeedLeft += VALUE_5;
+      break;
+    }
+    case 'J':
+    {
+      averageSpeedLeft -= VALUE_5;
+      break;
+    }
+    case 'K':
+    {
+      averageSpeedRight += VALUE_5;
+      break;
+    }
+    case 'L':
+    {
+      averageSpeedRight -= VALUE_5;
+      break;
+    }
+    case 'N':
+    {
+      walltofollow = true;
+      break;
+    }
+    case 'O':
+    {
+      DEBUG_BUTTON = true;
+      break;
+    }
+    case 'P':
+    {
+      DEBUG_EJE_Z = true;
+      break;
+    }
+    case 'W':
+    {
+      DEBUG_STATUS = true;
+      break;
+    }
+    case 'Y':
+    {
+      DEBUG_SENSORS = true;
+      break;
+    }
+    case 'Z':
+    {
+      stateStartButton = true;
+      break;
+    }
+    default:
+      SerialBT.println("OPCION INCORRECTA ");
+      break;
+    }
   }
 }
 
@@ -412,7 +503,7 @@ void movementLogic()
     Bover->Stop();
     if (stateStartButton)
     {
-      delay(2000);
+      delay(1900);
       movement = CONTINUE;
     }
   }
@@ -420,7 +511,7 @@ void movementLogic()
   case CONTINUE:
   {
     float input2 = leftDistance;
-    if (wall == true)
+    if (walltofollow == true)
     {
       input2 = rightDistance;
     }
@@ -446,7 +537,7 @@ void movementLogic()
 
     if (frontDistance <= PARED_ENFRENTE)
       movement = STOP;
-    if (wall == true)
+    if (walltofollow == true)
     {
       if (leftDistance >= NO_HAY_PARED && frontDistance >= NO_HAY_PARED_ENFRENTE && rightDistance >= NO_HAY_PARED)
       {
@@ -488,7 +579,7 @@ void movementLogic()
       movement = LEFT_TURN;
     if (frontDistance <= PARED_ENFRENTE && rightDistance > NO_HAY_PARED && leftDistance > NO_HAY_PARED)
     {
-      if (wall = true)
+      if (walltofollow = true)
       {
         movement = RIGHT_TURN;
       }
@@ -592,8 +683,8 @@ void printAll()
 }
 void setup()
 {
-  Serial.begin(9600);
-  SerialBT.begin("Bover");
+  Serial.begin(115200);
+  SerialBT.begin("Bover JR");
   mpuSetup();
 }
 
@@ -602,11 +693,11 @@ void loop()
   mpuLoop();
   stateStartButton = buttonStart1->GetIsPress();
   SensorsRead();
-  if (SerialBT.available())
+  if (menusalir == false)
   {
-    char command = SerialBT.read();
-    processCommand(command);
+    menuBT();
   }
+
   if (stateStartButton == true)
     menusalir = true;
   if (menusalir == true)

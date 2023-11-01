@@ -33,14 +33,17 @@ Sharp_GP2Y0A21::Sharp_GP2Y0A21(int pin)
 
 double Sharp_GP2Y0A21::SensorRead()
 {
-    float adc = AnalogReading(sensorPin);
-    if(adc<400) adc=380;
-    if(adc>4056) adc=4056;
-    for(int i = 0 ; i < PROM ; i++){
-        
+    long suma = 0;
+    for (int i = 0; i < PROM; i++) // Realizo un promedio de "n" valores
+    {
+        suma = suma + analogRead(sensorPin);
     }
-    float distance = 11945.0 / (adc - 11.0);
-    return distance;
+    float adc = suma / n;
+    if(adc<400) adc=400;
+    if(adc>4056) adc=4056;
+    float distancia_cm = 11945.0 / (adc - 11.0); // hay que ajustar esta formula para que me devuelva bien la distancia
+    return (distancia_cm);
+    
 }
 
 Sharp_GP2Y0A02::Sharp_GP2Y0A02(int pin)
