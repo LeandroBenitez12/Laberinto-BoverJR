@@ -44,7 +44,7 @@ BluetoothSerial SerialBT;
 #define PIN_BUTTON_START 32
 
 // TICKS DEBUG
-#define TICK_DEBUG_ALL 1500
+#define TICK_DEBUG_ALL 1000
 
 // menu
 bool menusalir = false;
@@ -52,12 +52,13 @@ bool walltofollow = false;
 
 // MPU
 // COSTANTS
-
+#define MARGEN 5
 // VARIABLES
 float gyroZ;
 unsigned long currentTimeDer;
 unsigned long currentTimeStop;
 unsigned long currentTimeZ;
+unsigned long currentTimewhileZ;
 
 unsigned long currentTimePID = 0;
 unsigned long currentTimeDebugAll = 0;
@@ -195,11 +196,11 @@ void mpuSetup()
   }
 }
 // MPU LOOP
-void mpuLoop()
+float mpuLoop()
 {
   // Si fallo al iniciar, parar programa
-  if (!dmpReady)
-    return;
+  //if (!dmpReady)
+    //return;
 
   // Ejecutar mientras no hay interrupcion
   while (!mpuInterrupt && fifoCount < packetSize)
@@ -236,7 +237,7 @@ void mpuLoop()
     mpu.dmpGetQuaternion(&q, fifoBuffer);
     mpu.dmpGetGravity(&gravity, &q);
     mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-    gyroZ = ypr[0] * 180 / M_PI;
+    return gyroZ = ypr[0] * 180 / M_PI;
     delay(1);
   }
 }
@@ -340,6 +341,21 @@ void printOptions()
 // GIROS 90º Y 180º
 void turnRight()
 {
+  float gyro90 = 90.0;
+  float gyroPretendido = gyroZ + gyro90;
+  do{
+    if(millis() > currentTimewhileZ + TICK_DEBUG_ALL){
+      currentTimewhileZ = millis();
+      gyroZ = mpuLoop();
+      SerialBT.print("gyroPretendido:  ");
+      SerialBT.println(gyroPretendido);
+      SerialBT.print("gyroZ Actual:  ");
+      SerialBT.println(gyroZ);
+    }
+    Bover->Right(200, 200);
+  }while (gyroZ < gyroPretendido - MARGEN || gyroZ > gyroPretendido + MARGEN);
+  gyroZ = gyroPretendido;
+  SerialBT.print("SALI LOCOOO:  ");
   /*if (gyroZ >= -5 && gyroZ <= 5)
   {
     do
@@ -361,8 +377,8 @@ void turnRight()
       SerialBT.println("detenido  ");
     }
   }*/
-  Bover->Right(205, 190);
-  delay(tick_giro_90);
+  //Bover->Right(205, 190);
+  //delay(tick_giro_90);
 }
 
 void turnLeft()
@@ -382,6 +398,7 @@ void postTurn()
   Bover->Forward(averageSpeedRight, averageSpeedLeft);
   delay(ENTRAR_EN_PASILLO);
 }
+
 
 void menuBT()
 {
@@ -560,7 +577,7 @@ enum movement
   FULL_TURN,
   POST_TURN,
 };
-int movement = STANDBY;
+int movement = RIGHT_TURN;
 
 void movementLogic()
 {
@@ -575,6 +592,7 @@ void movementLogic()
       movement = CONTINUE;
     }
   }
+
   break;
   case CONTINUE:
   {
@@ -756,6 +774,7 @@ void printAll()
     SerialBT.println("");
   }
 }
+
 void setup()
 {
   Serial.begin(115200);
@@ -765,7 +784,7 @@ void setup()
 
 void loop()
 {
-  mpuLoop();
+  gyroZ = mpuLoop();
   stateStartButton = buttonStart1->GetIsPress();
   SensorsRead();
   if (menusalir == false)
