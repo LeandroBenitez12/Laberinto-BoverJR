@@ -291,6 +291,8 @@ void printSensors()
   SerialBT.println(frontDistance);
   SerialBT.print(" || rightDistance: ");
   SerialBT.println(rightDistance);
+  SerialBT.print("|| gyroZ Actual:  ");
+  SerialBT.print(gyroZ);
 }
 
 void printOptions()
@@ -348,25 +350,25 @@ void turnRight()
     gyroZ = mpuLoop();
     if(millis() > currentTimewhileZ + TICK_DEBUG_ALL){
       currentTimewhileZ = millis();
-      Serial.print("1:  ");
-      Serial.print(gyroZ < gyroPretendido - MARGEN);
-      Serial.print(" | 2:  ");
-      Serial.print(gyroZ > gyroPretendido + MARGEN);
-      Serial.print("|| gyroZ Actual:  ");
-      Serial.print(gyroZ);
-      Serial.print("|| gyroZ Pretendido:  ");
-      Serial.println(gyroPretendido);
+      SerialBT.print("1:  ");
+      SerialBT.print(gyroZ < gyroPretendido - MARGEN);
+      SerialBT.print(" | 2:  ");
+      SerialBT.print(gyroZ > gyroPretendido + MARGEN);
+      SerialBT.print("|| gyroZ Actual:  ");
+      SerialBT.print(gyroZ);
+      SerialBT.print("|| gyroZ Pretendido:  ");
+      SerialBT.println(gyroPretendido);
     }
     Bover->Right(SPEED_TURN_LOW, SPEED_TURN_LOW);
   }while (gyroZ < gyroPretendido - MARGEN || gyroZ > gyroPretendido + MARGEN);
-  mpu.resetGyroscopePath();
-  while(true){
-    gyroZ = mpuLoop();
-    Serial.print(" gyroZ:  ");
-      Serial.println(gyroZ);
-  }
+  //mpu.resetGyroscopePath();
+  //while(true){
+  //  gyroZ = mpuLoop();
+  //  SerialBT.print(" gyroZ:  ");
+  //    SerialBT.println(gyroZ);
+  //}
   
-  Serial.print("SALI LOCOOO:  ");
+  SerialBT.print("SALI der:  ");
 
   /*if (gyroZ >= -5 && gyroZ <= 5)
   {
@@ -395,8 +397,26 @@ void turnRight()
 
 void turnLeft()
 {
-  Bover->Left(195, 200);
-  delay(tick_giro_90);
+  float gyro90 = 90.0;
+  float gyroPretendido = gyroZ - gyro90;
+  do{
+    gyroZ = mpuLoop();
+    if(millis() > currentTimewhileZ + TICK_DEBUG_ALL){
+      currentTimewhileZ = millis();
+      SerialBT.print("1:  ");
+      SerialBT.print(gyroZ < gyroPretendido - MARGEN);
+      SerialBT.print(" | 2:  ");
+      SerialBT.print(gyroZ > gyroPretendido + MARGEN);
+      SerialBT.print("|| gyroZ Actual:  ");
+      SerialBT.print(gyroZ);
+      SerialBT.print("|| gyroZ Pretendido:  ");
+      SerialBT.println(gyroPretendido);
+    }
+    Bover->Right(SPEED_TURN_LOW, SPEED_TURN_LOW);
+  }while (gyroZ < gyroPretendido - MARGEN || gyroZ > gyroPretendido + MARGEN);
+  SerialBT.println("  sali izq  ");
+  //Bover->Left(195, 200);
+  //delay(tick_giro_90);
 }
 
 void fullTurn()
@@ -797,18 +817,15 @@ void setup()
 void loop()
 {
   gyroZ = mpuLoop();
-  Serial.print("gyroZ: ");
-  Serial.println(gyroZ);
-  turnRight();
-  //stateStartButton = buttonStart1->GetIsPress();
-  //SensorsRead();
-  //if (menusalir == false)
-  //  menuBT();
-  //if (stateStartButton == true)
-  //  menusalir = true;
-  //if (menusalir == true)
-  //{
-  //  movementLogic();
-  //  printAll();
-  //}
+  stateStartButton = buttonStart1->GetIsPress();
+  SensorsRead();
+  if (menusalir == false)
+    menuBT();
+  if (stateStartButton == true)
+    menusalir = true;
+  if (menusalir == true)
+  {
+    movementLogic();
+    printAll();
+  }
 }
