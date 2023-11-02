@@ -74,6 +74,7 @@ float frontDistance;
 
 // veocidades motores pwm
 #define VELOCIDAD_GIROS 255
+#define SPEED_TURN_LOW 140
 int tick_giro_90 = 200;
 int tick_giro_180 = 400;
 #define ENTRAR_EN_PASILLO 400
@@ -203,10 +204,10 @@ float mpuLoop()
     //return;
 
   // Ejecutar mientras no hay interrupcion
-  while (!mpuInterrupt && fifoCount < packetSize)
-  {
-    // AQUI EL RESTO DEL CODIGO DE TU PROGRRAMA
-  }
+  //while (!mpuInterrupt && fifoCount < packetSize)
+  //{
+  //  // AQUI EL RESTO DEL CODIGO DE TU PROGRRAMA
+  //}
 
   mpuInterrupt = false;
   mpuIntStatus = mpu.getIntStatus();
@@ -344,18 +345,29 @@ void turnRight()
   float gyro90 = 90.0;
   float gyroPretendido = gyroZ + gyro90;
   do{
+    gyroZ = mpuLoop();
     if(millis() > currentTimewhileZ + TICK_DEBUG_ALL){
       currentTimewhileZ = millis();
-      gyroZ = mpuLoop();
-      SerialBT.print("gyroPretendido:  ");
-      SerialBT.println(gyroPretendido);
-      SerialBT.print("gyroZ Actual:  ");
-      SerialBT.println(gyroZ);
+      Serial.print("1:  ");
+      Serial.print(gyroZ < gyroPretendido - MARGEN);
+      Serial.print(" | 2:  ");
+      Serial.print(gyroZ > gyroPretendido + MARGEN);
+      Serial.print("|| gyroZ Actual:  ");
+      Serial.print(gyroZ);
+      Serial.print("|| gyroZ Pretendido:  ");
+      Serial.println(gyroPretendido);
     }
-    Bover->Right(200, 200);
+    Bover->Right(SPEED_TURN_LOW, SPEED_TURN_LOW);
   }while (gyroZ < gyroPretendido - MARGEN || gyroZ > gyroPretendido + MARGEN);
-  gyroZ = gyroPretendido;
-  SerialBT.print("SALI LOCOOO:  ");
+  mpu.resetGyroscopePath();
+  while(true){
+    gyroZ = mpuLoop();
+    Serial.print(" gyroZ:  ");
+      Serial.println(gyroZ);
+  }
+  
+  Serial.print("SALI LOCOOO:  ");
+
   /*if (gyroZ >= -5 && gyroZ <= 5)
   {
     do
@@ -785,15 +797,18 @@ void setup()
 void loop()
 {
   gyroZ = mpuLoop();
-  stateStartButton = buttonStart1->GetIsPress();
-  SensorsRead();
-  if (menusalir == false)
-    menuBT();
-  if (stateStartButton == true)
-    menusalir = true;
-  if (menusalir == true)
-  {
-    movementLogic();
-    printAll();
-  }
+  Serial.print("gyroZ: ");
+  Serial.println(gyroZ);
+  turnRight();
+  //stateStartButton = buttonStart1->GetIsPress();
+  //SensorsRead();
+  //if (menusalir == false)
+  //  menuBT();
+  //if (stateStartButton == true)
+  //  menusalir = true;
+  //if (menusalir == true)
+  //{
+  //  movementLogic();
+  //  printAll();
+  //}
 }
