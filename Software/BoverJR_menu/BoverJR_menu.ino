@@ -585,7 +585,6 @@ int movement = STANDBY;
 void movementLogic() {
   switch (movement) {
     case STANDBY:
-      {
         Bover->Stop();
         delay(1900);
         if (stateStartButton) {
@@ -593,7 +592,6 @@ void movementLogic() {
           movement = CONTINUE;
         }
         break;
-      }
     case CONTINUE:
     {
         float input = rightDistance - leftDistance;
