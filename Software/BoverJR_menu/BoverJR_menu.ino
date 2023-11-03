@@ -71,6 +71,8 @@ float frontDistance;
 #define PARED_COSTADO_PASILLO 27
 #define NO_HAY_PARED 28
 #define NO_HAY_PARED_ENFRENTE 10
+#define POSITIVE_ANGLE_MAX 180
+#define RIGHT_LIMIT_NEG -180
 
 enum movement
 {
@@ -393,8 +395,13 @@ void turnLeft() {
 }
 
 void fullTurn() {
-  float gyro175 = 170.0;
-  float gyroPretendido = gyroZ - gyro175;
+  float gyro175 = 180.0;
+  float gyroPretendido = gyroZ + gyro175;
+  if (gyroZ > 0){
+    if(gyroPretendido>POSITIVE_ANGLE_MAX){
+      gyroPretendido= RIGHT_LIMIT_NEG+(angleStep-(POSITIVE_ANGLE_MAX-gyroZ))
+    }
+  }
   do {
     gyroZ = mpuLoop();
     if (millis() > currentTimewhileZ + TICK_DEBUG_ALL) {
@@ -408,7 +415,7 @@ void fullTurn() {
       SerialBT.print("|| gyroZ Pretendido:  ");
       SerialBT.println(gyroPretendido);
     }
-    Bover->Left(SPEED_TURN_LOW, SPEED_TURN_LOW);
+    Bover->Right(SPEED_TURN_LOW, SPEED_TURN_LOW);
   } while (gyroZ < gyroPretendido - MARGEN || gyroZ > gyroPretendido + MARGEN);
   SerialBT.println("  sali FULL  ");
   movement = CONTINUE;
