@@ -68,11 +68,11 @@ float rightDistance;
 float leftDistance;
 float frontDistance;
 #define PARED_ENFRENTE 7
-#define PARED_COSTADO_PASILLO 27
+#define PARED_COSTADO_PASILLO 28
 #define NO_HAY_PARED 28
-#define NO_HAY_PARED_ENFRENTE 10
-#define POSITIVE_ANGLE_MAX 180
-#define RIGHT_LIMIT_NEG -180
+#define NO_HAY_PARED_ENFRENTE 20
+#define POSITIVE_ANGLE_MAX 179.9
+#define RIGHT_LIMIT_NEG -179.9
 
 enum movement
 {
@@ -176,10 +176,10 @@ void mpuSetup()
   devStatus = mpu.dmpInitialize();
 
   // Valores de calibracion
-  mpu.setXGyroOffset(53);
-  mpu.setYGyroOffset(57);
-  mpu.setZGyroOffset(-61);
-  mpu.setZAccelOffset(1063);
+  mpu.setXGyroOffset(51);
+  mpu.setYGyroOffset(48);
+  mpu.setZGyroOffset(-63);
+  mpu.setZAccelOffset(1072);
 
   // Activar DMP
   if (devStatus == 0)
