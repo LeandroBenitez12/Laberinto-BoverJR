@@ -209,14 +209,15 @@ void mpuSetup()
   }
 }
 // MPU LOOP
-float mpuLoop() {
+float mpuLoop()
+{
   // Si fallo al iniciar, parar programa
-  //if (!dmpReady) 
-  //return;
+  // if (!dmpReady)
+  // return;
   // Ejecutar mientras no hay interrupcion
   while (!mpuInterrupt && fifoCount < packetSize)
   {
-  //  // AQUI EL RESTO DEL CODIGO DE TU PROGRRAMA
+    //  // AQUI EL RESTO DEL CODIGO DE TU PROGRRAMA
   }
   mpuInterrupt = false;
   mpuIntStatus = mpu.getIntStatus();
@@ -225,10 +226,13 @@ float mpuLoop() {
   fifoCount = mpu.getFIFOCount();
 
   // Controlar overflow
-  if ((mpuIntStatus & 0x10) || fifoCount == 4096) {
+  if ((mpuIntStatus & 0x10) || fifoCount == 4096)
+  {
     mpu.resetFIFO();
     // SerialBT.println(F("FIFO overflow!"));
-  } else if (mpuIntStatus & 0x02) {
+  }
+  else if (mpuIntStatus & 0x02)
+  {
     // wait for correct available data length, should be a VERY short wait
     while (fifoCount < packetSize)
       fifoCount = mpu.getFIFOCount();
@@ -344,12 +348,29 @@ void printOptions()
   }
 }
 // GIROS 90º Y 180º
-void turnRight() {
+void turnRight()
+{
   float gyro90 = 90.0;
   float gyroPretendido = gyroZ + gyro90;
-  do {
+  if (gyroZ > 0)
+  {
+    if (gyroPretendido > POSITIVE_ANGLE_MAX)
+    {
+      gyroPretendido = RIGHT_LIMIT_NEG + (gyroPretendido - POSITIVE_ANGLE_MAX);
+    }
+  }
+  else if (gyroZ < 0)
+  {
+    if (gyroPretendido < RIGHT_LIMIT_NEG)
+    {
+      gyroPretendido = POSITIVE_ANGLE_MAX + (gyroPretendido + POSITIVE_ANGLE_MAX);
+    }
+  }
+  do
+  {
     gyroZ = mpuLoop();
-    if (millis() > currentTimewhileZ + TICK_DEBUG_ALL) {
+    if (millis() > currentTimewhileZ + TICK_DEBUG_ALL)
+    {
       currentTimewhileZ = millis();
       SerialBT.print("1:  ");
       SerialBT.print(gyroZ < gyroPretendido - MARGEN);
@@ -362,22 +383,39 @@ void turnRight() {
     }
     Bover->Right(SPEED_TURN_LOW, SPEED_TURN_LOW);
   } while (gyroZ < gyroPretendido - MARGEN || gyroZ > gyroPretendido + MARGEN);
-  //mpu.resetGyroscopePath();
-  //while(true){
-  //  gyroZ = gyroZ = ();
-  //  SerialBT.print(" gyroZ:  ");
-  //    SerialBT.println(gyroZ);
-  //}
+  // mpu.resetGyroscopePath();
+  // while(true){
+  //   gyroZ = gyroZ = ();
+  //   SerialBT.print(" gyroZ:  ");
+  //     SerialBT.println(gyroZ);
+  // }
   SerialBT.print("SALI der:  ");
   movement = POST_TURN;
 }
 
-void turnLeft() {
+void turnLeft()
+{
   float gyro90 = 90.0;
   float gyroPretendido = gyroZ - gyro90;
-  do {
+  if (gyroZ > 0)
+  {
+    if (gyroPretendido > POSITIVE_ANGLE_MAX)
+    {
+      gyroPretendido = RIGHT_LIMIT_NEG + (gyroPretendido - POSITIVE_ANGLE_MAX);
+    }
+  }
+  else if (gyroZ < 0)
+  {
+    if (gyroPretendido < RIGHT_LIMIT_NEG)
+    {
+      gyroPretendido = POSITIVE_ANGLE_MAX + (gyroPretendido + POSITIVE_ANGLE_MAX);
+    }
+  }
+  do
+  {
     gyroZ = mpuLoop();
-    if (millis() > currentTimewhileZ + TICK_DEBUG_ALL) {
+    if (millis() > currentTimewhileZ + TICK_DEBUG_ALL)
+    {
       currentTimewhileZ = millis();
       SerialBT.print("1:  ");
       SerialBT.print(gyroZ < gyroPretendido - MARGEN);
@@ -394,17 +432,29 @@ void turnLeft() {
   movement = POST_TURN;
 }
 
-void fullTurn() {
-  float gyro175 = 180.0;
-  float gyroPretendido = gyroZ + gyro175;
-  if (gyroZ > 0){
-    if(gyroPretendido>POSITIVE_ANGLE_MAX){
-      gyroPretendido= RIGHT_LIMIT_NEG+(angleStep-(POSITIVE_ANGLE_MAX-gyroZ))
+void fullTurn()
+{
+  float gyro180 = 180.0;
+  float gyroPretendido = gyroZ + gyro180;
+  if (gyroZ > 0)
+  {
+    if (gyroPretendido > POSITIVE_ANGLE_MAX)
+    {
+      gyroPretendido = RIGHT_LIMIT_NEG + (gyroPretendido - POSITIVE_ANGLE_MAX);
     }
   }
-  do {
+  else if (gyroZ < 0)
+  {
+    if (gyroPretendido < RIGHT_LIMIT_NEG)
+    {
+      gyroPretendido = POSITIVE_ANGLE_MAX + (gyroPretendido + POSITIVE_ANGLE_MAX);
+    }
+  }
+  do
+  {
     gyroZ = mpuLoop();
-    if (millis() > currentTimewhileZ + TICK_DEBUG_ALL) {
+    if (millis() > currentTimewhileZ + TICK_DEBUG_ALL)
+    {
       currentTimewhileZ = millis();
       SerialBT.print("1:  ");
       SerialBT.print(gyroZ < gyroPretendido - MARGEN);
@@ -421,7 +471,8 @@ void fullTurn() {
   movement = CONTINUE;
 }
 
-void postTurn() {
+void postTurn()
+{
   Bover->Forward(averageSpeedRight, averageSpeedLeft);
   delay(ENTRAR_EN_PASILLO);
 }
@@ -581,8 +632,8 @@ void movementLogic()
 
     // INPUT2 = WALLTOFOLLOW PARA MANTENER LA DISTANCIA A ESA PARED
     float input2 = leftDistance;
-    //if (walltofollow == true)
-      //input2 = rightDistance;
+    // if (walltofollow == true)
+    // input2 = rightDistance;
     gananciaPID2 = PID2->ComputePid(input2);
 
     if (DEBUG_PID)
