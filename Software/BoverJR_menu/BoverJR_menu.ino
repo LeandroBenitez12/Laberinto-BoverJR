@@ -39,6 +39,7 @@ BluetoothSerial SerialBT;
 #define PIN_SHARP_LEFT 35
 #define PIN_SHARP_FRONT 33
 // MPU
+#define MARGEN 5
 #define INTERRUPT_PIN 4
 // Boton
 #define PIN_BUTTON_START 32
@@ -58,7 +59,7 @@ float gyroZ;
 unsigned long currentTimeDer;
 unsigned long currentTimeStop;
 unsigned long currentTimeZ;
-
+unsigned long currentTimewhileZ;
 unsigned long currentTimePID = 0;
 unsigned long currentTimeDebugAll = 0;
 unsigned long currentTimeMenu = 0;
@@ -71,11 +72,24 @@ float frontDistance;
 #define NO_HAY_PARED 28
 #define NO_HAY_PARED_ENFRENTE 10
 
+enum movement
+{
+  STANDBY,
+  CONTINUE,
+  STOP,
+  RIGHT_TURN,
+  LEFT_TURN,
+  FULL_TURN,
+  POST_TURN,
+};
+int movement = STANDBY;
+
 // veocidades motores pwm
+#define SPEED_TURN_LOW 120
 #define VELOCIDAD_GIROS 255
 int tick_giro_90 = 200;
 int tick_giro_180 = 400;
-#define ENTRAR_EN_PASILLO 400
+#define ENTRAR_EN_PASILLO 500
 #define DELAY_TOMAR_DECISION 200
 #define DELAY_ANTI_INERCIA 80
 
@@ -90,17 +104,17 @@ int averageSpeedLeft = 230;
 
 // variables pid
 #define VALUE_0_1 0.1
-double kp = 1;
-double kd = 0.3;
+double kp = 5;
+double kd = 0.77;
 double ki = 0.0;
 double setPoint = 0;
 double gananciaPID;
 double TICK_PID = 1;
 // variables pid2
-double kp2 = 2;
-double kd2 = 0.7;
+double kp2 = 7;
+double kd2 = 1;
 double ki2 = 0.0;
-double setPoint2 = 7.5;
+double setPoint2 = 7;
 double gananciaPID2;
 double TICK_PID2 = 1.0;
 
@@ -118,7 +132,6 @@ Pid *PID = new Pid(kp, kd, ki, setPoint, TICK_PID);
 Pid *PID2 = new Pid(kp2, kd2, ki2, setPoint2, TICK_PID2);
 Button *buttonStart1 = new Button(PIN_BUTTON_START);
 MPU6050 mpu;
-
 // MPU control/status vars
 bool dmpReady = false;  // set true if DMP init was successful
 uint8_t mpuIntStatus;   // holds actual interrupt status byte from MPU
@@ -137,7 +150,6 @@ void dmpDataReady()
 {
   mpuInterrupt = true;
 }
-
 void mpuSetup()
 {
 // join I2C bus (I2Cdev library doesn't do this automatically)
@@ -195,18 +207,15 @@ void mpuSetup()
   }
 }
 // MPU LOOP
-void mpuLoop()
-{
+float mpuLoop() {
   // Si fallo al iniciar, parar programa
-  if (!dmpReady)
-    return;
-
+  //if (!dmpReady) 
+  //return;
   // Ejecutar mientras no hay interrupcion
   while (!mpuInterrupt && fifoCount < packetSize)
   {
-    // AQUI EL RESTO DEL CODIGO DE TU PROGRRAMA
+  //  // AQUI EL RESTO DEL CODIGO DE TU PROGRRAMA
   }
-
   mpuInterrupt = false;
   mpuIntStatus = mpu.getIntStatus();
 
@@ -214,13 +223,10 @@ void mpuLoop()
   fifoCount = mpu.getFIFOCount();
 
   // Controlar overflow
-  if ((mpuIntStatus & 0x10) || fifoCount == 4096)
-  {
+  if ((mpuIntStatus & 0x10) || fifoCount == 4096) {
     mpu.resetFIFO();
     // SerialBT.println(F("FIFO overflow!"));
-  }
-  else if (mpuIntStatus & 0x02)
-  {
+  } else if (mpuIntStatus & 0x02) {
     // wait for correct available data length, should be a VERY short wait
     while (fifoCount < packetSize)
       fifoCount = mpu.getFIFOCount();
@@ -236,11 +242,11 @@ void mpuLoop()
     mpu.dmpGetQuaternion(&q, fifoBuffer);
     mpu.dmpGetGravity(&gravity, &q);
     mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-    gyroZ = ypr[0] * 180 / M_PI;
+    float gyroZ;
+    return gyroZ = ypr[0] * 180 / M_PI;
     delay(1);
   }
 }
-
 // LECTURA SENSORS
 void SensorsRead()
 {
@@ -298,7 +304,6 @@ void printOptions()
   {
     SerialBT.println("");
   }
-
   SerialBT.println("Configuracion Actual:");
 
   SerialBT.print("A+/B- KP = ");
@@ -336,49 +341,80 @@ void printOptions()
     SerialBT.println("");
   }
 }
-
 // GIROS 90º Y 180º
-void turnRight()
-{
-  /*if (gyroZ >= -5 && gyroZ <= 5)
-  {
-    do
-    {
-      Bover->Right(VELOCIDAD_GIROS, VELOCIDAD_GIROS);
-      if (millis() > currentTimeDer + TICK_DEBUG_Z)
-      {
-        currentTimeDer = millis();
-        SerialBT.println("HACIA LA DERECHA  ");
-      }
-    } while (gyroZ >= 85 && gyroZ <= 95);
-  }
-  else
-  {
-    Bover->Stop();
-    if (millis() > currentTimeStop + TICK_DEBUG_Z)
-    {
-      currentTimeStop = millis();
-      SerialBT.println("detenido  ");
+void turnRight() {
+  float gyro90 = 90.0;
+  float gyroPretendido = gyroZ + gyro90;
+  do {
+    gyroZ = mpuLoop();
+    if (millis() > currentTimewhileZ + TICK_DEBUG_ALL) {
+      currentTimewhileZ = millis();
+      SerialBT.print("1:  ");
+      SerialBT.print(gyroZ < gyroPretendido - MARGEN);
+      SerialBT.print(" | 2:  ");
+      SerialBT.print(gyroZ > gyroPretendido + MARGEN);
+      SerialBT.print("|| gyroZ Actual:  ");
+      SerialBT.print(gyroZ);
+      SerialBT.print("|| gyroZ Pretendido:  ");
+      SerialBT.println(gyroPretendido);
     }
-  }*/
-  Bover->Right(205, 190);
-  delay(tick_giro_90);
+    Bover->Right(SPEED_TURN_LOW, SPEED_TURN_LOW);
+  } while (gyroZ < gyroPretendido - MARGEN || gyroZ > gyroPretendido + MARGEN);
+  //mpu.resetGyroscopePath();
+  //while(true){
+  //  gyroZ = gyroZ = ();
+  //  SerialBT.print(" gyroZ:  ");
+  //    SerialBT.println(gyroZ);
+  //}
+  SerialBT.print("SALI der:  ");
+  movement = POST_TURN;
 }
 
-void turnLeft()
-{
-  Bover->Left(195, 200);
-  delay(tick_giro_90);
+void turnLeft() {
+  float gyro90 = 90.0;
+  float gyroPretendido = gyroZ - gyro90;
+  do {
+    gyroZ = mpuLoop();
+    if (millis() > currentTimewhileZ + TICK_DEBUG_ALL) {
+      currentTimewhileZ = millis();
+      SerialBT.print("1:  ");
+      SerialBT.print(gyroZ < gyroPretendido - MARGEN);
+      SerialBT.print(" | 2:  ");
+      SerialBT.print(gyroZ > gyroPretendido + MARGEN);
+      SerialBT.print("|| gyroZ Actual:  ");
+      SerialBT.print(gyroZ);
+      SerialBT.print("|| gyroZ Pretendido:  ");
+      SerialBT.println(gyroPretendido);
+    }
+    Bover->Left(SPEED_TURN_LOW, SPEED_TURN_LOW);
+  } while (gyroZ < gyroPretendido - MARGEN || gyroZ > gyroPretendido + MARGEN);
+  SerialBT.println("  sali izq  ");
+  movement = POST_TURN;
 }
 
-void fullTurn()
-{
-  Bover->Right(190, 200);
-  delay(tick_giro_180);
+void fullTurn() {
+  float gyro175 = 170.0;
+  float gyroPretendido = gyroZ - gyro175;
+  do {
+    gyroZ = mpuLoop();
+    if (millis() > currentTimewhileZ + TICK_DEBUG_ALL) {
+      currentTimewhileZ = millis();
+      SerialBT.print("1:  ");
+      SerialBT.print(gyroZ < gyroPretendido - MARGEN);
+      SerialBT.print(" | 2:  ");
+      SerialBT.print(gyroZ > gyroPretendido + MARGEN);
+      SerialBT.print("|| gyroZ Actual:  ");
+      SerialBT.print(gyroZ);
+      SerialBT.print("|| gyroZ Pretendido:  ");
+      SerialBT.println(gyroPretendido);
+    }
+    Bover->Left(SPEED_TURN_LOW, SPEED_TURN_LOW);
+  } while (gyroZ < gyroPretendido - MARGEN || gyroZ > gyroPretendido + MARGEN);
+  SerialBT.println("  sali FULL  ");
+  movement = CONTINUE;
 }
 
-void postTurn()
-{
+void postTurn() {
   Bover->Forward(averageSpeedRight, averageSpeedLeft);
   delay(ENTRAR_EN_PASILLO);
 }
@@ -502,39 +538,6 @@ void menuBT()
       SerialBT.println("");
       break;
     }
-    /*
-    case 'O':
-    {
-      DEBUG_BUTTON = 1;
-      SerialBT.println("");
-      printOptions();
-      SerialBT.println("");
-      break;
-    }
-    case 'P':
-    {
-      DEBUG_EJE_Z = 1;
-      SerialBT.println("");
-      printOptions();
-      SerialBT.println("");
-      break;
-    }
-    case 'W':
-    {
-      DEBUG_STATUS = 1;
-      SerialBT.println("");
-      printOptions();
-      SerialBT.println("");
-      break;
-    }
-    case 'Y':
-    {
-      DEBUG_SENSORS = 1;
-      SerialBT.println("");
-      printOptions();
-      SerialBT.println("");
-      break;
-    }*/
     case 'Z':
     {
       stateStartButton = true;
@@ -549,18 +552,6 @@ void menuBT()
     }
   }
 }
-
-enum movement
-{
-  STANDBY,
-  CONTINUE,
-  STOP,
-  RIGHT_TURN,
-  LEFT_TURN,
-  FULL_TURN,
-  POST_TURN,
-};
-int movement = STANDBY;
 
 void movementLogic()
 {
@@ -583,28 +574,28 @@ void movementLogic()
 
     // INPUT2 = WALLTOFOLLOW PARA MANTENER LA DISTANCIA A ESA PARED
     float input2 = leftDistance;
-    if (walltofollow == true)
-      input2 = rightDistance;
+    //if (walltofollow == true)
+      //input2 = rightDistance;
     gananciaPID2 = PID2->ComputePid(input2);
 
     if (DEBUG_PID)
       printPID();
 
-    // APLICAMOS GANANCIA 1 DEL PID A MOTORES
+    // APLICAMOS GANANCIA 1 DEL PID A MOTORES. okey
     speedRightPID = (averageSpeedRight - (gananciaPID));
     speedLeftPID = (averageSpeedLeft + (gananciaPID));
 
     // APLICAMOS GANANCIA 2 DEL PID A MOTORES
-    speedRightPID2 = (speedRightPID - (gananciaPID2));
-    speedLeftPID2 = (speedLeftPID + (gananciaPID2));
+    speedRightPID2 = (speedRightPID + (gananciaPID2));
+    speedLeftPID2 = (speedLeftPID - (gananciaPID2));
 
     // ESTABLECEMOS LOS LIMITES
-    if (speedRightPID2 >= MAX_VEL)
-      speedRightPID2 = MAX_VEL;
-    if (speedRightPID2 >= MAX_VEL)
-      speedRightPID2 = MAX_VEL;
+    if (speedRightPID >= MAX_VEL)
+      speedRightPID = MAX_VEL;
+    if (speedRightPID >= MAX_VEL)
+      speedRightPID = MAX_VEL;
 
-    Bover->Forward(speedRightPID2, speedLeftPID2);
+    Bover->Forward(speedRightPID, speedLeftPID);
 
     if (frontDistance <= PARED_ENFRENTE)
       movement = STOP;
@@ -671,8 +662,6 @@ void movementLogic()
   case RIGHT_TURN:
   {
     turnRight();
-    Bover->Stop();
-    delay(DELAY_ANTI_INERCIA);
     movement = POST_TURN;
     break;
   }
@@ -680,8 +669,6 @@ void movementLogic()
   case LEFT_TURN:
   {
     turnLeft();
-    Bover->Stop();
-    delay(DELAY_ANTI_INERCIA);
     movement = POST_TURN;
     break;
   }
@@ -698,8 +685,6 @@ void movementLogic()
   case POST_TURN:
   {
     postTurn();
-    Bover->Stop();
-    delay(DELAY_ANTI_INERCIA);
     movement = CONTINUE;
     break;
   }
@@ -765,7 +750,7 @@ void setup()
 
 void loop()
 {
-  mpuLoop();
+  gyroZ = mpuLoop();
   stateStartButton = buttonStart1->GetIsPress();
   SensorsRead();
   if (menusalir == false)
