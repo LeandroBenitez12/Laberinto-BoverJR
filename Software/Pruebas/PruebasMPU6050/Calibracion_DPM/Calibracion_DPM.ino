@@ -36,7 +36,8 @@
 #include "I2Cdev.h"
 #include "MPU6050.h"
 #include "Wire.h"
- 
+#include "BluetoothSerial.h"
+
 ///////////////////////////////////   CONFIGURATION   /////////////////////////////
 //Change this 3 variables if you want to fine tune the skecth to your needs.
 int buffersize=1000;     //Amount of readings used to average, make it higher to get more precision but sketch will be slower  (default:1000)
@@ -50,6 +51,12 @@ int giro_deadzone=1;     //Giro error allowed, make it lower to get more precisi
 //MPU6050 accelgyro;
 MPU6050 accelgyro(0x68); // <-- use for AD0 high
  
+ // BLUETOOH
+#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+#endif
+BluetoothSerial SerialBT;
+
 int16_t ax, ay, az,gx, gy, gz;
  
 int mean_ax,mean_ay,mean_az,mean_gx,mean_gy,mean_gz,state=0;
@@ -62,9 +69,9 @@ void setup() {
   // COMMENT NEXT LINE IF YOU ARE USING ARDUINO DUE
   // TWBR = 24; // 400kHz I2C clock (200kHz if CPU is 8MHz). Leonardo measured 250kHz.
  
-  // initialize serial communication
+  // initialize SerialBT communication
   Serial.begin(115200);
- 
+  SerialBT.begin("Bover JR");
   //seteamos rango de mediciones
   accelgyro.setFullScaleAccelRange( (MPU6050_IMU::MPU6050_ACCEL_FS_8));
   accelgyro.setFullScaleGyroRange( (MPU6050_IMU::MPU6050_GYRO_FS_1000));
@@ -73,20 +80,20 @@ void setup() {
   accelgyro.initialize();
  
   // wait for ready
-  while (Serial.available() && Serial.read()); // empty buffer
-  while (!Serial.available()){
-    Serial.println(F("Send any character to start sketch.\n"));
+  while (SerialBT.available() && SerialBT.read()); // empty buffer
+  while (!SerialBT.available()){
+    SerialBT.println(F("Send any character to start sketch.\n"));
     delay(1500);
   }                
-  while (Serial.available() && Serial.read()); // empty buffer again
+  while (SerialBT.available() && SerialBT.read()); // empty buffer again
  
   // start message
-  Serial.println("\nMPU6050 Calibration Sketch");
+  SerialBT.println("\nMPU6050 Calibration Sketch");
   delay(2000);
-  Serial.println("\nYour MPU6050 should be placed in horizontal position, with package letters facing up. \nDon't touch it until you see a finish message.\n");
+  SerialBT.println("\nYour MPU6050 should be placed in horizontal position, with package letters facing up. \nDon't touch it until you see a finish message.\n");
   delay(3000);
   // verify connection
-  Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+  SerialBT.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
   delay(1000);
   // reset offsets
   accelgyro.setXAccelOffset(0);
@@ -100,14 +107,14 @@ void setup() {
 ///////////////////////////////////   LOOP   ////////////////////////////////////
 void loop() {
   if (state==0){
-    Serial.println("\nReading sensors for first time...");
+    SerialBT.println("\nReading sensors for first time...");
     meansensors();
     state++;
     delay(1000);
   }
  
   if (state==1) {
-    Serial.println("\nCalculating offsets...");
+    SerialBT.println("\nCalculating offsets...");
     calibration();
     state++;
     delay(1000);
@@ -115,34 +122,34 @@ void loop() {
  
   if (state==2) {
     meansensors();
-    Serial.println("\nFINISHED!");
-    Serial.print("\nSensor readings with offsets:\t");
-    Serial.print(mean_ax); 
-    Serial.print("\t");
-    Serial.print(mean_ay); 
-    Serial.print("\t");
-    Serial.print(mean_az); 
-    Serial.print("\t");
-    Serial.print(mean_gx); 
-    Serial.print("\t");
-    Serial.print(mean_gy); 
-    Serial.print("\t");
-    Serial.println(mean_gz);
-    Serial.print("Your offsets:\t");
-    Serial.print(ax_offset); 
-    Serial.print("\t");
-    Serial.print(ay_offset); 
-    Serial.print("\t");
-    Serial.print(az_offset); 
-    Serial.print("\t");
-    Serial.print(gx_offset); 
-    Serial.print("\t");
-    Serial.print(gy_offset); 
-    Serial.print("\t");
-    Serial.println(gz_offset); 
-    Serial.println("\nData is printed as: acelX acelY acelZ giroX giroY giroZ");
-    Serial.println("Check that your sensor readings are close to 0 0 16384 0 0 0");
-    Serial.println("If calibration was succesful write down your offsets so you can set them in your projects using something similar to mpu.setXAccelOffset(youroffset)");
+    SerialBT.println("\nFINISHED!");
+    SerialBT.print("\nSensor readings with offsets:\t");
+    SerialBT.print(mean_ax); 
+    SerialBT.print("\t");
+    SerialBT.print(mean_ay); 
+    SerialBT.print("\t");
+    SerialBT.print(mean_az); 
+    SerialBT.print("\t");
+    SerialBT.print(mean_gx); 
+    SerialBT.print("\t");
+    SerialBT.print(mean_gy); 
+    SerialBT.print("\t");
+    SerialBT.println(mean_gz);
+    SerialBT.print("Your offsets:\t");
+    SerialBT.print(ax_offset); 
+    SerialBT.print("\t");
+    SerialBT.print(ay_offset); 
+    SerialBT.print("\t");
+    SerialBT.print(az_offset); 
+    SerialBT.print("\t");
+    SerialBT.print(gx_offset); 
+    SerialBT.print("\t");
+    SerialBT.print(gy_offset); 
+    SerialBT.print("\t");
+    SerialBT.println(gz_offset); 
+    SerialBT.println("\nData is printed as: acelX acelY acelZ giroX giroY giroZ");
+    SerialBT.println("Check that your sensor readings are close to 0 0 16384 0 0 0");
+    SerialBT.println("If calibration was succesful write down your offsets so you can set them in your projects using something similar to mpu.setXAccelOffset(youroffset)");
     while (1);
   }
 }
@@ -195,7 +202,7 @@ void calibration(){
     accelgyro.setZGyroOffset(gz_offset);
  
     meansensors();
-    Serial.println("...");
+    SerialBT.println("...");
  
     if (abs(mean_ax)<=acel_deadzone) ready++;
     else ax_offset=ax_offset-mean_ax/acel_deadzone;

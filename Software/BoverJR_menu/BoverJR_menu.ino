@@ -39,7 +39,7 @@ BluetoothSerial SerialBT;
 #define PIN_SHARP_LEFT 35
 #define PIN_SHARP_FRONT 33
 // MPU
-#define MARGEN 5
+#define MARGEN 3
 #define INTERRUPT_PIN 4
 // Boton
 #define PIN_BUTTON_START 32
@@ -106,15 +106,15 @@ int averageSpeedLeft = 230;
 
 // variables pid
 #define VALUE_0_1 0.1
-double kp = 5;
+double kp = 4;
 double kd = 0.77;
 double ki = 0.0;
 double setPoint = 0;
 double gananciaPID;
 double TICK_PID = 1;
 // variables pid2
-double kp2 = 7;
-double kd2 = 1;
+double kp2 = 0;
+double kd2 = 0;
 double ki2 = 0.0;
 double setPoint2 = 7;
 double gananciaPID2;
@@ -276,12 +276,12 @@ void printPID()
     SerialBT.println("");
     SerialBT.print("Ganancia PID 1: ");
     SerialBT.println(gananciaPID);
-    SerialBT.print("Ganancia PID 2: ");
-    SerialBT.println(gananciaPID2);
+    //SerialBT.print("Ganancia PID 2: ");
+    //SerialBT.println(gananciaPID2);
     SerialBT.print("speedRight: ");
-    SerialBT.print(speedRightPID2);
+    SerialBT.print(speedRightPID);
     SerialBT.print(" || speedLeft: ");
-    SerialBT.println(speedLeftPID2);
+    SerialBT.println(speedLeftPID);
     SerialBT.println("");
   }
 }
@@ -434,7 +434,7 @@ void turnLeft()
 
 void fullTurn()
 {
-  float gyro180 = 180.0;
+  float gyro180 = 165.0;
   float gyroPretendido = gyroZ + gyro180;
   if (gyroZ > 0)
   {
@@ -631,10 +631,10 @@ void movementLogic()
     gananciaPID = PID->ComputePid(input);
 
     // INPUT2 = WALLTOFOLLOW PARA MANTENER LA DISTANCIA A ESA PARED
-    float input2 = leftDistance;
+    //float input2 = leftDistance;
     // if (walltofollow == true)
     // input2 = rightDistance;
-    gananciaPID2 = PID2->ComputePid(input2);
+    //gananciaPID2 = PID2->ComputePid(input2);
 
     if (DEBUG_PID)
       printPID();
@@ -644,8 +644,8 @@ void movementLogic()
     speedLeftPID = (averageSpeedLeft + (gananciaPID));
 
     // APLICAMOS GANANCIA 2 DEL PID A MOTORES
-    speedRightPID2 = (speedRightPID + (gananciaPID2));
-    speedLeftPID2 = (speedLeftPID - (gananciaPID2));
+    //speedRightPID2 = (speedRightPID + (gananciaPID2));
+    //speedLeftPID2 = (speedLeftPID - (gananciaPID2));
 
     // ESTABLECEMOS LOS LIMITES
     if (speedRightPID >= MAX_VEL)
