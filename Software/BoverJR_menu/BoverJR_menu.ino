@@ -19,7 +19,7 @@
 BluetoothSerial SerialBT;
 
 // DEBUG
-#define DEBUG_BUTTON 0
+#define DEBUG_BUTTON 1
 #define DEBUG_STATUS 1
 #define DEBUG_SENSORS 1
 #define DEBUG_PID 1
@@ -66,7 +66,7 @@ bool stateStartButton = 0;
 // MENU variables
 #define VALUE_5 5     // valor 5 para aumentar/disminuir velocidad
 #define VALUE_0_1 0.1 // valor 0.1 para aumentar/disminuir PID
-bool init = false;
+bool iniciarRobot = false;
 bool walltofollow = false;
 unsigned long currentTimeMenu = 0;
 
@@ -650,8 +650,8 @@ void movementLogic()
     }
       
     if (speedRightPID > MAX_SPEED){
-      int umbralLeft = (speedRightPID - MAX_SPEED);
-      speedLeftPID = speedRightPID - umbralLeft;
+      int umbralRight = (speedRightPID - MAX_SPEED);
+      speedLeftPID = speedLeftPID - umbralRight;
       speedRightPID = MAX_SPEED;
     }
 
@@ -817,11 +817,13 @@ void loop()
 {
   stateStartButton = buttonStart1->GetIsPress();
   SensorsRead();
-  if (init == false)
+  if (iniciarRobot == false){
     menuBT();
-  if (stateStartButton == true)
-    init = true;
-  if (init == true)
+  }
+  if (stateStartButton == true){
+    iniciarRobot = true;
+  }
+  if (iniciarRobot == true)
   {
     movementLogic();
     printAll();
