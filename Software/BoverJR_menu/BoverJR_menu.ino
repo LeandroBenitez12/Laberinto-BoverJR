@@ -643,10 +643,17 @@ void movementLogic()
     // speedLeftPID2 = (speedLeftPID - (gananciaPID2));
 
     // ESTABLECEMOS LOS LIMITES
-    if (speedLeftPID >= MAX_SPEED)
+    if (speedLeftPID > MAX_SPEED){
+      int umbralLeft = (speedLeftPID - MAX_SPEED);
+      speedRightPID = speedRightPID - umbralLeft;
       speedLeftPID = MAX_SPEED;
-    if (speedRightPID >= MAX_SPEED)
+    }
+      
+    if (speedRightPID > MAX_SPEED){
+      int umbralLeft = (speedRightPID - MAX_SPEED);
+      speedLeftPID = speedRightPID - umbralLeft;
       speedRightPID = MAX_SPEED;
+    }
 
     Bover->Forward(speedRightPID, speedLeftPID);
 
