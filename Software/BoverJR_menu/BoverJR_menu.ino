@@ -25,7 +25,7 @@ BluetoothSerial SerialBT;
 #define DEBUG_PID 1
 #define DEBUG_EJE_Z 1
 // TICKS DEBUG
-#define TICK_DEBUG_ALL 1500
+#define TICK_DEBUG_ALL 500
 unsigned long currentTimeDebugAll = 0;
 
 // PINOUT
@@ -53,11 +53,11 @@ float frontDistance;
 
 // MPU
 #define INTERRUPT_PIN 4
-#define MARGEN 3
+#define MARGEN 5
 #define POSITIVE_ANGLE_MAX 179.9
 #define RIGHT_LIMIT_NEG -179.9
 unsigned long currentTimewhileZ;
-// float gyroZ;
+float gyroZ;
 
 // Boton
 #define PIN_BUTTON_START 32
@@ -71,12 +71,12 @@ bool walltofollow = false;
 unsigned long currentTimeMenu = 0;
 
 // veocidades motores pwm
-#define SPEED_TURN_LOW 120
+#define SPEED_TURN_LOW 100
 #define ENTRAR_EN_PASILLO 500
 #define DELAY_TOMAR_DECISION 200
 #define MAX_SPEED 255
-int averageSpeedRight = 220; // velocidad inicial
-int averageSpeedLeft = 230;  // velocidad inicial
+int averageSpeedRight = 230; // velocidad inicial
+int averageSpeedLeft = 240;  // velocidad inicial
 int speedRightPID;
 int speedLeftPID;
 int speedRightPID2;
@@ -85,8 +85,8 @@ int speedLeftPID2;
 // Constantes y variables pid
 unsigned long currentTimePID = 0;
 #define TICK_PID 1
-double kp = 4;
-double kd = 0.77;
+double kp = 12;
+double kd = 2.77;
 double ki = 0.0;
 double setPoint = 0;
 double gananciaPID = 0;
@@ -203,13 +203,13 @@ void mpuSetup()
 float mpuLoop()
 {
   // Si fallo al iniciar, parar programa
-  // if (!dmpReady)
+  //if (!dmpReady)
   // return;
   // Ejecutar mientras no hay interrupcion
-  //while (!mpuInterrupt && fifoCount < packetSize)
-  //{
+  while (!mpuInterrupt && fifoCount < packetSize)
+  {
   //  //  // AQUI EL RESTO DEL CODIGO DE TU PROGRRAMA
-  //}
+  }
   mpuInterrupt = false;
   mpuIntStatus = mpu.getIntStatus();
 
@@ -239,8 +239,8 @@ float mpuLoop()
     mpu.dmpGetQuaternion(&q, fifoBuffer);
     mpu.dmpGetGravity(&gravity, &q);
     mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-    float gyroZ;
-    return gyroZ = ypr[0] * 180 / M_PI;
+    float gz;
+    return gz = ypr[0] * 180 / M_PI;
     delay(1);
   }
 }
@@ -279,7 +279,7 @@ void printPID()
 
 void printEjeZ()
 {
-  float gyroZ = mpuLoop();
+  //float gyroZ = mpuLoop();
   SerialBT.print("Eje Z:  ");
   SerialBT.print(gyroZ);
 }
@@ -341,8 +341,6 @@ void printOptions()
 // GIROS 90º Y 180º
 void turnRight()
 {
-  
-  float gyroZ = mpuLoop();
   float gyro90 = 90.0;
   float gyroPretendido = gyroZ + gyro90;
   if (gyroZ > 0)
@@ -388,7 +386,6 @@ void turnRight()
 
 void turnLeft()
 {
-  float gyroZ = mpuLoop();
   float gyro90 = 90.0;
   float gyroPretendido = gyroZ - gyro90;
   if (gyroZ > 0)
@@ -428,7 +425,6 @@ void turnLeft()
 
 void fullTurn()
 {
-  float gyroZ = mpuLoop();
   float gyro180 = 155.0;
   float gyroPretendido = gyroZ + gyro180;
   if (gyroZ > 0)
@@ -447,7 +443,7 @@ void fullTurn()
   }
   do
   {
-    float gyroZ = mpuLoop();
+    gyroZ = mpuLoop();
     if (millis() > currentTimewhileZ + TICK_DEBUG_ALL)
     {
       currentTimewhileZ = millis();
@@ -815,6 +811,7 @@ void setup()
 
 void loop()
 {
+  gyroZ = mpuLoop();
   stateStartButton = buttonStart1->GetIsPress();
   SensorsRead();
   if (iniciarRobot == false){
