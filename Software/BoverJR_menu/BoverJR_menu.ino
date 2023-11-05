@@ -85,7 +85,7 @@ int speedLeftPID2;
 // Constantes y variables pid
 unsigned long currentTimePID = 0;
 #define TICK_PID 1
-double kp = 12;
+double kp = 5.5;
 double kd = 2.77;
 double ki = 0.0;
 double setPoint = 0;
