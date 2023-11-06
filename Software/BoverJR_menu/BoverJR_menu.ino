@@ -66,6 +66,7 @@ bool stateStartButton = 0;
 // MENU variables
 #define VALUE_5 5     // valor 5 para aumentar/disminuir velocidad
 #define VALUE_0_1 0.1 // valor 0.1 para aumentar/disminuir PID
+bool parar_motores = false;
 bool iniciarRobot = false;
 bool walltofollow = false;
 unsigned long currentTimeMenu = 0;
@@ -88,8 +89,9 @@ unsigned long currentTimePID = 0;
 double kp = 5.5;
 double kd = 2.77;
 double ki = 0.0;
-double setPoint = 0;
+double setPoint = 7.5;
 double gananciaPID = 0;
+
 // variables pid2
 double kp2 = 0;
 double kd2 = 0;
@@ -587,6 +589,15 @@ void menuBT()
       SerialBT.println("");
       break;
     }
+    case 'P':
+    {
+      parar_motores = true;
+
+      SerialBT.println("");
+      printOptions();
+      SerialBT.println("");
+      break;
+    }
     case 'Z':
     {
       stateStartButton = true;
@@ -618,7 +629,9 @@ void movementLogic()
   break;
   case CONTINUE:
   {
-    float input = rightDistance - leftDistance;
+    float input = leftDistance;
+    if(walltofollow) input = rightDistance;
+
     gananciaPID = PID->ComputePid(input);
 
     // INPUT2 = WALLTOFOLLOW PARA MANTENER LA DISTANCIA A ESA PARED
@@ -631,8 +644,8 @@ void movementLogic()
       printPID();
 
     // APLICAMOS GANANCIA 1 DEL PID A MOTORES. okey
-    speedRightPID = (averageSpeedRight - (gananciaPID));
-    speedLeftPID = (averageSpeedLeft + (gananciaPID));
+    speedRightPID = (averageSpeedRight + (gananciaPID));
+    speedLeftPID = (averageSpeedLeft - (gananciaPID));
 
     // APLICAMOS GANANCIA 2 DEL PID A MOTORES
     // speedRightPID2 = (speedRightPID + (gananciaPID2));
@@ -651,8 +664,8 @@ void movementLogic()
       speedRightPID = MAX_SPEED;
     }
 
-    Bover->Forward(speedRightPID, speedLeftPID);
-
+    if(parar_motores) Bover->Stop();
+    else Bover->Forward(speedRightPID,speedLeftPID);
     if (frontDistance <= PARED_ENFRENTE)
       movement = STOP;
 
