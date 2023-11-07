@@ -46,7 +46,7 @@ unsigned long currentTimeDebugAll = 0;
 float rightDistance;
 float leftDistance;
 float frontDistance;
-#define PARED_ENFRENTE 7
+#define PARED_ENFRENTE 10
 #define PARED_COSTADO_PASILLO 28
 #define NO_HAY_PARED 29
 #define NO_HAY_PARED_ENFRENTE 20
@@ -73,11 +73,12 @@ unsigned long currentTimeMenu = 0;
 
 // veocidades motores pwm
 #define SPEED_TURN_LOW 100
-#define ENTRAR_EN_PASILLO 500
+#define ENTRAR_EN_PASILLO 300
+#define OMITIR_BIFURCACION 600
 #define DELAY_TOMAR_DECISION 200
 #define MAX_SPEED 255
 int averageSpeedRight = 230; // velocidad inicial
-int averageSpeedLeft = 240;  // velocidad inicial
+int averageSpeedLeft = 238;  // velocidad inicial
 int speedRightPID;
 int speedLeftPID;
 int speedRightPID2;
@@ -86,10 +87,10 @@ int speedLeftPID2;
 // Constantes y variables pid
 unsigned long currentTimePID = 0;
 #define TICK_PID 1
-double kp = 5.5;
-double kd = 2.77;
+double kp = 4.4;
+double kd = 1.77;
 double ki = 0.0;
-double setPoint = 7.5;
+double setPoint = 8.2;
 double gananciaPID = 0;
 
 // variables pid2
@@ -109,7 +110,9 @@ enum movement
   RIGHT_TURN,
   LEFT_TURN,
   FULL_TURN,
-  POST_TURN,
+  POST_TURN_FULL,
+  POST_TURN_MIDDLE,
+  ANT_TURN
 };
 int movement = STANDBY;
 
@@ -205,12 +208,12 @@ void mpuSetup()
 float mpuLoop()
 {
   // Si fallo al iniciar, parar programa
-  //if (!dmpReady)
+  // if (!dmpReady)
   // return;
   // Ejecutar mientras no hay interrupcion
   while (!mpuInterrupt && fifoCount < packetSize)
   {
-  //  //  // AQUI EL RESTO DEL CODIGO DE TU PROGRRAMA
+    //  //  // AQUI EL RESTO DEL CODIGO DE TU PROGRRAMA
   }
   mpuInterrupt = false;
   mpuIntStatus = mpu.getIntStatus();
@@ -281,7 +284,7 @@ void printPID()
 
 void printEjeZ()
 {
-  //float gyroZ = mpuLoop();
+  // float gyroZ = mpuLoop();
   SerialBT.print("Eje Z:  ");
   SerialBT.print(gyroZ);
 }
@@ -464,10 +467,21 @@ void fullTurn()
   movement = CONTINUE;
 }
 
-void postTurn()
+void postTurnFull()
+{
+  Bover->Forward(averageSpeedRight, averageSpeedLeft);
+  delay(OMITIR_BIFURCACION);
+}
+void postTurnMiddle()
 {
   Bover->Forward(averageSpeedRight, averageSpeedLeft);
   delay(ENTRAR_EN_PASILLO);
+}
+
+void antTurn()
+{
+  Bover->Forward(averageSpeedRight, averageSpeedLeft);
+  delay(300);
 }
 
 void menuBT()
@@ -630,7 +644,8 @@ void movementLogic()
   case CONTINUE:
   {
     float input = leftDistance;
-    if(walltofollow) input = rightDistance;
+    if (walltofollow)
+      input = rightDistance;
 
     gananciaPID = PID->ComputePid(input);
 
@@ -644,59 +659,65 @@ void movementLogic()
       printPID();
 
     // APLICAMOS GANANCIA 1 DEL PID A MOTORES. okey
-    speedRightPID = (averageSpeedRight + (gananciaPID));
-    speedLeftPID = (averageSpeedLeft - (gananciaPID));
-
+    if (walltofollow)
+    {
+      speedRightPID = (averageSpeedRight - (gananciaPID));
+      speedLeftPID = (averageSpeedLeft + (gananciaPID));
+    }
+    else
+    {
+      speedRightPID = (averageSpeedRight + (gananciaPID));
+      speedLeftPID = (averageSpeedLeft - (gananciaPID));
+    }
     // APLICAMOS GANANCIA 2 DEL PID A MOTORES
     // speedRightPID2 = (speedRightPID + (gananciaPID2));
     // speedLeftPID2 = (speedLeftPID - (gananciaPID2));
 
     // ESTABLECEMOS LOS LIMITES
-    if (speedLeftPID > MAX_SPEED){
+    if (speedLeftPID > MAX_SPEED)
+    {
       int umbralLeft = (speedLeftPID - MAX_SPEED);
       speedRightPID = speedRightPID - umbralLeft;
       speedLeftPID = MAX_SPEED;
     }
-      
-    if (speedRightPID > MAX_SPEED){
+
+    if (speedRightPID > MAX_SPEED)
+    {
       int umbralRight = (speedRightPID - MAX_SPEED);
       speedLeftPID = speedLeftPID - umbralRight;
       speedRightPID = MAX_SPEED;
     }
 
-    if(parar_motores) Bover->Stop();
-    else Bover->Forward(speedRightPID,speedLeftPID);
+    if (parar_motores)
+      Bover->Stop();
+    else
+      Bover->Forward(speedRightPID, speedLeftPID);
     if (frontDistance <= PARED_ENFRENTE)
       movement = STOP;
-
+    if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
+    {
+      movement = POST_TURN_FULL;
+    }
     if (walltofollow == true)
     {
-      if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
-      {
-        movement = POST_TURN;
-      }
       if (leftDistance <= PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
       {
-        movement = RIGHT_TURN;
+        movement = ANT_TURN;
       }
       if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO)
       {
-        movement = POST_TURN;
+        movement = POST_TURN_FULL;
       }
     }
     else
     {
-      if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
-      {
-        movement = POST_TURN;
-      }
       if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO)
       {
-        movement = LEFT_TURN;
+        movement = ANT_TURN;
       }
       if (leftDistance <= PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
       {
-        movement = POST_TURN;
+        movement = POST_TURN_FULL;
       }
     }
     break;
@@ -756,11 +777,23 @@ void movementLogic()
     break;
   }
 
-  case POST_TURN:
+  case POST_TURN_MIDDLE:
   {
-    postTurn();
+    postTurnMiddle();
     movement = CONTINUE;
     break;
+  }
+
+  case POST_TURN_FULL:
+  {
+    postTurnFull();
+    movement = CONTINUE;
+    break;
+  }
+  case ANT_TURN:
+  {
+    antTurn();
+    movement = STOP;
   }
   }
 }
@@ -827,10 +860,12 @@ void loop()
   gyroZ = mpuLoop();
   stateStartButton = buttonStart1->GetIsPress();
   SensorsRead();
-  if (iniciarRobot == false){
+  if (iniciarRobot == false)
+  {
     menuBT();
   }
-  if (stateStartButton == true){
+  if (stateStartButton == true)
+  {
     iniciarRobot = true;
   }
   if (iniciarRobot == true)
