@@ -346,6 +346,7 @@ void printOptions()
 // GIROS 90º Y 180º
 void turnRight()
 {
+  gyroZ = mpuLoop();
   float gyro90 = 90.0;
   float gyroPretendido = gyroZ + gyro90;
   if (gyroZ > 0)
@@ -391,6 +392,7 @@ void turnRight()
 
 void turnLeft()
 {
+  gyroZ = mpuLoop();
   float gyro90 = 90.0;
   float gyroPretendido = gyroZ - gyro90;
   if (gyroZ > 0)
@@ -430,6 +432,7 @@ void turnLeft()
 
 void fullTurn()
 {
+  gyroZ = mpuLoop();
   float gyro180 = 155.0;
   float gyroPretendido = gyroZ + gyro180;
   if (gyroZ > 0)
@@ -857,7 +860,7 @@ void setup()
 
 void loop()
 {
-  gyroZ = mpuLoop();
+  //gyroZ = mpuLoop();
   stateStartButton = buttonStart1->GetIsPress();
   SensorsRead();
   if (iniciarRobot == false)
