@@ -748,6 +748,7 @@ void movementLogic()
   {
     if (millis() > currentTimeStop + TICK_STOP)
     {
+      currentTimeStop = millis();
       Bover->Stop();
       if (frontDistance <= PARED_ENFRENTE)
       {
