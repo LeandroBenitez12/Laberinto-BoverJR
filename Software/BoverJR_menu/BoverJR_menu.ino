@@ -72,13 +72,13 @@ bool walltofollow = false;
 unsigned long currentTimeMenu = 0;
 
 // veocidades motores pwm
-#define SPEED_TURN_LOW 100
+#define SPEED_TURN_LOW 90
 #define ENTRAR_EN_PASILLO 300
 #define OMITIR_BIFURCACION 600
 #define DELAY_TOMAR_DECISION 200
 #define MAX_SPEED 255
-int averageSpeedRight = 230; // velocidad inicial
-int averageSpeedLeft = 238;  // velocidad inicial
+int averageSpeedRight = 210; // velocidad inicial
+int averageSpeedLeft = 220;  // velocidad inicial + 10
 int speedRightPID;
 int speedLeftPID;
 int speedRightPID2;
@@ -87,7 +87,7 @@ int speedLeftPID2;
 // Constantes y variables pid
 unsigned long currentTimePID = 0;
 #define TICK_PID 1
-double kp = 4.4;
+double kp = 10;
 double kd = 1.77;
 double ki = 0.0;
 double setPoint = 8.2;
@@ -97,10 +97,13 @@ double gananciaPID = 0;
 double kp2 = 0;
 double kd2 = 0;
 double ki2 = 0.0;
-double setPoint2 = 7;
+double setPoint2 = 0;
 double gananciaPID2;
 double TICK_PID2 = 1.0;
 
+unsigned long currentTimeStop = 0;
+#define TICK_STOP 1000
+#define TICK_CENTRAR 500
 // enum state
 enum movement
 {
@@ -334,6 +337,9 @@ void printOptions()
     state = "Left";
   SerialBT.println(state);
 
+  SerialBT.print("P - Motor parado = ");
+  SerialBT.println(parar_motores);
+
   SerialBT.println("Y - DEBUGEAR ROBOT ");
 
   SerialBT.println("Z - INICIAR ROBOT ");
@@ -346,7 +352,7 @@ void printOptions()
 // GIROS 90º Y 180º
 void turnRight()
 {
-  gyroZ = mpuLoop();
+  // gyroZ = mpuLoop();
   float gyro90 = 90.0;
   float gyroPretendido = gyroZ + gyro90;
   if (gyroZ > 0)
@@ -387,12 +393,12 @@ void turnRight()
   //     SerialBT.println(gyroZ);
   // }
   SerialBT.print("SALI der:  ");
-  movement = POST_TURN;
+  movement = POST_TURN_MIDDLE;
 }
 
 void turnLeft()
 {
-  gyroZ = mpuLoop();
+  // gyroZ = mpuLoop();
   float gyro90 = 90.0;
   float gyroPretendido = gyroZ - gyro90;
   if (gyroZ > 0)
@@ -427,12 +433,12 @@ void turnLeft()
     Bover->Left(SPEED_TURN_LOW, SPEED_TURN_LOW);
   } while (gyroZ < gyroPretendido - MARGEN || gyroZ > gyroPretendido + MARGEN);
   SerialBT.println("  sali izq  ");
-  movement = POST_TURN;
+  movement = POST_TURN_MIDDLE;
 }
 
 void fullTurn()
 {
-  gyroZ = mpuLoop();
+  // gyroZ = mpuLoop();
   float gyro180 = 155.0;
   float gyroPretendido = gyroZ + gyro180;
   if (gyroZ > 0)
@@ -484,7 +490,7 @@ void postTurnMiddle()
 void antTurn()
 {
   Bover->Forward(averageSpeedRight, averageSpeedLeft);
-  delay(300);
+  delay(TICK_CENTRAR);
 }
 
 void menuBT()
@@ -639,24 +645,26 @@ void movementLogic()
     Bover->Stop();
     if (stateStartButton)
     {
-      delay(1900);
+      delay(2000);
       movement = CONTINUE;
     }
   }
   break;
   case CONTINUE:
   {
+    // float input2 = gyroZ
+
     float input = leftDistance;
     if (walltofollow)
       input = rightDistance;
 
     gananciaPID = PID->ComputePid(input);
-
-    // INPUT2 = WALLTOFOLLOW PARA MANTENER LA DISTANCIA A ESA PARED
-    // float input2 = leftDistance;
-    // if (walltofollow == true)
-    // input2 = rightDistance;
     // gananciaPID2 = PID2->ComputePid(input2);
+    //  INPUT2 = WALLTOFOLLOW PARA MANTENER LA DISTANCIA A ESA PARED
+    //  float input2 = leftDistance;
+    //  if (walltofollow == true)
+    //  input2 = rightDistance;
+    //  gananciaPID2 = PID2->ComputePid(input2);
 
     if (DEBUG_PID)
       printPID();
@@ -692,17 +700,20 @@ void movementLogic()
     }
 
     if (parar_motores)
-      Bover->Stop();
-    else
-      Bover->Forward(speedRightPID, speedLeftPID);
-    if (frontDistance <= PARED_ENFRENTE)
-      movement = STOP;
-    if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
     {
-      movement = POST_TURN_FULL;
+      Bover->Stop();
     }
+    else
+    {
+      Bover->Forward(speedRightPID, speedLeftPID);
+    }
+
     if (walltofollow == true)
     {
+      if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
+      {
+        movement = ANT_TURN;
+      }
       if (leftDistance <= PARED_COSTADO_PASILLO && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
       {
         movement = ANT_TURN;
@@ -714,6 +725,10 @@ void movementLogic()
     }
     else
     {
+      if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance > NO_HAY_PARED)
+      {
+        movement = ANT_TURN;
+      }
       if (leftDistance > NO_HAY_PARED && frontDistance > NO_HAY_PARED_ENFRENTE && rightDistance <= PARED_COSTADO_PASILLO)
       {
         movement = ANT_TURN;
@@ -722,42 +737,48 @@ void movementLogic()
       {
         movement = POST_TURN_FULL;
       }
+    }
+    if (frontDistance <= PARED_ENFRENTE)
+    {
+      movement = STOP;
     }
     break;
   }
   case STOP:
   {
-    Bover->Stop();
-    delay(DELAY_TOMAR_DECISION);
-    if (frontDistance <= PARED_ENFRENTE)
+    if (millis() > currentTimeStop + TICK_STOP)
     {
-      if (rightDistance > NO_HAY_PARED && leftDistance <= PARED_COSTADO_PASILLO)
+      Bover->Stop();
+      if (frontDistance <= PARED_ENFRENTE)
       {
-        movement = RIGHT_TURN;
-      }
-      if (rightDistance <= PARED_COSTADO_PASILLO && leftDistance > NO_HAY_PARED)
-      {
-        movement = LEFT_TURN;
-      }
-      if (rightDistance > NO_HAY_PARED && leftDistance > NO_HAY_PARED)
-      {
-        if (walltofollow = true)
+        if (rightDistance > NO_HAY_PARED && leftDistance > NO_HAY_PARED)
+        {
+          if (walltofollow = true)
+          {
+            movement = RIGHT_TURN;
+          }
+          else
+          {
+            movement = LEFT_TURN;
+          }
+        }
+        else if (rightDistance <= PARED_COSTADO_PASILLO && leftDistance <= PARED_COSTADO_PASILLO)
+        {
+          movement = FULL_TURN;
+        }
+        else if (rightDistance > NO_HAY_PARED && leftDistance <= PARED_COSTADO_PASILLO)
         {
           movement = RIGHT_TURN;
         }
-        else
+        else if (rightDistance <= PARED_COSTADO_PASILLO && leftDistance > NO_HAY_PARED)
         {
           movement = LEFT_TURN;
         }
       }
-      if (rightDistance <= PARED_COSTADO_PASILLO && leftDistance <= PARED_COSTADO_PASILLO)
+      else
       {
-        movement = FULL_TURN;
+        movement = CONTINUE;
       }
-    }
-    else if (frontDistance > PARED_ENFRENTE)
-    {
-      movement = CONTINUE;
     }
     break;
   }
@@ -796,7 +817,14 @@ void movementLogic()
   case ANT_TURN:
   {
     antTurn();
-    movement = STOP;
+    if (walltofollow == true)
+    {
+      movement = RIGHT_TURN;
+    }
+    else
+    {
+      movement = LEFT_TURN;
+    }
   }
   }
 }
@@ -824,8 +852,14 @@ void printStatus()
   case FULL_TURN:
     state = "FULL TURN";
     break;
-  case POST_TURN:
-    state = "POST TURN";
+  case POST_TURN_MIDDLE:
+    state = "POST TURN MIDDLE";
+    break;
+  case POST_TURN_FULL:
+    state = "POST TURN FULL";
+    break;
+  case ANT_TURN:
+    state = "ANT TURN ";
     break;
   }
   SerialBT.print("State: ");
@@ -860,7 +894,7 @@ void setup()
 
 void loop()
 {
-  //gyroZ = mpuLoop();
+  gyroZ = mpuLoop();
   stateStartButton = buttonStart1->GetIsPress();
   SensorsRead();
   if (iniciarRobot == false)
