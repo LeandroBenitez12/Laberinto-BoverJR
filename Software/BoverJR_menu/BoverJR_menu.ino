@@ -23,7 +23,7 @@ BluetoothSerial SerialBT;
 #define DEBUG_STATUS 1
 #define DEBUG_SENSORS 1
 #define DEBUG_PID 1
-#define DEBUG_EJE_Z 0
+#define DEBUG_EJE_Z 1
 // TICKS DEBUG
 #define TICK_DEBUG_ALL 500
 unsigned long currentTimeDebugAll = 0;
@@ -46,10 +46,10 @@ unsigned long currentTimeDebugAll = 0;
 float rightDistance;
 float leftDistance;
 float frontDistance;
-#define PARED_ENFRENTE 10
-#define PARED_COSTADO_PASILLO 28
+#define PARED_ENFRENTE 12
+#define PARED_COSTADO_PASILLO 29
 #define NO_HAY_PARED 29
-#define NO_HAY_PARED_ENFRENTE 20
+#define NO_HAY_PARED_ENFRENTE 29
 
 // MPU
 #define INTERRUPT_PIN 4
@@ -288,7 +288,7 @@ void printPID()
 
 void printEjeZ()
 {
-  // float gyroZ = mpuLoop();
+  float gyroZ = mpuLoop();
   SerialBT.print("Eje Z:  ");
   SerialBT.print(gyroZ);
 }
@@ -356,6 +356,7 @@ void turnRight()
   float gyroZ = mpuLoop();
   float gyro90 = 90.0;
   float gyroPretendido = gyroZ + gyro90;
+  
   if (gyroZ > 0)
   {
     if (gyroPretendido > POSITIVE_ANGLE_MAX)
