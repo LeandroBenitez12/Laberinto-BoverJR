@@ -23,7 +23,7 @@ BluetoothSerial SerialBT;
 #define DEBUG_STATUS 1
 #define DEBUG_SENSORS 1
 #define DEBUG_PID 1
-#define DEBUG_EJE_Z 1
+#define DEBUG_EJE_Z 0
 // TICKS DEBUG
 #define TICK_DEBUG_ALL 500
 unsigned long currentTimeDebugAll = 0;
@@ -57,7 +57,7 @@ float frontDistance;
 #define POSITIVE_ANGLE_MAX 179.9
 #define RIGHT_LIMIT_NEG -179.9
 unsigned long currentTimewhileZ;
-float gyroZ;
+//float gyroZ;
 
 // Boton
 #define PIN_BUTTON_START 32
@@ -87,11 +87,12 @@ int speedLeftPID2;
 // Constantes y variables pid
 unsigned long currentTimePID = 0;
 #define TICK_PID 1
-double kp = 10;
-double kd = 1.77;
+double kp = 5;
+double kd = 0.77;
 double ki = 0.0;
-double setPoint = 8.2;
+double setPoint = 0.01;
 double gananciaPID = 0;
+double input = 0;
 
 // variables pid2
 double kp2 = 0;
@@ -352,7 +353,7 @@ void printOptions()
 // GIROS 90º Y 180º
 void turnRight()
 {
-  // gyroZ = mpuLoop();
+  float gyroZ = mpuLoop();
   float gyro90 = 90.0;
   float gyroPretendido = gyroZ + gyro90;
   if (gyroZ > 0)
@@ -398,7 +399,7 @@ void turnRight()
 
 void turnLeft()
 {
-  // gyroZ = mpuLoop();
+  float gyroZ = mpuLoop();
   float gyro90 = 90.0;
   float gyroPretendido = gyroZ - gyro90;
   if (gyroZ > 0)
@@ -438,7 +439,7 @@ void turnLeft()
 
 void fullTurn()
 {
-  // gyroZ = mpuLoop();
+  float gyroZ = mpuLoop();
   float gyro180 = 155.0;
   float gyroPretendido = gyroZ + gyro180;
   if (gyroZ > 0)
@@ -652,12 +653,11 @@ void movementLogic()
   break;
   case CONTINUE:
   {
-    // float input2 = gyroZ
+    //float input = leftDistance;
+    //if (walltofollow)
+    //  input = rightDistance;
 
-    float input = leftDistance;
-    if (walltofollow)
-      input = rightDistance;
-
+    input = rightDistance - leftDistance;
     gananciaPID = PID->ComputePid(input);
     // gananciaPID2 = PID2->ComputePid(input2);
     //  INPUT2 = WALLTOFOLLOW PARA MANTENER LA DISTANCIA A ESA PARED
@@ -669,17 +669,20 @@ void movementLogic()
     if (DEBUG_PID)
       printPID();
 
+    speedRightPID = (averageSpeedRight - (gananciaPID));
+    speedLeftPID = (averageSpeedLeft + (gananciaPID));
+
     // APLICAMOS GANANCIA 1 DEL PID A MOTORES. okey
-    if (walltofollow)
-    {
-      speedRightPID = (averageSpeedRight - (gananciaPID));
-      speedLeftPID = (averageSpeedLeft + (gananciaPID));
-    }
-    else
-    {
-      speedRightPID = (averageSpeedRight + (gananciaPID));
-      speedLeftPID = (averageSpeedLeft - (gananciaPID));
-    }
+    // if (walltofollow)
+    // {
+    //   speedRightPID = (averageSpeedRight - (gananciaPID));
+    //   speedLeftPID = (averageSpeedLeft + (gananciaPID));
+    // }
+    // else
+    // {
+    //   speedRightPID = (averageSpeedRight + (gananciaPID));
+    //   speedLeftPID = (averageSpeedLeft - (gananciaPID));
+    // }
     // APLICAMOS GANANCIA 2 DEL PID A MOTORES
     // speedRightPID2 = (speedRightPID + (gananciaPID2));
     // speedLeftPID2 = (speedLeftPID - (gananciaPID2));
@@ -895,7 +898,7 @@ void setup()
 
 void loop()
 {
-  gyroZ = mpuLoop();
+  //gyroZ = mpuLoop();
   stateStartButton = buttonStart1->GetIsPress();
   SensorsRead();
   if (iniciarRobot == false)
