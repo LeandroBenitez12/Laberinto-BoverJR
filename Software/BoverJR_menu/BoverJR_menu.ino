@@ -46,18 +46,18 @@ unsigned long currentTimeDebugAll = 0;
 float rightDistance;
 float leftDistance;
 float frontDistance;
-#define PARED_ENFRENTE 12
-#define PARED_COSTADO_PASILLO 29
-#define NO_HAY_PARED 29
-#define NO_HAY_PARED_ENFRENTE 29
+#define PARED_ENFRENTE 10
+#define PARED_COSTADO_PASILLO 30
+#define NO_HAY_PARED 30
+#define NO_HAY_PARED_ENFRENTE 30
 
 // MPU
 #define INTERRUPT_PIN 4
-#define MARGEN 5
-#define POSITIVE_ANGLE_MAX 179.9
-#define RIGHT_LIMIT_NEG -179.9
+#define MARGEN 2
+#define POSITIVE_ANGLE_MAX 180
+#define RIGHT_LIMIT_NEG -180
 unsigned long currentTimewhileZ;
-//float gyroZ;
+float gyroZ;
 
 // Boton
 #define PIN_BUTTON_START 32
@@ -72,13 +72,13 @@ bool walltofollow = false;
 unsigned long currentTimeMenu = 0;
 
 // veocidades motores pwm
-#define SPEED_TURN_LOW 90
-#define ENTRAR_EN_PASILLO 300
-#define OMITIR_BIFURCACION 600
+#define SPEED_TURN_LOW 100
+#define ENTRAR_EN_PASILLO 400
+#define OMITIR_BIFURCACION 750
 #define DELAY_TOMAR_DECISION 200
 #define MAX_SPEED 255
-int averageSpeedRight = 210; // velocidad inicial
-int averageSpeedLeft = 220;  // velocidad inicial + 10
+int averageSpeedRight = 190; // velocidad inicial
+int averageSpeedLeft = 200;  // velocidad inicial + 10
 int speedRightPID;
 int speedLeftPID;
 int speedRightPID2;
@@ -87,10 +87,10 @@ int speedLeftPID2;
 // Constantes y variables pid
 unsigned long currentTimePID = 0;
 #define TICK_PID 1
-double kp = 5;
-double kd = 0.77;
+double kp = 4;
+double kd = 1.77;
 double ki = 0.0;
-double setPoint = 0.01;
+double setPoint = 0.0;
 double gananciaPID = 0;
 double input = 0;
 
@@ -217,7 +217,7 @@ float mpuLoop()
   // Ejecutar mientras no hay interrupcion
   while (!mpuInterrupt && fifoCount < packetSize)
   {
-    //  //  // AQUI EL RESTO DEL CODIGO DE TU PROGRRAMA
+  // AQUI EL RESTO DEL CODIGO DE TU PROGRRAMA
   }
   mpuInterrupt = false;
   mpuIntStatus = mpu.getIntStatus();
@@ -288,7 +288,6 @@ void printPID()
 
 void printEjeZ()
 {
-  float gyroZ = mpuLoop();
   SerialBT.print("Eje Z:  ");
   SerialBT.print(gyroZ);
 }
@@ -353,7 +352,6 @@ void printOptions()
 // GIROS 90º Y 180º
 void turnRight()
 {
-  float gyroZ = mpuLoop();
   float gyro90 = 90.0;
   float gyroPretendido = gyroZ + gyro90;
   
@@ -400,7 +398,6 @@ void turnRight()
 
 void turnLeft()
 {
-  float gyroZ = mpuLoop();
   float gyro90 = 90.0;
   float gyroPretendido = gyroZ - gyro90;
   if (gyroZ > 0)
@@ -440,7 +437,6 @@ void turnLeft()
 
 void fullTurn()
 {
-  float gyroZ = mpuLoop();
   float gyro180 = 155.0;
   float gyroPretendido = gyroZ + gyro180;
   if (gyroZ > 0)
@@ -899,7 +895,7 @@ void setup()
 
 void loop()
 {
-  //gyroZ = mpuLoop();
+  gyroZ = mpuLoop();
   stateStartButton = buttonStart1->GetIsPress();
   SensorsRead();
   if (iniciarRobot == false)
