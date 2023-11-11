@@ -19,11 +19,11 @@
 BluetoothSerial SerialBT;
 
 // DEBUG
-#define DEBUG_BUTTON 0
-#define DEBUG_STATUS 0
-#define DEBUG_SENSORS 0
-#define DEBUG_PID 0
-#define DEBUG_EJE_Z 0
+#define DEBUG_BUTTON 1
+#define DEBUG_STATUS 1
+#define DEBUG_SENSORS 1
+#define DEBUG_PID 1
+#define DEBUG_EJE_Z 1
 // TICKS DEBUG
 #define TICK_DEBUG_ALL 500
 unsigned long currentTimeDebugAll = 0;
@@ -351,137 +351,37 @@ void printOptions()
 // GIROS 90º Y 180º
 void turnRight()
 {
-  
-  float gyro90 = 90.0;
-  float gyroPretendido = gyroZ + gyro90;
-  
-  if (gyroZ > 0)
-  {
-    if (gyroPretendido > POSITIVE_ANGLE_MAX)
-    {
-      gyroPretendido = RIGHT_LIMIT_NEG + (gyroPretendido - POSITIVE_ANGLE_MAX);
-    }
-  }
-  else if (gyroZ < 0)
-  {
-    if (gyroPretendido < RIGHT_LIMIT_NEG)
-    {
-      gyroPretendido = POSITIVE_ANGLE_MAX + (gyroPretendido + POSITIVE_ANGLE_MAX);
-    }
-  }
+  SerialBT.println("  entro right  ");
   do
   {
     SensorsRead();
-    gyroZ = mpuLoop();
-     /*
-      if (millis() > currentTimewhileZ + TICK_DEBUG_ALL)
-      {
-        currentTimewhileZ = millis();
-        SerialBT.print("1:  ");
-        SerialBT.print(gyroZ < gyroPretendido - MARGEN);
-        SerialBT.print(" | 2:  ");
-        SerialBT.print(gyroZ > gyroPretendido + MARGEN);
-        SerialBT.print(" | 3:  ");
-        SerialBT.print(frontDistance > PARED_ENFRENTE);
-        SerialBT.print("|| gyroZ Actual:  ");
-        SerialBT.print(gyroZ);
-        SerialBT.print("|| gyroZ Pretendido:  ");
-        SerialBT.println(gyroPretendido);
-      }*/
     Bover->Right(SPEED_TURN_LOW, SPEED_TURN_LOW);
-  } while (gyroZ < gyroPretendido - MARGEN || gyroZ > gyroPretendido + MARGEN && frontDistance < PARED_ENFRENTE);
-  // mpu.resetGyroscopePath();
-  // while(true){
-  //   gyroZ = gyroZ = ();
-  //   SerialBT.print(" gyroZ:  ");
-  //     SerialBT.println(gyroZ);
-  // }
-  //SerialBT.print("SALI der:  ");
+  } while ( frontDistance < 28);
+  SerialBT.println("  sali right  ");
   movement = POST_TURN_MIDDLE;
 }
 
 void turnLeft()
 {
-  float gyro90 = 89.0;
-  float gyroPretendido = gyroZ - gyro90;
-  if (gyroZ > 0)
-  {
-    if (gyroPretendido > POSITIVE_ANGLE_MAX)
-    {
-      gyroPretendido = RIGHT_LIMIT_NEG + (gyroPretendido - POSITIVE_ANGLE_MAX);
-    }
-  }
-  else if (gyroZ < 0)
-  {
-    if (gyroPretendido < RIGHT_LIMIT_NEG)
-    {
-      gyroPretendido = POSITIVE_ANGLE_MAX + (gyroPretendido + POSITIVE_ANGLE_MAX);
-    }
-  }
+  SerialBT.println("  entro left  ");
   do
   {
     SensorsRead();
-    gyroZ = mpuLoop();
-    /*if (millis() > currentTimewhileZ + TICK_DEBUG_ALL)
-    {
-      currentTimewhileZ = millis();
-      SerialBT.print("1:  ");
-      SerialBT.print(gyroZ < gyroPretendido - MARGEN);
-      SerialBT.print(" | 2:  ");
-      SerialBT.print(gyroZ > gyroPretendido + MARGEN);
-      SerialBT.print(" | 3:  ");
-      SerialBT.print(frontDistance > PARED_ENFRENTE);
-      SerialBT.print("|| gyroZ Actual:  ");
-      SerialBT.print(gyroZ);
-      SerialBT.print("|| gyroZ Pretendido:  ");
-      SerialBT.println(gyroPretendido);
-    }*/
     Bover->Left(SPEED_TURN_LOW, SPEED_TURN_LOW);
-  } while (gyroZ < gyroPretendido - MARGEN || gyroZ > gyroPretendido + MARGEN && frontDistance < PARED_ENFRENTE );
-  //SerialBT.println("  sali izq  ");
+  } while ( frontDistance < 28);
+  SerialBT.println("  sali left  ");
   movement = POST_TURN_MIDDLE;
 }
 
 void fullTurn()
 {
-  float gyro180 = 140.0;
-  float gyroPretendido = gyroZ + gyro180;
-  if (gyroZ > 0)
-  {
-    if (gyroPretendido > POSITIVE_ANGLE_MAX)
-    {
-      gyroPretendido = RIGHT_LIMIT_NEG + (gyroPretendido - POSITIVE_ANGLE_MAX);
-    }
-  }
-  else if (gyroZ < 0)
-  {
-    if (gyroPretendido < RIGHT_LIMIT_NEG)
-    {
-      gyroPretendido = POSITIVE_ANGLE_MAX + (gyroPretendido + POSITIVE_ANGLE_MAX);
-    }
-  }
+  SerialBT.println("  entro full  ");
   do
   {
     SensorsRead();
-    gyroZ = mpuLoop();
-    /*if (millis() > currentTimewhileZ + TICK_DEBUG_ALL)
-    {
-      currentTimewhileZ = millis();
-      SerialBT.print("1:  ");
-      SerialBT.print(gyroZ < gyroPretendido - MARGEN);
-      SerialBT.print(" | 2:  ");
-      SerialBT.print(gyroZ > gyroPretendido + MARGEN);
-      SerialBT.print(" | 3:  ");
-      SerialBT.print(frontDistance > PARED_ENFRENTE);
-      SerialBT.print("|| gyroZ Actual:  ");
-      SerialBT.print(gyroZ);
-      SerialBT.print("|| gyroZ Pretendido:  ");
-      SerialBT.println(gyroPretendido);
-    }
-    */
     Bover->Right(SPEED_TURN_LOW, SPEED_TURN_LOW);
-  } while (gyroZ < gyroPretendido - MARGEN || gyroZ > gyroPretendido + MARGEN && frontDistance < PARED_ENFRENTE);
-  //SerialBT.println("  sali FULL  ");
+  } while ( frontDistance < 28);
+  SerialBT.println("  sali FULL  ");
   movement = CONTINUE;
 }
 
