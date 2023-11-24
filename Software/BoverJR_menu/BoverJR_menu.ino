@@ -19,11 +19,11 @@
 BluetoothSerial SerialBT;
 
 // DEBUG
-#define DEBUG_BUTTON 1
-#define DEBUG_STATUS 1
-#define DEBUG_SENSORS 1
-#define DEBUG_PID 1
-#define DEBUG_EJE_Z 1
+#define DEBUG_BUTTON 0
+#define DEBUG_STATUS 0
+#define DEBUG_SENSORS 0
+#define DEBUG_PID 0
+#define DEBUG_EJE_Z 0
 // TICKS DEBUG
 #define TICK_DEBUG_ALL 500
 unsigned long currentTimeDebugAll = 0;
@@ -47,9 +47,9 @@ float rightDistance;
 float leftDistance;
 float frontDistance;
 #define PARED_ENFRENTE 10
-#define PARED_COSTADO_PASILLO 20
-#define NO_HAY_PARED 28
-#define NO_HAY_PARED_ENFRENTE 28
+#define PARED_COSTADO_PASILLO 18
+#define NO_HAY_PARED 24
+#define NO_HAY_PARED_ENFRENTE 24
 
 // MPU
 #define INTERRUPT_PIN 4
