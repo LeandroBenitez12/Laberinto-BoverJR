@@ -1,7 +1,10 @@
 # Robot en Desarrollo para la Resolución de Laberintos 🚧
 
 ![image](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/fc53aeef-5db7-40ba-8f84-613de3c5e623)
-![Laberinto BoverJR](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/8e0e0711-0f1c-469e-903a-441d05014f11)
+
+![Laberinto BoverJR](https://github.com/LeandroBenitez12/Laberinto-BoverJR/assets/108737751/8e0e0711-0f1c-469e-903a-441d05014f11) 
+
+<a href="https://www.pcbway.com/project/shareproject/Bover_JR_Maze_Robot_1de85bd7.html"><img src="https://www.pcbway.com/project/img/images/frompcbway-1220.png" alt="PCB from PCBWay" width=400 /></a>
 
 ## Descripción del Proyecto
 
